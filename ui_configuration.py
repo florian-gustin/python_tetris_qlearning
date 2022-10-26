@@ -6,6 +6,8 @@ class UIConfiguration:
     def __init__(self, pygame) -> None:
         super().__init__()
         self.__pygame = pygame
+        self.__pygame.display.set_caption("PYTRIS™")
+
         # Fonts
         self.font_path = "./assets/fonts/OpenSans-Light.ttf"
         self.font_path_b = "./assets/fonts/OpenSans-Bold.ttf"

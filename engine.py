@@ -50,7 +50,6 @@ class PygameEngine(Engine):
         self.__framerate = 30  # Bigger -> Slower
         pygame.init()
         pygame.time.set_timer(USEREVENT, self.__framerate * 10)
-        pygame.display.set_caption("PYTRIS™")
         self.__pygame = pygame
         self.__clock = pygame.time.Clock()
         self.environment = environment
@@ -524,8 +523,8 @@ class PygameEngine(Engine):
         if self.environment.hold_mino != -1:
             for i in range(4):
                 for j in range(4):
-                    self.environment.dx = 220 + self.environment.block_size * j
-                    self.environment.dy = 50 + self.environment.block_size * i
+                    self.environment.dx = 220 + self.__block_size * j
+                    self.environment.dy = 50 + self.__block_size * i
                     if grid_h[i][j] != 0:
                         self.__pygame.draw.rect(
                             self.__screen,
