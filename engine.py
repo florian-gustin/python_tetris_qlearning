@@ -88,12 +88,12 @@ class PygameEngine(Engine):
         title_info = self.ui_configuration.h6.render("Copyright (c) 2017 Jason Kim All Rights Reserved.", 1,
                                                self.ui_configuration.white)
 
-        # leader_1 = self.ui_configuration.h5_i.render('1st ' + self.leaders[0][0] + ' ' + str(self.leaders[0][1]), 1,
-        #                                        self.ui_configuration.grey_1)
-        # leader_2 = self.ui_configuration.h5_i.render('2nd ' + self.leaders[1][0] + ' ' + str(self.leaders[1][1]), 1,
-        #                                        self.ui_configuration.grey_1)
-        # leader_3 = self.ui_configuration.h5_i.render('3rd ' + self.leaders[2][0] + ' ' + str(self.leaders[2][1]), 1,
-        #                                        self.ui_configuration.grey_1)
+        leader_1 = self.ui_configuration.h5_i.render('1st ' + self.leaders[0][0] + ' ' + str(self.leaders[0][1]), 1,
+                                               self.ui_configuration.grey_1)
+        leader_2 = self.ui_configuration.h5_i.render('2nd ' + self.leaders[1][0] + ' ' + str(self.leaders[1][1]), 1,
+                                               self.ui_configuration.grey_1)
+        leader_3 = self.ui_configuration.h5_i.render('3rd ' + self.leaders[2][0] + ' ' + str(self.leaders[2][1]), 1,
+                                               self.ui_configuration.grey_1)
 
         if self.environment.blink:
             self.__screen.blit(title_start, (92, 195))
@@ -104,9 +104,9 @@ class PygameEngine(Engine):
         self.__screen.blit(title, (65, 120))
         self.__screen.blit(title_info, (40, 335))
 
-        # self.__screen.blit(leader_1, (10, 10))
-        # self.__screen.blit(leader_2, (10, 23))
-        # self.__screen.blit(leader_3, (10, 36))
+        self.__screen.blit(leader_1, (10, 10))
+        self.__screen.blit(leader_2, (10, 23))
+        self.__screen.blit(leader_3, (10, 36))
 
         if not self.environment.start:
             self.__pygame.display.update()
@@ -477,7 +477,7 @@ class PygameEngine(Engine):
         self.leaders = {'AAA': 0, 'BBB': 0, 'CCC': 0}
         for i in self.lines:
             self.leaders[i.split(' ')[0]] = int(i.split(' ')[1])
-        leaders = sorted(self.leaders.items(), key=operator.itemgetter(1), reverse=True)
+        self.leaders = sorted(self.leaders.items(), key=operator.itemgetter(1), reverse=True)
 
     # # Draw block
     # def draw_block(x, y, color):
@@ -524,13 +524,13 @@ class PygameEngine(Engine):
         if self.environment.hold_mino != -1:
             for i in range(4):
                 for j in range(4):
-                    dx = 220 + self.environment.block_size * j
-                    dy = 50 + self.environment.block_size * i
+                    self.environment.dx = 220 + self.environment.block_size * j
+                    self.environment.dy = 50 + self.environment.block_size * i
                     if grid_h[i][j] != 0:
                         self.__pygame.draw.rect(
                             self.__screen,
                             self.ui_configuration.t_color[grid_h[i][j]],
-                            Rect(dx, dy, self.__block_size, self.__block_size)
+                            Rect(self.environment.dx, self.environment.dy, self.__block_size, self.__block_size)
                         )
 
         # Set max score
