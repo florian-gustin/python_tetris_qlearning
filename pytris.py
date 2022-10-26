@@ -6,11 +6,7 @@ from environment import *
 
 def main():
     environment = Environment()
-    engine = PygameEngine(environment)
-
-    if isinstance(engine, PygameEngine):
-        # get the score history
-        engine.score_history()
+    engine = TetrisEngine(environment)
 
     while not environment.done:
         # Pause screen

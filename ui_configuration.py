@@ -6,6 +6,14 @@ class UIConfiguration:
     def __init__(self, pygame) -> None:
         super().__init__()
         self.__pygame = pygame
+        self.__pygame.display.set_caption("PYTRIS™")
+
+        self.block_size = 17  # Height, width of single block
+
+        self.screen = pygame.display.set_mode((300, 374))
+        self.leaders = None
+        self.lines = None
+
         # Fonts
         self.font_path = "./assets/fonts/OpenSans-Light.ttf"
         self.font_path_b = "./assets/fonts/OpenSans-Bold.ttf"
