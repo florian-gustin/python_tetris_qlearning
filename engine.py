@@ -52,11 +52,11 @@ class TetrisEngine:
         title_info = self.ui_configuration.h6.render("Copyright (c) 2017 Jason Kim All Rights Reserved.", 1,
                                                      self.ui_configuration.white)
 
-        leader_1 = self.ui_configuration.h5_i.render('1st ' + self.leaders[0][0] + ' ' + str(self.leaders[0][1]), 1,
+        leader_1 = self.ui_configuration.h5_i.render('1st ' +  self.ui_configuration.leaders[0][0] + ' ' + str( self.ui_configuration.leaders[0][1]), 1,
                                                      self.ui_configuration.grey_1)
-        leader_2 = self.ui_configuration.h5_i.render('2nd ' + self.leaders[1][0] + ' ' + str(self.leaders[1][1]), 1,
+        leader_2 = self.ui_configuration.h5_i.render('2nd ' +  self.ui_configuration.leaders[1][0] + ' ' + str( self.ui_configuration.leaders[1][1]), 1,
                                                      self.ui_configuration.grey_1)
-        leader_3 = self.ui_configuration.h5_i.render('3rd ' + self.leaders[2][0] + ' ' + str(self.leaders[2][1]), 1,
+        leader_3 = self.ui_configuration.h5_i.render('3rd ' +  self.ui_configuration.leaders[2][0] + ' ' + str( self.ui_configuration.leaders[2][1]), 1,
                                                      self.ui_configuration.grey_1)
 
         if self.environment.blink:
@@ -439,13 +439,13 @@ class TetrisEngine:
 
     def score_history(self):
         with open('leaderboard.txt') as f:
-            self.lines = f.readlines()
-        self.lines = [line.rstrip('\n') for line in open('leaderboard.txt')]
+            self.ui_configuration.lines = f.readlines()
+        self.ui_configuration.lines = [line.rstrip('\n') for line in open('leaderboard.txt')]
 
-        self.leaders = {'AAA': 0, 'BBB': 0, 'CCC': 0}
-        for i in self.lines:
-            self.leaders[i.split(' ')[0]] = int(i.split(' ')[1])
-        self.leaders = sorted(self.leaders.items(), key=operator.itemgetter(1), reverse=True)
+        self.ui_configuration.leaders = {'AAA': 0, 'BBB': 0, 'CCC': 0}
+        for i in self.ui_configuration.lines:
+            self.ui_configuration.leaders[i.split(' ')[0]] = int(i.split(' ')[1])
+        self.ui_configuration.leaders = sorted(self.ui_configuration.leaders.items(), key=operator.itemgetter(1), reverse=True)
 
     # Draw game screen
     def draw_board(self, next, hold, score, level, goal):
