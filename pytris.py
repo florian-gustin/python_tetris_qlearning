@@ -6,9 +6,9 @@ from environment import *
 
 def main():
     environment = Environment()
-    engine = PygameEngine(environment)
+    engine = TetrisEngine(environment)
 
-    if isinstance(engine, PygameEngine):
+    if isinstance(engine, TetrisEngine):
         # get the score history
         engine.score_history()
 
