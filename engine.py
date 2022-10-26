@@ -30,7 +30,7 @@ class TetrisEngine:
         self.__pygame.quit()
 
     def on_start(self):
-
+        self.score_history()
         for event in self.__pygame.event.get():
             if event.type == QUIT:
                 self.environment.done = True
@@ -115,9 +115,10 @@ class TetrisEngine:
                         self.__pygame.time.set_timer(USEREVENT, self.__framerate * 1)
                     else:
                         self.__pygame.time.set_timer(USEREVENT, self.__framerate * 10)
-                        # pygame.time.set_timer(pygame.KEYDOWN, framerate * 10)
-                        # newevent = pygame.event.Event(pygame.locals.KEYDOWN, unicode="a", key=pygame.locals.K_LEFT,
-                        #                               mod=pygame.locals.KMOD_NONE)  # create the event
+
+                        #
+                        # pygame.time.set_timer(pygame.KEYDOWN, self.__framerate * 10)
+                        # newevent = pygame.event.Event(KEYDOWN, K_LEFT)  # create the event
                         # pygame.event.post(newevent)  # a
 
                 # Draw a mino
@@ -385,13 +386,13 @@ class TetrisEngine:
                                                range(self.environment.width)]
 
                     with open('leaderboard.txt') as f:
-                        lines = f.readlines()
-                    lines = [line.rstrip('\n') for line in open('leaderboard.txt')]
+                        self.ui_configuration.lines = f.readlines()
+                    self.ui_configuration.lines = [line.rstrip('\n') for line in open('leaderboard.txt')]
 
-                    leaders = {'AAA': 0, 'BBB': 0, 'CCC': 0}
-                    for i in lines:
-                        leaders[i.split(' ')[0]] = int(i.split(' ')[1])
-                    leaders = sorted(leaders.items(), key=operator.itemgetter(1), reverse=True)
+                    self.ui_configuration.leaders = {'AAA': 0, 'BBB': 0, 'CCC': 0}
+                    for i in self.ui_configuration.lines:
+                        self.ui_configuration.leaders[i.split(' ')[0]] = int(i.split(' ')[1])
+                    self.ui_configuration.leaders = sorted(self.ui_configuration.leaders.items(), key=operator.itemgetter(1), reverse=True)
 
                     self.__pygame.time.set_timer(USEREVENT, 1)
                 elif event.key == K_RIGHT:
@@ -421,19 +422,16 @@ class TetrisEngine:
                         self.environment.name[self.environment.name_location] = 90
                     self.__pygame.time.set_timer(USEREVENT, 1)
 
-    def get_constants(self):
-        return self.__pygame.constants
-
     def draw_block(self, x, y, color):
-        pygame.draw.rect(
+        self.__pygame.draw.rect(
             self.ui_configuration.screen,
             color,
-            pygame.Rect(x, y, self.ui_configuration.block_size, self.ui_configuration.block_size)
+            Rect(x, y, self.ui_configuration.block_size, self.ui_configuration.block_size)
         )
-        pygame.draw.rect(
+        self.__pygame.draw.rect(
             self.ui_configuration.screen,
             self.ui_configuration.grey_1,
-            pygame.Rect(x, y, self.ui_configuration.block_size, self.ui_configuration.block_size),
+            Rect(x, y, self.ui_configuration.block_size, self.ui_configuration.block_size),
             1
         )
 
@@ -488,8 +486,8 @@ class TetrisEngine:
                         )
 
         # Set max score
-        if score > 999999:
-            score = 999999
+        if self.environment.score > 999999:
+            self.environment.score = 999999
 
         # Draw texts
         text_hold = self.ui_configuration.h5.render("HOLD", 1, self.ui_configuration.black)

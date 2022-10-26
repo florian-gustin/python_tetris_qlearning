@@ -8,10 +8,6 @@ def main():
     environment = Environment()
     engine = TetrisEngine(environment)
 
-    if isinstance(engine, TetrisEngine):
-        # get the score history
-        engine.score_history()
-
     while not environment.done:
         # Pause screen
         if environment.pause:
