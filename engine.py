@@ -16,14 +16,15 @@ from pygame.event import Event
 
 class TetrisEngine:
 
-    def __init__(self, environment) -> None:
+    def __init__(self, environment, agent) -> None:
         super().__init__()
-        self.__framerate = 30  # Bigger -> Slower
+        self.__framerate = 15  # Bigger -> Slower
         pygame.init()
         pygame.time.set_timer(USEREVENT, self.__framerate * 10)
         self.__pygame = pygame
         self.__clock = pygame.time.Clock()
-        self.environment = environment
+        self.__environment = environment
+        self.__agent = agent
         self.ui_configuration = UIConfiguration(self.__pygame)
 
     def quit(self):
@@ -104,7 +105,9 @@ class TetrisEngine:
                     self.__pygame.set_timer(USEREVENT, 1)
 
     def on_game(self):
+
         for event in self.__pygame.event.get():
+            self.__agent.step(self.__environment.dx)
             if event.type == QUIT:
                 self.__environment.done = True
             elif event.type == USEREVENT:
