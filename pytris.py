@@ -1,21 +1,23 @@
 # PYTRIS™ Copyright (c) 2017 Jason Kim All Rights Reserved.
-
+from agent import Agent
 from engine import *
 from environment import *
 
 
 def main():
     environment = Environment()
-    engine = TetrisEngine(environment)
+    agent = Agent()
+    engine = TetrisEngine(environment, agent)
 
     while not environment.done:
-        # Pause screen
-        if environment.pause:
-            engine.on_pause()
+        # # Pause screen
+        # if environment.pause:
+        #     engine.on_pause()
 
         # Game screen
-        elif environment.start:
+        if environment.start:
             engine.on_game()
+            print(environment.dx)
 
         # Game over screen
         elif environment.game_over:
@@ -31,4 +33,6 @@ def main():
 ###########################################################
 # Loop Start
 ###########################################################
-main()
+
+if __name__ == '__main__':
+    main()

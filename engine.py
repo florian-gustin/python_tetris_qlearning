@@ -33,11 +33,11 @@ class TetrisEngine:
         self.score_history()
         for event in self.__pygame.event.get():
             if event.type == QUIT:
-                self.environment.done = True
+                self.__environment.done = True
             elif event.type == KEYDOWN:
                 if event.key == K_SPACE:
                     self.ui_configuration.click_sound.play()
-                    self.environment.start = True
+                    self.__environment.start = True
 
         # engine.set_timer(USEREVENT, 300)
         self.ui_configuration.screen.fill(self.ui_configuration.white)
@@ -59,11 +59,11 @@ class TetrisEngine:
         leader_3 = self.ui_configuration.h5_i.render('3rd ' +  self.ui_configuration.leaders[2][0] + ' ' + str( self.ui_configuration.leaders[2][1]), 1,
                                                      self.ui_configuration.grey_1)
 
-        if self.environment.blink:
+        if self.__environment.blink:
             self.ui_configuration.screen.blit(title_start, (92, 195))
-            self.environment.blink = False
+            self.__environment.blink = False
         else:
-            self.environment.blink = True
+            self.__environment.blink = True
 
         self.ui_configuration.screen.blit(title, (65, 120))
         self.ui_configuration.screen.blit(title_info, (40, 335))
@@ -72,44 +72,44 @@ class TetrisEngine:
         self.ui_configuration.screen.blit(leader_2, (10, 23))
         self.ui_configuration.screen.blit(leader_3, (10, 36))
 
-        if not self.environment.start:
+        if not self.__environment.start:
             self.__pygame.display.update()
             self.__clock.tick(3)
 
     def on_pause(self):
         for event in self.__pygame.event.get():
             if event.type == QUIT:
-                self.environment.done = True
+                self.__environment.done = True
             elif event.type == USEREVENT:
                 self.__pygame.time.set_timer(USEREVENT, 300)
-                self.draw_board(self.environment.next_mino, self.environment.hold_mino, self.environment.score,
-                                self.environment.level, self.environment.goal)
+                self.draw_board(self.__environment.next_mino, self.__environment.hold_mino, self.__environment.score,
+                                self.__environment.level, self.__environment.goal)
 
                 pause_text = self.ui_configuration.h2_b.render("PAUSED", 1, self.ui_configuration.white)
                 pause_start = self.ui_configuration.h5.render("Press esc to continue", 1, self.ui_configuration.white)
 
                 self.ui_configuration.screen.blit(pause_text, (43, 100))
-                if self.environment.blink:
+                if self.__environment.blink:
                     self.ui_configuration.screen.blit(pause_start, (40, 160))
-                    self.environment.blink = False
+                    self.__environment.blink = False
                 else:
-                    self.environment.blink = True
+                    self.__environment.blink = True
                 self.__pygame.display.update()
             elif event.type == KEYDOWN:
-                self.environment.erase_mino(self.environment.dx, self.environment.dy, self.environment.mino,
-                                            self.environment.rotation)
+                self.__environment.erase_mino(self.__environment.dx, self.__environment.dy, self.__environment.mino,
+                                              self.__environment.rotation)
                 if event.key == K_ESCAPE:
-                    self.environment.pause = False
+                    self.__environment.pause = False
                     self.ui_configuration.click_sound.play()
                     self.__pygame.set_timer(USEREVENT, 1)
 
     def on_game(self):
         for event in self.__pygame.event.get():
             if event.type == QUIT:
-                self.environment.done = True
+                self.__environment.done = True
             elif event.type == USEREVENT:
                 # Set speed
-                if not self.environment.game_over:
+                if not self.__environment.game_over:
                     keys_pressed = pygame.key.get_pressed()
                     if keys_pressed[K_DOWN]:
                         self.__pygame.time.set_timer(USEREVENT, self.__framerate * 1)
@@ -122,219 +122,221 @@ class TetrisEngine:
                         # pygame.event.post(newevent)  # a
 
                 # Draw a mino
-                self.environment.draw_mino(self.environment.dx, self.environment.dy, self.environment.mino,
-                                           self.environment.rotation)
-                self.draw_board(self.environment.next_mino, self.environment.hold_mino, self.environment.score,
-                                self.environment.level, self.environment.goal)
+                self.__environment.draw_mino(self.__environment.dx, self.__environment.dy, self.__environment.mino,
+                                             self.__environment.rotation)
+                self.draw_board(self.__environment.next_mino, self.__environment.hold_mino, self.__environment.score,
+                                self.__environment.level, self.__environment.goal)
 
                 # Erase a mino
-                if not self.environment.game_over:
-                    self.environment.erase_mino(self.environment.dx, self.environment.dy, self.environment.mino,
-                                                self.environment.rotation)
+                if not self.__environment.game_over:
+                    self.__environment.erase_mino(self.__environment.dx, self.__environment.dy, self.__environment.mino,
+                                                  self.__environment.rotation)
 
                 # Move mino down
-                if not self.environment.is_bottom(self.environment.dx, self.environment.dy, self.environment.mino,
-                                                  self.environment.rotation):
-                    self.environment.dy += 1
+                if not self.__environment.is_bottom(self.__environment.dx, self.__environment.dy, self.__environment.mino,
+                                                    self.__environment.rotation):
+                    self.__environment.dy += 1
 
                 # Create new mino
                 else:
-                    if self.environment.hard_drop or self.environment.bottom_count == 6:
-                        self.environment.hard_drop = False
-                        self.environment.bottom_count = 0
-                        self.environment.score += 10 * self.environment.level
-                        self.environment.draw_mino(self.environment.dx, self.environment.dy, self.environment.mino,
-                                                   self.environment.rotation)
-                        self.draw_board(self.environment.next_mino, self.environment.hold_mino, self.environment.score,
-                                        self.environment.level, self.environment.goal)
-                        if self.environment.is_stackable(self.environment.next_mino):
-                            self.environment.mino = self.environment.next_mino
-                            self.environment.next_mino = randint(1, 7)
-                            self.environment.dx, self.environment.dy = 3, 0
-                            self.environment.rotation = 0
-                            self.environment.hold = False
+                    if self.__environment.hard_drop or self.__environment.bottom_count == 1:
+                        self.__agent.insert_reward_in_state_qtable(self.__environment.dx, 50) # fake reward
+                        self.__environment.hard_drop = False
+                        self.__environment.bottom_count = 0
+                        self.__environment.score += 10 * self.__environment.level
+                        self.__environment.draw_mino(self.__environment.dx, self.__environment.dy, self.__environment.mino,
+                                                     self.__environment.rotation)
+                        self.draw_board(self.__environment.next_mino, self.__environment.hold_mino, self.__environment.score,
+                                        self.__environment.level, self.__environment.goal)
+                        if self.__environment.is_stackable(self.__environment.next_mino):
+                            self.__environment.mino = self.__environment.next_mino
+                            self.__environment.next_mino = randint(1, 7)
+                            self.__environment.dx, self.__environment.dy = 3, 0
+                            self.__environment.rotation = 0
+                            self.__environment.hold = False
                         else:
-                            self.environment.start = False
-                            self.environment.game_over = True
+                            self.__environment.start = False
+                            self.__environment.game_over = True
                             self.__pygame.time.set_timer(USEREVENT, 1)
                     else:
-                        self.environment.bottom_count += 1
+                        self.__environment.bottom_count += 1
 
                 # Erase line
-                self.environment.try_erase_line(self.ui_configuration)
+                self.__environment.try_erase_line(self.ui_configuration)
 
                 # Increase level
-                self.environment.goal -= self.environment.erase_count
-                if self.environment.goal < 1 and self.environment.level < 15:
-                    self.environment.level += 1
-                    self.environment.goal += self.environment.level * 5
+                self.__environment.goal -= self.__environment.erase_count
+                if self.__environment.goal < 1 and self.__environment.level < 15:
+                    self.__environment.level += 1
+                    self.__environment.goal += self.__environment.level * 5
                     self.__framerate = int(self.__framerate * 0.8)
 
             elif event.type == KEYDOWN:
-                self.environment.erase_mino(self.environment.dx, self.environment.dy, self.environment.mino,
-                                            self.environment.rotation)
+                self.__environment.erase_mino(self.__environment.dx, self.__environment.dy, self.__environment.mino,
+                                              self.__environment.rotation)
                 if event.key == K_ESCAPE:
                     self.ui_configuration.click_sound.play()
-                    self.environment.pause = True
+                    self.__environment.pause = True
                 # Hard drop
                 elif event.key == K_SPACE:
                     self.ui_configuration.drop_sound.play()
-                    while not self.environment.is_bottom(self.environment.dx, self.environment.dy,
-                                                         self.environment.mino, self.environment.rotation):
-                        self.environment.dy += 1
-                    self.environment.hard_drop = True
+                    while not self.__environment.is_bottom(self.__environment.dx, self.__environment.dy,
+                                                           self.__environment.mino, self.__environment.rotation):
+                        self.__environment.dy += 1
+                    self.__environment.hard_drop = True
                     self.__pygame.time.set_timer(USEREVENT, 1)
-                    self.environment.draw_mino(self.environment.dx, self.environment.dy, self.environment.mino,
-                                               self.environment.rotation)
-                    self.draw_board(self.environment.next_mino, self.environment.hold_mino, self.environment.score,
-                                    self.environment.level, self.environment.goal)
+                    self.__environment.draw_mino(self.__environment.dx, self.__environment.dy, self.__environment.mino,
+                                                 self.__environment.rotation)
+                    self.draw_board(self.__environment.next_mino, self.__environment.hold_mino, self.__environment.score,
+                                    self.__environment.level, self.__environment.goal)
                 # Hold
                 elif event.key == K_LSHIFT or event.key == K_c:
-                    if not self.environment.hold:
+                    if not self.__environment.hold:
                         self.ui_configuration.move_sound.play()
-                        if self.environment.hold_mino == -1:
-                            self.environment.hold_mino = self.environment.mino
-                            self.environment.mino = self.environment.next_mino
-                            self.environment.next_mino = randint(1, 7)
+                        if self.__environment.hold_mino == -1:
+                            self.__environment.hold_mino = self.__environment.mino
+                            self.__environment.mino = self.__environment.next_mino
+                            self.__environment.next_mino = randint(1, 7)
+                            #self.environment.next_mino = randint(1, 7)
                         else:
-                            self.environment.hold_mino, self.environment.mino = \
-                                self.environment.mino, self.environment.hold_mino
-                        self.environment.dx, self.environment.dy = 3, 0
-                        self.environment.rotation = 0
-                        self.environment.hold = True
-                    self.environment.draw_mino(self.environment.dx, self.environment.dy, self.environment.mino,
-                                               self.environment.rotation)
-                    self.draw_board(self.environment.next_mino, self.environment.hold_mino, self.environment.score,
-                                    self.environment.level, self.environment.goal)
+                            self.__environment.hold_mino, self.__environment.mino = \
+                                self.__environment.mino, self.__environment.hold_mino
+                        self.__environment.dx, self.__environment.dy = 3, 0
+                        self.__environment.rotation = 0
+                        self.__environment.hold = True
+                    self.__environment.draw_mino(self.__environment.dx, self.__environment.dy, self.__environment.mino,
+                                                 self.__environment.rotation)
+                    self.draw_board(self.__environment.next_mino, self.__environment.hold_mino, self.__environment.score,
+                                    self.__environment.level, self.__environment.goal)
                 # Turn right
                 elif event.key == K_UP or event.key == K_x:
 
-                    if self.environment.is_turnable_r(self.environment.dx, self.environment.dy,
-                                                      self.environment.mino, self.environment.rotation):
+                    if self.__environment.is_turnable_r(self.__environment.dx, self.__environment.dy,
+                                                        self.__environment.mino, self.__environment.rotation):
                         self.ui_configuration.move_sound.play()
-                        self.environment.rotation += 1
+                        self.__environment.rotation += 1
                     # Kick
-                    elif self.environment.is_turnable_r(self.environment.dx, self.environment.dy - 1,
-                                                        self.environment.mino, self.environment.rotation):
+                    elif self.__environment.is_turnable_r(self.__environment.dx, self.__environment.dy - 1,
+                                                          self.__environment.mino, self.__environment.rotation):
                         self.ui_configuration.move_sound.play()
-                        self.environment.dy -= 1
-                        self.environment.rotation += 1
-                    elif self.environment.is_turnable_r(self.environment.dx + 1,
-                                                        self.environment.dy, self.environment.mino,
-                                                        self.environment.rotation):
+                        self.__environment.dy -= 1
+                        self.__environment.rotation += 1
+                    elif self.__environment.is_turnable_r(self.__environment.dx + 1,
+                                                          self.__environment.dy, self.__environment.mino,
+                                                          self.__environment.rotation):
                         self.ui_configuration.move_sound.play()
-                        self.environment.dx += 1
-                        self.environment.rotation += 1
-                    elif self.environment.is_turnable_r(self.environment.dx - 1, self.environment.dy,
-                                                        self.environment.mino, self.environment.rotation):
+                        self.__environment.dx += 1
+                        self.__environment.rotation += 1
+                    elif self.__environment.is_turnable_r(self.__environment.dx - 1, self.__environment.dy,
+                                                          self.__environment.mino, self.__environment.rotation):
                         self.ui_configuration.move_sound.play()
-                        self.environment.dx -= 1
-                        self.environment.rotation += 1
-                    elif self.environment.is_turnable_r(self.environment.dx, self.environment.dy - 2,
-                                                        self.environment.mino, self.environment.rotation):
+                        self.__environment.dx -= 1
+                        self.__environment.rotation += 1
+                    elif self.__environment.is_turnable_r(self.__environment.dx, self.__environment.dy - 2,
+                                                          self.__environment.mino, self.__environment.rotation):
                         self.ui_configuration.move_sound.play()
-                        self.environment.dy -= 2
-                        self.environment.rotation += 1
-                    elif self.environment.is_turnable_r(self.environment.dx + 2, self.environment.dy,
-                                                        self.environment.mino, self.environment.rotation):
+                        self.__environment.dy -= 2
+                        self.__environment.rotation += 1
+                    elif self.__environment.is_turnable_r(self.__environment.dx + 2, self.__environment.dy,
+                                                          self.__environment.mino, self.__environment.rotation):
                         self.ui_configuration.move_sound.play()
-                        self.environment.dx += 2
-                        self.environment.rotation += 1
-                    elif self.environment.is_turnable_r(self.environment.dx - 2, self.environment.dy,
-                                                        self.environment.mino, self.environment.rotation):
+                        self.__environment.dx += 2
+                        self.__environment.rotation += 1
+                    elif self.__environment.is_turnable_r(self.__environment.dx - 2, self.__environment.dy,
+                                                          self.__environment.mino, self.__environment.rotation):
                         self.ui_configuration.move_sound.play()
-                        self.environment.dx -= 2
-                        self.environment.rotation += 1
-                    if self.environment.rotation == 4:
-                        self.environment.rotation = 0
-                    self.environment.draw_mino(self.environment.dx, self.environment.dy,
-                                               self.environment.mino, self.environment.rotation)
-                    self.draw_board(self.environment.next_mino, self.environment.hold_mino,
-                                    self.environment.score, self.environment.level, self.environment.goal)
+                        self.__environment.dx -= 2
+                        self.__environment.rotation += 1
+                    if self.__environment.rotation == 4:
+                        self.__environment.rotation = 0
+                    self.__environment.draw_mino(self.__environment.dx, self.__environment.dy,
+                                                 self.__environment.mino, self.__environment.rotation)
+                    self.draw_board(self.__environment.next_mino, self.__environment.hold_mino,
+                                    self.__environment.score, self.__environment.level, self.__environment.goal)
                 # Turn left
                 elif event.key == K_z or event.key == K_LCTRL:
-                    if self.environment.is_turnable_l(self.environment.dx, self.environment.dy,
-                                                      self.environment.mino, self.environment.rotation):
+                    if self.__environment.is_turnable_l(self.__environment.dx, self.__environment.dy,
+                                                        self.__environment.mino, self.__environment.rotation):
                         self.ui_configuration.move_sound.play()
-                        self.environment.rotation -= 1
+                        self.__environment.rotation -= 1
                     # Kick
-                    elif self.environment.is_turnable_l(self.environment.dx, self.environment.dy - 1,
-                                                        self.environment.mino, self.environment.rotation):
+                    elif self.__environment.is_turnable_l(self.__environment.dx, self.__environment.dy - 1,
+                                                          self.__environment.mino, self.__environment.rotation):
                         self.ui_configuration.move_sound.play()
-                        self.environment.dy -= 1
-                        self.environment.rotation -= 1
-                    elif self.environment.is_turnable_l(self.environment.dx + 1, self.environment.dy,
-                                                        self.environment.mino, self.environment.rotation):
+                        self.__environment.dy -= 1
+                        self.__environment.rotation -= 1
+                    elif self.__environment.is_turnable_l(self.__environment.dx + 1, self.__environment.dy,
+                                                          self.__environment.mino, self.__environment.rotation):
                         self.ui_configuration.move_sound.play()
-                        self.environment.dx += 1
-                        self.environment.rotation -= 1
-                    elif self.environment.is_turnable_l(self.environment.dx - 1, self.environment.dy,
-                                                        self.environment.mino, self.environment.rotation):
+                        self.__environment.dx += 1
+                        self.__environment.rotation -= 1
+                    elif self.__environment.is_turnable_l(self.__environment.dx - 1, self.__environment.dy,
+                                                          self.__environment.mino, self.__environment.rotation):
                         self.ui_configuration.move_sound.play()
-                        self.environment.dx -= 1
-                        self.environment.rotation -= 1
-                    elif self.environment.is_turnable_l(self.environment.dx, self.environment.dy - 2,
-                                                        self.environment.mino, self.environment.rotation):
+                        self.__environment.dx -= 1
+                        self.__environment.rotation -= 1
+                    elif self.__environment.is_turnable_l(self.__environment.dx, self.__environment.dy - 2,
+                                                          self.__environment.mino, self.__environment.rotation):
                         self.ui_configuration.move_sound.play()
-                        self.environment.dy -= 2
-                        self.environment.rotation += 1
-                    elif self.environment.is_turnable_l(self.environment.dx + 2, self.environment.dy,
-                                                        self.environment.mino, self.environment.rotation):
+                        self.__environment.dy -= 2
+                        self.__environment.rotation += 1
+                    elif self.__environment.is_turnable_l(self.__environment.dx + 2, self.__environment.dy,
+                                                          self.__environment.mino, self.__environment.rotation):
                         self.ui_configuration.move_sound.play()
-                        self.environment.dx += 2
-                        self.environment.rotation += 1
-                    elif self.environment.is_turnable_l(self.environment.dx - 2, self.environment.dy,
-                                                        self.environment.mino, self.environment.rotation):
+                        self.__environment.dx += 2
+                        self.__environment.rotation += 1
+                    elif self.__environment.is_turnable_l(self.__environment.dx - 2, self.__environment.dy,
+                                                          self.__environment.mino, self.__environment.rotation):
                         self.ui_configuration.move_sound.play()
-                        self.environment.dx -= 2
-                    if self.environment.rotation == -1:
-                        self.environment.rotation = 3
-                    self.environment.draw_mino(self.environment.dx, self.environment.dy,
-                                               self.environment.mino, self.environment.rotation)
-                    self.draw_board(self.environment.next_mino, self.environment.hold_mino, self.environment.score,
-                                    self.environment.level, self.environment.goal)
+                        self.__environment.dx -= 2
+                    if self.__environment.rotation == -1:
+                        self.__environment.rotation = 3
+                    self.__environment.draw_mino(self.__environment.dx, self.__environment.dy,
+                                                 self.__environment.mino, self.__environment.rotation)
+                    self.draw_board(self.__environment.next_mino, self.__environment.hold_mino, self.__environment.score,
+                                    self.__environment.level, self.__environment.goal)
                 # Move left
                 elif event.key == K_LEFT:
-                    if not self.environment.is_leftedge(self.environment.dx, self.environment.dy,
-                                                        self.environment.mino, self.environment.rotation):
+                    if not self.__environment.is_leftedge(self.__environment.dx, self.__environment.dy,
+                                                          self.__environment.mino, self.__environment.rotation):
                         self.ui_configuration.move_sound.play()
-                        self.environment.dx -= 1
-                    self.environment.draw_mino(self.environment.dx, self.environment.dy,
-                                               self.environment.mino, self.environment.rotation)
-                    self.draw_board(self.environment.next_mino, self.environment.hold_mino,
-                                    self.environment.score, self.environment.level, self.environment.goal)
+                        self.__environment.dx -= 1
+                    self.__environment.draw_mino(self.__environment.dx, self.__environment.dy,
+                                                 self.__environment.mino, self.__environment.rotation)
+                    self.draw_board(self.__environment.next_mino, self.__environment.hold_mino,
+                                    self.__environment.score, self.__environment.level, self.__environment.goal)
                 # Move right
                 elif event.key == K_RIGHT:
-                    if not self.environment.is_rightedge(self.environment.dx, self.environment.dy,
-                                                         self.environment.mino, self.environment.rotation):
+                    if not self.__environment.is_rightedge(self.__environment.dx, self.__environment.dy,
+                                                           self.__environment.mino, self.__environment.rotation):
                         self.ui_configuration.move_sound.play()
-                        self.environment.dx += 1
-                    self.environment.draw_mino(self.environment.dx, self.environment.dy,
-                                               self.environment.mino, self.environment.rotation)
-                    self.draw_board(self.environment.next_mino, self.environment.hold_mino, self.environment.score,
-                                    self.environment.level, self.environment.goal)
+                        self.__environment.dx += 1
+                    self.__environment.draw_mino(self.__environment.dx, self.__environment.dy,
+                                                 self.__environment.mino, self.__environment.rotation)
+                    self.draw_board(self.__environment.next_mino, self.__environment.hold_mino, self.__environment.score,
+                                    self.__environment.level, self.__environment.goal)
         self.__pygame.display.update()
 
     def on_game_over(self):
         for event in self.__pygame.event.get():
             if event.type == QUIT:
-                self.environment.done = True
+                self.__environment.done = True
             elif event.type == USEREVENT:
                 self.__pygame.time.set_timer(USEREVENT, 300)
                 over_text_1 = self.ui_configuration.h2_b.render("GAME", 1, self.ui_configuration.white)
                 over_text_2 = self.ui_configuration.h2_b.render("OVER", 1, self.ui_configuration.white)
                 over_start = self.ui_configuration.h5.render("Press return to continue", 1, self.ui_configuration.white)
 
-                self.draw_board(self.environment.next_mino, self.environment.hold_mino, self.environment.score,
-                                self.environment.level, self.environment.goal)
+                self.draw_board(self.__environment.next_mino, self.__environment.hold_mino, self.__environment.score,
+                                self.__environment.level, self.__environment.goal)
                 self.ui_configuration.screen.blit(over_text_1, (58, 75))
                 self.ui_configuration.screen.blit(over_text_2, (62, 105))
 
-                name_1 = self.ui_configuration.h2_i.render(chr(self.environment.name[0]), 1,
+                name_1 = self.ui_configuration.h2_i.render(chr(self.__environment.name[0]), 1,
                                                            self.ui_configuration.white)
-                name_2 = self.ui_configuration.h2_i.render(chr(self.environment.name[1]), 1,
+                name_2 = self.ui_configuration.h2_i.render(chr(self.__environment.name[1]), 1,
                                                            self.ui_configuration.white)
-                name_3 = self.ui_configuration.h2_i.render(chr(self.environment.name[2]), 1,
+                name_3 = self.ui_configuration.h2_i.render(chr(self.__environment.name[2]), 1,
                                                            self.ui_configuration.white)
 
                 underbar_1 = self.ui_configuration.h2.render("_", 1, self.ui_configuration.white)
@@ -345,17 +347,17 @@ class TetrisEngine:
                 self.ui_configuration.screen.blit(name_2, (95, 147))
                 self.ui_configuration.screen.blit(name_3, (125, 147))
 
-                if self.environment.blink:
+                if self.__environment.blink:
                     self.ui_configuration.screen.blit(over_start, (32, 195))
-                    self.environment.blink = False
+                    self.__environment.blink = False
                 else:
-                    if self.environment.name_location == 0:
+                    if self.__environment.name_location == 0:
                         self.ui_configuration.screen.blit(underbar_1, (65, 145))
-                    elif self.environment.name_location == 1:
+                    elif self.__environment.name_location == 1:
                         self.ui_configuration.screen.blit(underbar_2, (95, 145))
-                    elif self.environment.name_location == 2:
+                    elif self.__environment.name_location == 2:
                         self.ui_configuration.screen.blit(underbar_3, (125, 145))
-                    self.environment.blink = True
+                    self.__environment.blink = True
                 self.__pygame.display.update()
 
             elif event.type == KEYDOWN:
@@ -363,27 +365,27 @@ class TetrisEngine:
                     self.ui_configuration.click_sound.play()
 
                     outfile = open('leaderboard.txt', 'a')
-                    outfile.write(chr(self.environment.name[0]) + chr(self.environment.name[1]) + chr(
-                        self.environment.name[2]) + ' ' + str(self.environment.score) + '\n')
+                    outfile.write(chr(self.__environment.name[0]) + chr(self.__environment.name[1]) + chr(
+                        self.__environment.name[2]) + ' ' + str(self.__environment.score) + '\n')
                     outfile.close()
 
-                    self.environment.game_over = False
-                    self.environment.hold = False
-                    self.environment.dx, self.environment.dy = 3, 0
-                    self.environment.rotation = 0
-                    self.environment.mino = randint(1, 7)
-                    self.environment.next_mino = randint(1, 7)
-                    self.environment.hold_mino = -1
-                    self.environment.framerate = 30
-                    self.environment.score = 0
-                    self.environment.level = 1
-                    self.environment.goal = self.environment.level * 5
-                    self.environment.bottom_count = 0
-                    self.environment.hard_drop = False
-                    self.environment.name_location = 0
-                    self.environment.name = [65, 65, 65]
-                    self.environment.matrix = [[0 for y in range(self.environment.height + 1)] for x in
-                                               range(self.environment.width)]
+                    self.__environment.game_over = False
+                    self.__environment.hold = False
+                    self.__environment.dx, self.__environment.dy = 3, 0
+                    self.__environment.rotation = 0
+                    self.__environment.mino = randint(1, 7)
+                    self.__environment.next_mino = randint(1, 7)
+                    self.__environment.hold_mino = -1
+                    self.__environment.framerate = 30
+                    self.__environment.score = 0
+                    self.__environment.level = 1
+                    self.__environment.goal = self.__environment.level * 5
+                    self.__environment.bottom_count = 0
+                    self.__environment.hard_drop = False
+                    self.__environment.name_location = 0
+                    self.__environment.name = [65, 65, 65]
+                    self.__environment.matrix = [[0 for y in range(self.__environment.height + 1)] for x in
+                                                 range(self.__environment.width)]
 
                     with open('leaderboard.txt') as f:
                         self.ui_configuration.lines = f.readlines()
@@ -394,33 +396,33 @@ class TetrisEngine:
                         self.ui_configuration.leaders[i.split(' ')[0]] = int(i.split(' ')[1])
                     self.ui_configuration.leaders = sorted(self.ui_configuration.leaders.items(), key=operator.itemgetter(1), reverse=True)
 
-                    self.__pygame.time.set_timer(USEREVENT, 1)
+                    #self.__pygame.time.set_timer(USEREVENT, 1)
                 elif event.key == K_RIGHT:
-                    if self.environment.name_location != 2:
-                        self.environment.name_location += 1
+                    if self.__environment.name_location != 2:
+                        self.__environment.name_location += 1
                     else:
-                        self.environment.name_location = 0
-                    self.__pygame.time.set_timer(USEREVENT, 1)
+                        self.__environment.name_location = 0
+                    #self.__pygame.time.set_timer(USEREVENT, 1)
                 elif event.key == K_LEFT:
-                    if self.environment.name_location != 0:
-                        self.environment.name_location -= 1
+                    if self.__environment.name_location != 0:
+                        self.__environment.name_location -= 1
                     else:
-                        self.environment.name_location = 2
-                    self.__pygame.time.set_timer(USEREVENT, 1)
+                        self.__environment.name_location = 2
+                    #self.__pygame.time.set_timer(USEREVENT, 1)
                 elif event.key == K_UP:
                     self.ui_configuration.click_sound.play()
-                    if self.environment.name[self.environment.name_location] != 90:
-                        self.environment.name[self.environment.name_location] += 1
+                    if self.__environment.name[self.__environment.name_location] != 90:
+                        self.__environment.name[self.__environment.name_location] += 1
                     else:
-                        self.environment.name[self.environment.name_location] = 65
-                    self.__pygame.time.set_timer(USEREVENT, 1)
+                        self.__environment.name[self.__environment.name_location] = 65
+                    #self.__pygame.time.set_timer(USEREVENT, 1)
                 elif event.key == K_DOWN:
                     self.ui_configuration.click_sound.play()
-                    if self.environment.name[self.environment.name_location] != 65:
-                        self.environment.name[self.environment.name_location] -= 1
+                    if self.__environment.name[self.__environment.name_location] != 65:
+                        self.__environment.name[self.__environment.name_location] -= 1
                     else:
-                        self.environment.name[self.environment.name_location] = 90
-                    self.__pygame.time.set_timer(USEREVENT, 1)
+                        self.__environment.name[self.__environment.name_location] = 90
+                    #self.__pygame.time.set_timer(USEREVENT, 1)
 
     def draw_block(self, x, y, color):
         self.__pygame.draw.rect(
@@ -473,21 +475,21 @@ class TetrisEngine:
         # Draw hold mino
         grid_h = TetriMino.mino_map[hold - 1][0]
 
-        if self.environment.hold_mino != -1:
+        if self.__environment.hold_mino != -1:
             for i in range(4):
                 for j in range(4):
-                    self.environment.dx = 220 + self.ui_configuration.block_size * j
-                    self.environment.dy = 50 + self.ui_configuration.block_size * i
+                    self.__environment.dx = 220 + self.ui_configuration.block_size * j
+                    self.__environment.dy = 50 + self.ui_configuration.block_size * i
                     if grid_h[i][j] != 0:
                         self.__pygame.draw.rect(
                             self.ui_configuration.screen,
                             self.ui_configuration.t_color[grid_h[i][j]],
-                            Rect(self.environment.dx, self.environment.dy, self.ui_configuration.block_size, self.ui_configuration.block_size)
+                            Rect(self.__environment.dx, self.__environment.dy, self.ui_configuration.block_size, self.ui_configuration.block_size)
                         )
 
         # Set max score
-        if self.environment.score > 999999:
-            self.environment.score = 999999
+        if self.__environment.score > 999999:
+            self.__environment.score = 999999
 
         # Draw texts
         text_hold = self.ui_configuration.h5.render("HOLD", 1, self.ui_configuration.black)
@@ -510,8 +512,8 @@ class TetrisEngine:
         self.ui_configuration.screen.blit(goal_value, (220, 330))
 
         # Draw board
-        for x in range(self.environment.width):
-            for y in range(self.environment.height):
+        for x in range(self.__environment.width):
+            for y in range(self.__environment.height):
                 dx = 17 + self.ui_configuration.block_size * x
                 dy = 17 + self.ui_configuration.block_size * y
-                self.draw_block(dx, dy, self.ui_configuration.t_color[self.environment.matrix[x][y + 1]])
+                self.draw_block(dx, dy, self.ui_configuration.t_color[self.__environment.matrix[x][y + 1]])
