@@ -462,7 +462,7 @@ class TetrisEngine:
         )
 
         # Draw next mino
-        grid_n = TetriMino.mino_map[next - 1][0]
+        grid_n = TetriMino.mino_map[next - 1][0]['GRID']
 
         for i in range(4):
             for j in range(4):
@@ -476,7 +476,7 @@ class TetrisEngine:
                     )
 
         # Draw hold mino
-        grid_h = TetriMino.mino_map[hold - 1][0]
+        grid_h = TetriMino.mino_map[hold - 1][0]['GRID']
 
         if self.__environment.hold_mino != -1:
             for i in range(4):

@@ -39,7 +39,7 @@ class Environment:
 
     # Returns true if mino is at bottom
     def is_bottom(self, x, y, mino, r):
-        grid = self.tetri_mino.mino_map[mino - 1][r]
+        grid = self.tetri_mino.mino_map[mino - 1][r]['GRID']
 
         for i in range(4):
             for j in range(4):
@@ -53,7 +53,7 @@ class Environment:
 
     # Returns true if mino is at the left edge
     def is_leftedge(self, x, y, mino, r):
-        grid = self.tetri_mino.mino_map[mino - 1][r]
+        grid = self.tetri_mino.mino_map[mino - 1][r]['GRID']
 
         for i in range(4):
             for j in range(4):
@@ -67,7 +67,7 @@ class Environment:
 
     # Returns true if mino is at the right edge
     def is_rightedge(self, x, y, mino, r):
-        grid = self.tetri_mino.mino_map[mino - 1][r]
+        grid = self.tetri_mino.mino_map[mino - 1][r]['GRID']
 
         for i in range(4):
             for j in range(4):
@@ -82,9 +82,9 @@ class Environment:
     # Returns true if turning right is possible
     def is_turnable_r(self, x, y, mino, r):
         if r != 3:
-            grid = self.tetri_mino.mino_map[mino - 1][r + 1]
+            grid = self.tetri_mino.mino_map[mino - 1][r + 1]['GRID']
         else:
-            grid = self.tetri_mino.mino_map[mino - 1][0]
+            grid = self.tetri_mino.mino_map[mino - 1][0]['GRID']
 
         for i in range(4):
             for j in range(4):
@@ -98,10 +98,11 @@ class Environment:
 
     # Returns true if turning left is possible
     def is_turnable_l(self, x, y, mino, r):
+        #simplifiable avec modulo
         if r != 0:
-            grid = self.tetri_mino.mino_map[mino - 1][r - 1]
+            grid = self.tetri_mino.mino_map[mino - 1][r - 1]['GRID']
         else:
-            grid = self.tetri_mino.mino_map[mino - 1][3]
+            grid = self.tetri_mino.mino_map[mino - 1][3]['GRID']
 
         for i in range(4):
             for j in range(4):
@@ -115,7 +116,7 @@ class Environment:
 
     # Returns true if new block is drawable
     def is_stackable(self, mino):
-        grid = self.tetri_mino.mino_map[mino - 1][0]
+        grid = self.tetri_mino.mino_map[mino - 1][0]['GRID']
 
         for i in range(4):
             for j in range(4):
@@ -127,7 +128,7 @@ class Environment:
 
     # Draw a tetrimino
     def draw_mino(self, x, y, mino, r):
-        grid = TetriMino.mino_map[mino - 1][r]
+        grid = TetriMino.mino_map[mino - 1][r]['GRID']
 
         tx, ty = x, y
         while not self.is_bottom(tx, ty, mino, r):
@@ -147,7 +148,7 @@ class Environment:
 
     # Erase a tetrimino
     def erase_mino(self, x, y, mino, r):
-        grid = TetriMino.mino_map[mino - 1][r]
+        grid = TetriMino.mino_map[mino - 1][r]['GRID']
 
         # Erase ghost
         for j in range(21):
