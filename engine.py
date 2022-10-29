@@ -37,7 +37,7 @@ class TetrisEngine:
                 self.__environment.done = True
             elif event.type == KEYDOWN:
                 if event.key == K_SPACE:
-                    self.ui_configuration.click_sound.play()
+                    # self.ui_configuration.click_sound.play()
                     self.__environment.start = True
 
         # engine.set_timer(USEREVENT, 300)
@@ -101,13 +101,13 @@ class TetrisEngine:
                                               self.__environment.rotation)
                 if event.key == K_ESCAPE:
                     self.__environment.pause = False
-                    self.ui_configuration.click_sound.play()
+#                     # self.ui_configuration.click_sound.play()
                     self.__pygame.set_timer(USEREVENT, 1)
 
     def on_game(self):
 
         for event in self.__pygame.event.get():
-            self.__agent.step(self.__environment.dx)
+            self.__agent.step(self.__environment.mino, self.__environment.dx)
             if event.type == QUIT:
                 self.__environment.done = True
             elif event.type == USEREVENT:
@@ -143,7 +143,8 @@ class TetrisEngine:
                 # Create new mino
                 else:
                     if self.__environment.hard_drop or self.__environment.bottom_count == 1:
-                        self.__agent.insert_reward_in_state_qtable(self.__environment.dx, 50) # fake reward
+                        self.__agent.change_state(self.__environment.matrix)
+                        self.__agent.insert_reward_in_state_qtable(self.__environment.mino, self.__environment.dx, 50) # fake reward
                         self.__environment.hard_drop = False
                         self.__environment.bottom_count = 0
                         self.__environment.score += 10 * self.__environment.level
@@ -178,7 +179,7 @@ class TetrisEngine:
                 self.__environment.erase_mino(self.__environment.dx, self.__environment.dy, self.__environment.mino,
                                               self.__environment.rotation)
                 if event.key == K_ESCAPE:
-                    self.ui_configuration.click_sound.play()
+                    # self.ui_configuration.click_sound.play()
                     self.__environment.pause = True
                 # Hard drop
                 elif event.key == K_SPACE:
@@ -365,7 +366,7 @@ class TetrisEngine:
 
             elif event.type == KEYDOWN:
                 if event.key == K_RETURN:
-                    self.ui_configuration.click_sound.play()
+                    # self.ui_configuration.click_sound.play()
 
                     outfile = open('leaderboard.txt', 'a')
                     outfile.write(chr(self.__environment.name[0]) + chr(self.__environment.name[1]) + chr(
@@ -413,14 +414,14 @@ class TetrisEngine:
                         self.__environment.name_location = 2
                     #self.__pygame.time.set_timer(USEREVENT, 1)
                 elif event.key == K_UP:
-                    self.ui_configuration.click_sound.play()
+                    # self.ui_configuration.click_sound.play()
                     if self.__environment.name[self.__environment.name_location] != 90:
                         self.__environment.name[self.__environment.name_location] += 1
                     else:
                         self.__environment.name[self.__environment.name_location] = 65
                     #self.__pygame.time.set_timer(USEREVENT, 1)
                 elif event.key == K_DOWN:
-                    self.ui_configuration.click_sound.play()
+                    # self.ui_configuration.click_sound.play()
                     if self.__environment.name[self.__environment.name_location] != 65:
                         self.__environment.name[self.__environment.name_location] -= 1
                     else:

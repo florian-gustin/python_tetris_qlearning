@@ -11,8 +11,8 @@ ACTIONS = [pygame.event.Event(pygame.KEYDOWN, key=pygame.K_LEFT, mod=pygame.KMOD
 class Agent:
     def __init__(self, alpha=1, gamma=1, exploration=1, cooling_rate=0.9999):
         self.last_action = None
-        self.__state = [0 for i in range(10)]
-        self.__qtable_I = {}
+        self.state = [0 for i in range(10)]
+        self.__qtables = [{},{},{},{},{},{},{},]
         self.init_state_in_qtable()
         self.init_radar()
         self.__alpha = alpha
@@ -26,27 +26,44 @@ class Agent:
 
     def init_state_in_qtable(self):
         index_array = []
-        state_str = ''.join(map(str, self.__state))
+        state_str = ''.join(map(str, self.state))
 
         for i in range(11):
             index_array.append({'NOTHING': 0, 'LEFT': 0, 'RIGHT': 0, 'ROTATE': 0})
-        self.__qtable_I[state_str] = index_array
-        print(self.__qtable_I)
+        for i in range(7):
+            self.__qtables[i][state_str] = index_array
+        # self.__qtable_I[state_str] = index_array
+        print(self.__qtables)
 
-    def insert_reward_in_state_qtable(self, x, value):
+    def change_state(self, grid):
+        tmp = []
+        for x in range(len(grid)):
+            for y in range(len(grid[x])):
+                if y < len(grid[x])-1 and y+1 is 0:
+                    tmp.append(y)
+                    self.state = tmp
+
+
+    def insert_reward_in_state_qtable(self, mino, x, value):
         # self.__insert_reward_in_state_qtable(state,5, 50)
-        state_str = ''.join(map(str, self.__state))
-        self.__qtable_I[state_str][x][self.last_action] = value
+        state_str = ''.join(map(str, self.state))
+        self.__qtables[mino-1][state_str][x][self.last_action] = value
+        print(self.__qtables)
 
     def action(self):
         # minos = self.__env.mino
         # print(self.__env.dx)
         return pygame.event.post(random.choice(ACTIONS))
 
-    def best_action(self, dx):
-        hash = ''.join(str(x) for x in self.__state)
+    def best_action(self, mino, dx):
+        hash = ''.join(str(x) for x in self.state)
         piece_x = dx
-        actions = self.__qtable_I[hash][piece_x+2]
+
+        if len(self.__qtables[mino-1][hash]) == 0:
+            actions = self.__qtables[mino-1][hash][piece_x+2]
+        else:
+            self.__qtables[mino - 1][hash] = [{'NOTHING': 0, 'LEFT': 0, 'RIGHT': 0, 'ROTATE': 0} for i in range(11)]
+            actions = self.__qtables[mino - 1][hash][piece_x + 2]
         # print(actions)
 
         if random.uniform(0, 1) < self.__exploration:
@@ -55,11 +72,11 @@ class Agent:
         else:
             return max(actions, key=actions.get)
 
-    def step(self, dx):
-        if not self.__state in self.__qtable_I.values():
+    def step(self, mino,  dx):
+        if len(self.__qtables) is 0:
             self.init_state_in_qtable()
 
-        action = self.best_action(dx)
+        action = self.best_action(mino, dx)
         self.last_action = action
         key = None
 
