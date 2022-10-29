@@ -37,6 +37,16 @@ class Environment:
         self.tetri_mino = TetriMino()
         self.erase_count = 0
 
+    def get_boundaries(self):
+        boundaries = []
+        for y in range(len(self.matrix)):
+            for x in range(len(self.matrix[y])):
+                if self.matrix[y][x] > 0:
+                    boundaries.append(len(self.matrix[y]) - self.matrix[y].index(x-1))
+                else:
+                    boundaries.append(0)
+        return boundaries
+
     # Returns true if mino is at bottom
     def is_bottom(self, x, y, mino, r):
         grid = self.tetri_mino.mino_map[mino - 1][r]['GRID']

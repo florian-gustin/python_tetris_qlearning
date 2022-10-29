@@ -144,7 +144,15 @@ class TetrisEngine:
                 else:
                     if self.__environment.hard_drop or self.__environment.bottom_count == 1:
                         self.__agent.change_state(self.__environment.matrix)
+
+                        b = self.__environment.get_boundaries()
+                        c = []
+                        c.append(0)
+                        self.__agent.state = c + b
                         self.__agent.insert_reward_in_state_qtable(self.__environment.mino, self.__environment.dx, 50) # fake reward
+
+
+
                         self.__environment.hard_drop = False
                         self.__environment.bottom_count = 0
                         self.__environment.score += 10 * self.__environment.level
