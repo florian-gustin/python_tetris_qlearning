@@ -39,17 +39,30 @@ class Agent:
         tmp = []
         for x in range(len(grid)):
             for y in range(len(grid[x])):
-                if y < len(grid[x])-1 and y+1 is 0:
+                if y < len(grid[x])-1 and y+1 == 0:
                     tmp.append(y)
                     self.state = tmp
 
 
-    def insert_reward_in_state_qtable(self, mino, x, value):
+    def table_to_str(self, table):
+        return ''.join(map(str, table))
+
+    def insert_reward_in_state_qtable(self, mino, x, value, boundaries):
         # self.__insert_reward_in_state_qtable(state,5, 50)
-        state_str = ''.join(map(str, self.state))
+        state_str = self.table_to_str(boundaries)
+        self.upsert_boundary_qtable(mino, state_str)
+
         self.__qtables[mino-1][state_str][x][self.last_action] = value
         print(self.__qtables)
 
+        self.state = boundaries
+
+
+    def upsert_boundary_qtable(self, mino, state_str):
+        self.__qtables[mino - 1][state_str] = []
+        if len(self.__qtables[mino-1][state_str]) == 0:
+            for i in range(11):
+                self.__qtables[mino - 1][state_str] = [{'NOTHING': 0, 'LEFT': 0, 'RIGHT': 0, 'ROTATE': 0} for i in range(11)]
     def action(self):
         # minos = self.__env.mino
         # print(self.__env.dx)
@@ -59,11 +72,13 @@ class Agent:
         hash = ''.join(str(x) for x in self.state)
         piece_x = dx
 
-        if len(self.__qtables[mino-1][hash]) == 0:
-            actions = self.__qtables[mino-1][hash][piece_x+2]
-        else:
+        print("caca ", self.__qtables[mino-1][hash])
+        if self.__qtables[mino-1][hash] == 0:
             self.__qtables[mino - 1][hash] = [{'NOTHING': 0, 'LEFT': 0, 'RIGHT': 0, 'ROTATE': 0} for i in range(11)]
             actions = self.__qtables[mino - 1][hash][piece_x + 2]
+        else:
+            actions = self.__qtables[mino-1][hash][piece_x+2]
+
         # print(actions)
 
         if random.uniform(0, 1) < self.__exploration:
@@ -73,7 +88,7 @@ class Agent:
             return max(actions, key=actions.get)
 
     def step(self, mino,  dx):
-        if len(self.__qtables) is 0:
+        if len(self.__qtables) == 0:
             self.init_state_in_qtable()
 
         action = self.best_action(mino, dx)

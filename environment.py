@@ -39,12 +39,15 @@ class Environment:
 
     def get_boundaries(self):
         boundaries = []
-        for y in range(len(self.matrix)):
-            for x in range(len(self.matrix[y])):
-                if self.matrix[y][x] > 0:
-                    boundaries.append(len(self.matrix[y]) - self.matrix[y].index(x-1))
-                else:
-                    boundaries.append(0)
+        for key, y in enumerate(self.matrix):
+            boundary = 0
+            for xkey, x in enumerate(y):
+                if x > 0:
+                    boundary = len(y) - xkey
+                    break
+
+            boundaries.append(boundary)
+
         return boundaries
 
     # Returns true if mino is at bottom
