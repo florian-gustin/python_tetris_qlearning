@@ -6,8 +6,11 @@ class Environment:
     def __init__(self) -> None:
         super().__init__()
         # Initial values
+        self.reset()
+
+    def reset(self, start=False):
         self.blink = False
-        self.start = False
+        self.start = start
         self.pause = False
         self.done = False
         self.game_over = False
@@ -36,6 +39,7 @@ class Environment:
 
         self.tetri_mino = TetriMino()
         self.erase_count = 0
+
 
     def get_boundaries(self):
         boundaries = []

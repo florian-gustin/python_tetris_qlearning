@@ -53,12 +53,15 @@ class TetrisEngine:
         title_info = self.ui_configuration.h6.render("Copyright (c) 2017 Jason Kim All Rights Reserved.", 1,
                                                      self.ui_configuration.white)
 
-        leader_1 = self.ui_configuration.h5_i.render('1st ' +  self.ui_configuration.leaders[0][0] + ' ' + str( self.ui_configuration.leaders[0][1]), 1,
-                                                     self.ui_configuration.grey_1)
-        leader_2 = self.ui_configuration.h5_i.render('2nd ' +  self.ui_configuration.leaders[1][0] + ' ' + str( self.ui_configuration.leaders[1][1]), 1,
-                                                     self.ui_configuration.grey_1)
-        leader_3 = self.ui_configuration.h5_i.render('3rd ' +  self.ui_configuration.leaders[2][0] + ' ' + str( self.ui_configuration.leaders[2][1]), 1,
-                                                     self.ui_configuration.grey_1)
+        leader_1 = self.ui_configuration.h5_i.render(
+            '1st ' + self.ui_configuration.leaders[0][0] + ' ' + str(self.ui_configuration.leaders[0][1]), 1,
+            self.ui_configuration.grey_1)
+        leader_2 = self.ui_configuration.h5_i.render(
+            '2nd ' + self.ui_configuration.leaders[1][0] + ' ' + str(self.ui_configuration.leaders[1][1]), 1,
+            self.ui_configuration.grey_1)
+        leader_3 = self.ui_configuration.h5_i.render(
+            '3rd ' + self.ui_configuration.leaders[2][0] + ' ' + str(self.ui_configuration.leaders[2][1]), 1,
+            self.ui_configuration.grey_1)
 
         if self.__environment.blink:
             self.ui_configuration.screen.blit(title_start, (92, 195))
@@ -101,7 +104,7 @@ class TetrisEngine:
                                               self.__environment.rotation)
                 if event.key == K_ESCAPE:
                     self.__environment.pause = False
-#                     # self.ui_configuration.click_sound.play()
+                    #                     # self.ui_configuration.click_sound.play()
                     self.__pygame.set_timer(USEREVENT, 1)
 
     def on_game(self):
@@ -136,7 +139,8 @@ class TetrisEngine:
                                                   self.__environment.rotation)
 
                 # Move mino down
-                if not self.__environment.is_bottom(self.__environment.dx, self.__environment.dy, self.__environment.mino,
+                if not self.__environment.is_bottom(self.__environment.dx, self.__environment.dy,
+                                                    self.__environment.mino,
                                                     self.__environment.rotation):
                     self.__environment.dy += 1
 
@@ -145,15 +149,17 @@ class TetrisEngine:
                     if self.__environment.hard_drop or self.__environment.bottom_count == 1:
                         self.__agent.change_state(self.__environment.matrix)
 
-                        self.__agent.insert_reward_in_state_qtable(self.__environment.mino, self.__environment.dx, 50, self.__environment.get_boundaries()) # fake reward
-
+                        self.__agent.insert_reward_in_state_qtable(self.__environment.mino, self.__environment.dx, 50,
+                                                                   self.__environment.get_boundaries())  # fake reward
 
                         self.__environment.hard_drop = False
                         self.__environment.bottom_count = 0
                         self.__environment.score += 10 * self.__environment.level
-                        self.__environment.draw_mino(self.__environment.dx, self.__environment.dy, self.__environment.mino,
+                        self.__environment.draw_mino(self.__environment.dx, self.__environment.dy,
+                                                     self.__environment.mino,
                                                      self.__environment.rotation)
-                        self.draw_board(self.__environment.next_mino, self.__environment.hold_mino, self.__environment.score,
+                        self.draw_board(self.__environment.next_mino, self.__environment.hold_mino,
+                                        self.__environment.score,
                                         self.__environment.level, self.__environment.goal)
                         if self.__environment.is_stackable(self.__environment.next_mino):
                             self.__environment.mino = self.__environment.next_mino
@@ -194,7 +200,8 @@ class TetrisEngine:
                     self.__pygame.time.set_timer(USEREVENT, 1)
                     self.__environment.draw_mino(self.__environment.dx, self.__environment.dy, self.__environment.mino,
                                                  self.__environment.rotation)
-                    self.draw_board(self.__environment.next_mino, self.__environment.hold_mino, self.__environment.score,
+                    self.draw_board(self.__environment.next_mino, self.__environment.hold_mino,
+                                    self.__environment.score,
                                     self.__environment.level, self.__environment.goal)
                 # Hold
                 elif event.key == K_LSHIFT or event.key == K_c:
@@ -204,7 +211,7 @@ class TetrisEngine:
                             self.__environment.hold_mino = self.__environment.mino
                             self.__environment.mino = self.__environment.next_mino
                             self.__environment.next_mino = randint(1, 7)
-                            #self.environment.next_mino = randint(1, 7)
+                            # self.environment.next_mino = randint(1, 7)
                         else:
                             self.__environment.hold_mino, self.__environment.mino = \
                                 self.__environment.mino, self.__environment.hold_mino
@@ -213,7 +220,8 @@ class TetrisEngine:
                         self.__environment.hold = True
                     self.__environment.draw_mino(self.__environment.dx, self.__environment.dy, self.__environment.mino,
                                                  self.__environment.rotation)
-                    self.draw_board(self.__environment.next_mino, self.__environment.hold_mino, self.__environment.score,
+                    self.draw_board(self.__environment.next_mino, self.__environment.hold_mino,
+                                    self.__environment.score,
                                     self.__environment.level, self.__environment.goal)
                 # Turn right
                 elif event.key == K_UP or event.key == K_x:
@@ -300,7 +308,8 @@ class TetrisEngine:
                         self.__environment.rotation = 3
                     self.__environment.draw_mino(self.__environment.dx, self.__environment.dy,
                                                  self.__environment.mino, self.__environment.rotation)
-                    self.draw_board(self.__environment.next_mino, self.__environment.hold_mino, self.__environment.score,
+                    self.draw_board(self.__environment.next_mino, self.__environment.hold_mino,
+                                    self.__environment.score,
                                     self.__environment.level, self.__environment.goal)
                 # Move left
                 elif event.key == K_LEFT:
@@ -320,9 +329,13 @@ class TetrisEngine:
                         self.__environment.dx += 1
                     self.__environment.draw_mino(self.__environment.dx, self.__environment.dy,
                                                  self.__environment.mino, self.__environment.rotation)
-                    self.draw_board(self.__environment.next_mino, self.__environment.hold_mino, self.__environment.score,
+                    self.draw_board(self.__environment.next_mino, self.__environment.hold_mino,
+                                    self.__environment.score,
                                     self.__environment.level, self.__environment.goal)
         self.__pygame.display.update()
+
+    def on_reset(self):
+        self.__environment.reset(True)
 
     def on_game_over(self):
         for event in self.__pygame.event.get():
@@ -401,35 +414,36 @@ class TetrisEngine:
                     self.ui_configuration.leaders = {'AAA': 0, 'BBB': 0, 'CCC': 0}
                     for i in self.ui_configuration.lines:
                         self.ui_configuration.leaders[i.split(' ')[0]] = int(i.split(' ')[1])
-                    self.ui_configuration.leaders = sorted(self.ui_configuration.leaders.items(), key=operator.itemgetter(1), reverse=True)
+                    self.ui_configuration.leaders = sorted(self.ui_configuration.leaders.items(),
+                                                           key=operator.itemgetter(1), reverse=True)
 
-                    #self.__pygame.time.set_timer(USEREVENT, 1)
+                    # self.__pygame.time.set_timer(USEREVENT, 1)
                 elif event.key == K_RIGHT:
                     if self.__environment.name_location != 2:
                         self.__environment.name_location += 1
                     else:
                         self.__environment.name_location = 0
-                    #self.__pygame.time.set_timer(USEREVENT, 1)
+                    # self.__pygame.time.set_timer(USEREVENT, 1)
                 elif event.key == K_LEFT:
                     if self.__environment.name_location != 0:
                         self.__environment.name_location -= 1
                     else:
                         self.__environment.name_location = 2
-                    #self.__pygame.time.set_timer(USEREVENT, 1)
+                    # self.__pygame.time.set_timer(USEREVENT, 1)
                 elif event.key == K_UP:
                     # self.ui_configuration.click_sound.play()
                     if self.__environment.name[self.__environment.name_location] != 90:
                         self.__environment.name[self.__environment.name_location] += 1
                     else:
                         self.__environment.name[self.__environment.name_location] = 65
-                    #self.__pygame.time.set_timer(USEREVENT, 1)
+                    # self.__pygame.time.set_timer(USEREVENT, 1)
                 elif event.key == K_DOWN:
                     # self.ui_configuration.click_sound.play()
                     if self.__environment.name[self.__environment.name_location] != 65:
                         self.__environment.name[self.__environment.name_location] -= 1
                     else:
                         self.__environment.name[self.__environment.name_location] = 90
-                    #self.__pygame.time.set_timer(USEREVENT, 1)
+                    # self.__pygame.time.set_timer(USEREVENT, 1)
 
     def draw_block(self, x, y, color):
         self.__pygame.draw.rect(
@@ -452,7 +466,8 @@ class TetrisEngine:
         self.ui_configuration.leaders = {'AAA': 0, 'BBB': 0, 'CCC': 0}
         for i in self.ui_configuration.lines:
             self.ui_configuration.leaders[i.split(' ')[0]] = int(i.split(' ')[1])
-        self.ui_configuration.leaders = sorted(self.ui_configuration.leaders.items(), key=operator.itemgetter(1), reverse=True)
+        self.ui_configuration.leaders = sorted(self.ui_configuration.leaders.items(), key=operator.itemgetter(1),
+                                               reverse=True)
 
     # Draw game screen
     def draw_board(self, next, hold, score, level, goal):
@@ -491,7 +506,8 @@ class TetrisEngine:
                         self.__pygame.draw.rect(
                             self.ui_configuration.screen,
                             self.ui_configuration.t_color[grid_h[i][j]],
-                            Rect(self.__environment.dx, self.__environment.dy, self.ui_configuration.block_size, self.ui_configuration.block_size)
+                            Rect(self.__environment.dx, self.__environment.dy, self.ui_configuration.block_size,
+                                 self.ui_configuration.block_size)
                         )
 
         # Set max score

@@ -21,7 +21,8 @@ def main():
 
         # Game over screen
         elif environment.game_over:
-            engine.on_game_over()
+            engine.on_reset()
+            # engine.on_game_over()
 
         # Start screen
         else:
