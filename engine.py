@@ -206,7 +206,7 @@ class TetrisEngine:
                 # Hold
                 elif event.key == K_LSHIFT or event.key == K_c:
                     if not self.__environment.hold:
-                        self.ui_configuration.move_sound.play()
+                        # self.ui_configuration.move_sound.play()
                         if self.__environment.hold_mino == -1:
                             self.__environment.hold_mino = self.__environment.mino
                             self.__environment.mino = self.__environment.next_mino
@@ -228,38 +228,38 @@ class TetrisEngine:
 
                     if self.__environment.is_turnable_r(self.__environment.dx, self.__environment.dy,
                                                         self.__environment.mino, self.__environment.rotation):
-                        self.ui_configuration.move_sound.play()
+                        # self.ui_configuration.move_sound.play()
                         self.__environment.rotation += 1
                     # Kick
                     elif self.__environment.is_turnable_r(self.__environment.dx, self.__environment.dy - 1,
                                                           self.__environment.mino, self.__environment.rotation):
-                        self.ui_configuration.move_sound.play()
+                        # self.ui_configuration.move_sound.play()
                         self.__environment.dy -= 1
                         self.__environment.rotation += 1
                     elif self.__environment.is_turnable_r(self.__environment.dx + 1,
                                                           self.__environment.dy, self.__environment.mino,
                                                           self.__environment.rotation):
-                        self.ui_configuration.move_sound.play()
+                        # self.ui_configuration.move_sound.play()
                         self.__environment.dx += 1
                         self.__environment.rotation += 1
                     elif self.__environment.is_turnable_r(self.__environment.dx - 1, self.__environment.dy,
                                                           self.__environment.mino, self.__environment.rotation):
-                        self.ui_configuration.move_sound.play()
+                        # self.ui_configuration.move_sound.play()
                         self.__environment.dx -= 1
                         self.__environment.rotation += 1
                     elif self.__environment.is_turnable_r(self.__environment.dx, self.__environment.dy - 2,
                                                           self.__environment.mino, self.__environment.rotation):
-                        self.ui_configuration.move_sound.play()
+                        # self.ui_configuration.move_sound.play()
                         self.__environment.dy -= 2
                         self.__environment.rotation += 1
                     elif self.__environment.is_turnable_r(self.__environment.dx + 2, self.__environment.dy,
                                                           self.__environment.mino, self.__environment.rotation):
-                        self.ui_configuration.move_sound.play()
+                        # self.ui_configuration.move_sound.play()
                         self.__environment.dx += 2
                         self.__environment.rotation += 1
                     elif self.__environment.is_turnable_r(self.__environment.dx - 2, self.__environment.dy,
                                                           self.__environment.mino, self.__environment.rotation):
-                        self.ui_configuration.move_sound.play()
+                        # self.ui_configuration.move_sound.play()
                         self.__environment.dx -= 2
                         self.__environment.rotation += 1
                     if self.__environment.rotation == 4:
@@ -272,37 +272,37 @@ class TetrisEngine:
                 elif event.key == K_z or event.key == K_LCTRL:
                     if self.__environment.is_turnable_l(self.__environment.dx, self.__environment.dy,
                                                         self.__environment.mino, self.__environment.rotation):
-                        self.ui_configuration.move_sound.play()
+                        # self.ui_configuration.move_sound.play()
                         self.__environment.rotation -= 1
                     # Kick
                     elif self.__environment.is_turnable_l(self.__environment.dx, self.__environment.dy - 1,
                                                           self.__environment.mino, self.__environment.rotation):
-                        self.ui_configuration.move_sound.play()
+                        # self.ui_configuration.move_sound.play()
                         self.__environment.dy -= 1
                         self.__environment.rotation -= 1
                     elif self.__environment.is_turnable_l(self.__environment.dx + 1, self.__environment.dy,
                                                           self.__environment.mino, self.__environment.rotation):
-                        self.ui_configuration.move_sound.play()
+                        # self.ui_configuration.move_sound.play()
                         self.__environment.dx += 1
                         self.__environment.rotation -= 1
                     elif self.__environment.is_turnable_l(self.__environment.dx - 1, self.__environment.dy,
                                                           self.__environment.mino, self.__environment.rotation):
-                        self.ui_configuration.move_sound.play()
+                        # self.ui_configuration.move_sound.play()
                         self.__environment.dx -= 1
                         self.__environment.rotation -= 1
                     elif self.__environment.is_turnable_l(self.__environment.dx, self.__environment.dy - 2,
                                                           self.__environment.mino, self.__environment.rotation):
-                        self.ui_configuration.move_sound.play()
+                        # self.ui_configuration.move_sound.play()
                         self.__environment.dy -= 2
                         self.__environment.rotation += 1
                     elif self.__environment.is_turnable_l(self.__environment.dx + 2, self.__environment.dy,
                                                           self.__environment.mino, self.__environment.rotation):
-                        self.ui_configuration.move_sound.play()
+                        # self.ui_configuration.move_sound.play()
                         self.__environment.dx += 2
                         self.__environment.rotation += 1
                     elif self.__environment.is_turnable_l(self.__environment.dx - 2, self.__environment.dy,
                                                           self.__environment.mino, self.__environment.rotation):
-                        self.ui_configuration.move_sound.play()
+                        # self.ui_configuration.move_sound.play()
                         self.__environment.dx -= 2
                     if self.__environment.rotation == -1:
                         self.__environment.rotation = 3
@@ -315,7 +315,7 @@ class TetrisEngine:
                 elif event.key == K_LEFT:
                     if not self.__environment.is_leftedge(self.__environment.dx, self.__environment.dy,
                                                           self.__environment.mino, self.__environment.rotation):
-                        self.ui_configuration.move_sound.play()
+                        # self.ui_configuration.move_sound.play()
                         self.__environment.dx -= 1
                     self.__environment.draw_mino(self.__environment.dx, self.__environment.dy,
                                                  self.__environment.mino, self.__environment.rotation)
@@ -325,7 +325,7 @@ class TetrisEngine:
                 elif event.key == K_RIGHT:
                     if not self.__environment.is_rightedge(self.__environment.dx, self.__environment.dy,
                                                            self.__environment.mino, self.__environment.rotation):
-                        self.ui_configuration.move_sound.play()
+                        # self.ui_configuration.move_sound.play()
                         self.__environment.dx += 1
                     self.__environment.draw_mino(self.__environment.dx, self.__environment.dy,
                                                  self.__environment.mino, self.__environment.rotation)
