@@ -148,7 +148,7 @@ class TetrisEngine:
                 else:
                     if self.__environment.hard_drop or self.__environment.bottom_count == 1:
                         self.__agent.change_state(self.__environment.matrix)
-
+                        self.__environment.set_previous_boundaries()
                         self.__agent.insert_reward_in_state_qtable(self.__environment.mino, self.__environment.dx, 50,
                                                                    self.__environment.get_boundaries())  # fake reward
 
@@ -158,9 +158,11 @@ class TetrisEngine:
                         self.__environment.draw_mino(self.__environment.dx, self.__environment.dy,
                                                      self.__environment.mino,
                                                      self.__environment.rotation)
+
                         self.draw_board(self.__environment.next_mino, self.__environment.hold_mino,
                                         self.__environment.score,
                                         self.__environment.level, self.__environment.goal)
+
                         if self.__environment.is_stackable(self.__environment.next_mino):
                             self.__environment.mino = self.__environment.next_mino
                             self.__environment.next_mino = randint(1, 7)

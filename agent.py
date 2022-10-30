@@ -113,3 +113,6 @@ class Agent:
         if key is not None:
             event = pygame.event.Event(pygame.KEYDOWN, key=key, mod=pygame.KMOD_NONE)
             pygame.event.post(event)
+
+    def generate_reward(self):
+

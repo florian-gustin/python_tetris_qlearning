@@ -39,6 +39,7 @@ class Environment:
 
         self.tetri_mino = TetriMino()
         self.erase_count = 0
+        self.previous_boundaries = [0,0,0,0,0,0,0,0,0,0]
 
 
     def get_boundaries(self):
@@ -178,6 +179,31 @@ class Environment:
             for j in range(4):
                 if grid[i][j] != 0:
                     self.matrix[x + j][y + i] = 0
+    def is_lines_cleared(self):
+        return self.erase_count != 0
+
+    def is_holes_created(self):
+        previous_holes = 0
+        previous_bumpiness = max(self.previous_boundaries)
+        previous_coords = [[]]
+        for i in range(previous_bumpiness-4, previous_bumpiness):
+            for y in range(len(self.matrix[i])):
+                if(previous_coords)
+
+        holes = 0
+        bumpiness = max(self.get_boundaries())
+        for i in range(bumpiness-4, bumpiness):
+            for y in range(len(self.matrix[i])):
+
+
+
+    def is_blockade_created(self):
+
+    def is_bumpiness_increased(self):
+        return max(self.previous_boundaries) == max(self.get_boundaries())
+
+    def set_previous_boundaries(self):
+        self.previous_boundaries = self.get_boundaries()
 
     def try_erase_line(self, ui_configuration=None):
         self.erase_count = 0
