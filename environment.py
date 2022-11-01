@@ -182,22 +182,71 @@ class Environment:
     def is_lines_cleared(self):
         return self.erase_count != 0
 
-    def is_holes_created(self):
+
+    def bumpiness(self):
+        total = 0
+
+        for index, col in enumerate(self.matrix):
+            total += self.calcul_column_height(index) - self.calcul_column_height(index+1)
+
+        return total
+
+
+    def is_holes_created(self, radar):
+
+
         previous_holes = 0
-        previous_bumpiness = max(self.previous_boundaries)
-        previous_coords = [[]]
-        for i in range(previous_bumpiness-4, previous_bumpiness):
-            for y in range(len(self.matrix[i])):
-                if(previous_coords)
+        previous_bumpiness = self.get_boundaries()
 
-        holes = 0
-        bumpiness = max(self.get_boundaries())
-        for i in range(bumpiness-4, bumpiness):
-            for y in range(len(self.matrix[i])):
+        min_bumpiness = 22 - max(previous_bumpiness) - 4
+        max_bumpiness = 22 - max(previous_bumpiness)
 
+        print("min: ", min_bumpiness)
+        print("max: ", max_bumpiness)
+
+
+        if min_bumpiness < 0:
+            min_bumpiness = 0
+
+        if max_bumpiness < 4:
+            max_bumpiness = 4
+
+        print("new min: ", min_bumpiness)
+        print("new max: ", max_bumpiness)
+
+        count = 0
+
+        ## ici que ca merde
+        for col in range(len(self.matrix)):
+            print("self.matrix[", col, "][", min_bumpiness, ":", max_bumpiness, "] = ", self.matrix[col][min_bumpiness: max_bumpiness])
+            block = False
+            for row in range(min_bumpiness, max_bumpiness):
+                if self.matrix[col][row] > 0:
+                    block = True
+                elif self.matrix[col][row] == 0 and block is True:
+                    count += 1
+        ## fin ici
+
+
+        return count
+
+        # previous_holes = 0
+        # previous_bumpiness = max(self.previous_boundaries)
+        # previous_coords = [[]]
+        # for i in range(previous_bumpiness-4, previous_bumpiness):
+        #     for y in range(len(self.matrix[i])):
+        #         if(previous_coords):
+        #             print(previous_coord)
+        #
+        # holes = 0
+        # bumpiness = max(self.get_boundaries())
+        # for i in range(bumpiness-4, bumpiness):
+        #     for y in range(len(self.matrix[i])):
+        #         print(bumpiness)
 
 
     def is_blockade_created(self):
+        pass
 
     def is_bumpiness_increased(self):
         return max(self.previous_boundaries) == max(self.get_boundaries())

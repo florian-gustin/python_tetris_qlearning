@@ -148,9 +148,10 @@ class TetrisEngine:
                 else:
                     if self.__environment.hard_drop or self.__environment.bottom_count == 1:
                         self.__agent.change_state(self.__environment.matrix)
+
                         self.__environment.set_previous_boundaries()
-                        self.__agent.insert_reward_in_state_qtable(self.__environment.mino, self.__environment.dx, 50,
-                                                                   self.__environment.get_boundaries())  # fake reward
+  # fake reward
+
 
                         self.__environment.hard_drop = False
                         self.__environment.bottom_count = 0
@@ -158,6 +159,13 @@ class TetrisEngine:
                         self.__environment.draw_mino(self.__environment.dx, self.__environment.dy,
                                                      self.__environment.mino,
                                                      self.__environment.rotation)
+
+
+                        print("HOLE CREATED: ", self.__environment.is_holes_created(self.__agent.radar["zone"]))
+
+
+                        self.__agent.insert_reward_in_state_qtable(self.__environment.mino, self.__environment.dx, 50,
+                                                                   self.__environment.get_boundaries())
 
                         self.draw_board(self.__environment.next_mino, self.__environment.hold_mino,
                                         self.__environment.score,

@@ -21,7 +21,7 @@ class Agent:
         self.__cooling_rate = cooling_rate
 
     def init_radar(self):
-        self.__radar = {"zone": [[0 for i in range(10)] for j in range(4)],
+        self.radar = {"zone": [[0 for i in range(10)] for j in range(4)],
                         "y": 19}
 
     def init_state_in_qtable(self):
@@ -33,7 +33,7 @@ class Agent:
         for i in range(7):
             self.qtables[i][state_str] = index_array
         # self.__qtable_I[state_str] = index_array
-        print(self.qtables)
+        #print(self.qtables)
 
     def change_state(self, grid):
         tmp = []
@@ -53,7 +53,7 @@ class Agent:
         self.upsert_boundary_qtable(mino, state_str)
 
         self.qtables[mino - 1][state_str][x][self.last_action] = value
-        print(self.qtables)
+        #print(self.qtables)
 
         self.state = boundaries
 
@@ -101,7 +101,7 @@ class Agent:
         self.last_action = action
         key = None
 
-        print(action)
+        #print(action)
 
         if action == 'LEFT':
             key = pygame.K_LEFT
@@ -112,7 +112,7 @@ class Agent:
 
         if key is not None:
             event = pygame.event.Event(pygame.KEYDOWN, key=key, mod=pygame.KMOD_NONE)
-            pygame.event.post(event)
+            #pygame.event.post(event)
 
     def generate_reward(self):
-
+        pass
