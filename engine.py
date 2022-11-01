@@ -8,6 +8,7 @@ from pygame import QUIT, USEREVENT, KEYDOWN, K_ESCAPE, K_DOWN, K_SPACE, K_LSHIFT
     K_RIGHT, K_RETURN
 from pygame.rect import Rect
 
+from rewards import HOLE_REWARD, LINE_CLEAR_REWARD
 from ui_configuration import *
 from tetri_mino import *
 import pygame
@@ -161,11 +162,8 @@ class TetrisEngine:
                                                      self.__environment.rotation)
 
 
-                        print("HOLE CREATED: ", self.__environment.is_holes_created(self.__agent.radar["zone"]))
 
 
-                        self.__agent.insert_reward_in_state_qtable(self.__environment.mino, self.__environment.dx, 50,
-                                                                   self.__environment.get_boundaries())
 
                         self.draw_board(self.__environment.next_mino, self.__environment.hold_mino,
                                         self.__environment.score,
@@ -186,6 +184,11 @@ class TetrisEngine:
 
                 # Erase line
                 self.__environment.try_erase_line(self.ui_configuration)
+                lines_count = self.__environment.erase_count * LINE_CLEAR_REWARD
+                holes_count = self.__environment.holes_created_count() * HOLE_REWARD
+                reward = lines_count + holes_count
+                self.__agent.insert_reward_in_state_qtable(self.__environment.mino, self.__environment.dx, reward,
+                                                           self.__environment.get_boundaries())
 
                 # Increase level
                 self.__environment.goal -= self.__environment.erase_count
