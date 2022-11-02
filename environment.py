@@ -6,6 +6,8 @@ class Environment:
     def __init__(self) -> None:
         super().__init__()
         # Initial values
+        self.game_process_counter = 1
+        self.best_score = 0
         self.reset()
 
     def reset(self, start=False):
@@ -24,8 +26,8 @@ class Environment:
         self.dx, self.dy = 3, 0  # Minos location status
         self.rotation = 0  # Minos rotation status
 
-        self.mino = randint(1, 7)  # Current mino ## TODO : randint(1,7)
-        self.next_mino = randint(1, 7)  # Next mino ## TODO : randint(1,7)
+        self.mino = randint(1, 1)  # Current mino ## TODO : randint(1,7)
+        self.next_mino = randint(1, 1)  # Next mino ## TODO : randint(1,7)
 
         self.hold = False  # Hold status
         self.hold_mino = -1  # Holded mino
@@ -40,6 +42,12 @@ class Environment:
         self.tetri_mino = TetriMino()
         self.erase_count = 0
         self.previous_boundaries = [0,0,0,0,0,0,0,0,0,0]
+
+
+    def next(self):
+        self.game_process_counter += 1
+        if self.score > self.best_score:
+            self.best_score = self.score
 
 
     def get_boundaries(self):

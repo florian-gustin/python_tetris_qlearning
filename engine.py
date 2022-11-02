@@ -19,7 +19,7 @@ class TetrisEngine:
 
     def __init__(self, environment, agent) -> None:
         super().__init__()
-        self.__framerate = 15  # Bigger -> Slower
+        self.__framerate = 5  # Bigger -> Slower
         pygame.init()
         pygame.time.set_timer(USEREVENT, self.__framerate * 10)
         self.__pygame = pygame
@@ -27,6 +27,7 @@ class TetrisEngine:
         self.__environment = environment
         self.__agent = agent
         self.ui_configuration = UIConfiguration(self.__pygame)
+
 
     def quit(self):
         self.__pygame.quit()
@@ -147,6 +148,10 @@ class TetrisEngine:
 
                 # Create new mino
                 else:
+                    # Erase line
+                    self.__environment.try_erase_line(self.ui_configuration)
+
+
                     if self.__environment.hard_drop or self.__environment.bottom_count == 1:
                         self.__agent.change_state(self.__environment.matrix)
 
@@ -161,7 +166,12 @@ class TetrisEngine:
                                                      self.__environment.mino,
                                                      self.__environment.rotation)
 
-
+                        lines_count = self.__environment.erase_count * LINE_CLEAR_REWARD
+                        holes_count = self.__environment.holes_created_count() * HOLE_REWARD
+                        reward = lines_count + holes_count
+                        self.__agent.insert_reward_in_state_qtable(self.__environment.mino, self.__environment.dx,
+                                                                   reward,
+                                                                   self.__environment.get_boundaries())
 
 
 
@@ -171,7 +181,7 @@ class TetrisEngine:
 
                         if self.__environment.is_stackable(self.__environment.next_mino):
                             self.__environment.mino = self.__environment.next_mino
-                            self.__environment.next_mino = randint(1, 7)
+                            self.__environment.next_mino = randint(1, 1)
                             self.__environment.dx, self.__environment.dy = 3, 0
                             self.__environment.rotation = 0
                             self.__environment.hold = False
@@ -182,13 +192,6 @@ class TetrisEngine:
                     else:
                         self.__environment.bottom_count += 1
 
-                # Erase line
-                self.__environment.try_erase_line(self.ui_configuration)
-                lines_count = self.__environment.erase_count * LINE_CLEAR_REWARD
-                holes_count = self.__environment.holes_created_count() * HOLE_REWARD
-                reward = lines_count + holes_count
-                self.__agent.insert_reward_in_state_qtable(self.__environment.mino, self.__environment.dx, reward,
-                                                           self.__environment.get_boundaries())
 
                 # Increase level
                 self.__environment.goal -= self.__environment.erase_count
@@ -223,7 +226,7 @@ class TetrisEngine:
                         if self.__environment.hold_mino == -1:
                             self.__environment.hold_mino = self.__environment.mino
                             self.__environment.mino = self.__environment.next_mino
-                            self.__environment.next_mino = randint(1, 7)
+                            self.__environment.next_mino = randint(1, 1)
                             # self.environment.next_mino = randint(1, 7)
                         else:
                             self.__environment.hold_mino, self.__environment.mino = \
@@ -348,6 +351,7 @@ class TetrisEngine:
         self.__pygame.display.update()
 
     def on_reset(self):
+        self.__environment.next()
         self.__environment.reset(True)
 
     def on_game_over(self):
@@ -407,7 +411,7 @@ class TetrisEngine:
                     self.__environment.dx, self.__environment.dy = 3, 0
                     self.__environment.rotation = 0
                     self.__environment.mino = randint(1, 7)
-                    self.__environment.next_mino = randint(1, 7)
+                    self.__environment.next_mino = randint(1, 1)
                     self.__environment.hold_mino = -1
                     self.__environment.framerate = 30
                     self.__environment.score = 0
@@ -508,20 +512,20 @@ class TetrisEngine:
                     )
 
         # Draw hold mino
-        grid_h = TetriMino.mino_map[hold - 1][0]['GRID']
-
-        if self.__environment.hold_mino != -1:
-            for i in range(4):
-                for j in range(4):
-                    self.__environment.dx = 220 + self.ui_configuration.block_size * j
-                    self.__environment.dy = 50 + self.ui_configuration.block_size * i
-                    if grid_h[i][j] != 0:
-                        self.__pygame.draw.rect(
-                            self.ui_configuration.screen,
-                            self.ui_configuration.t_color[grid_h[i][j]],
-                            Rect(self.__environment.dx, self.__environment.dy, self.ui_configuration.block_size,
-                                 self.ui_configuration.block_size)
-                        )
+        # grid_h = TetriMino.mino_map[hold - 1][0]['GRID']
+        #
+        # if self.__environment.hold_mino != -1:
+        #     for i in range(4):
+        #         for j in range(4):
+        #             self.__environment.dx = 220 + self.ui_configuration.block_size * j
+        #             self.__environment.dy = 50 + self.ui_configuration.block_size * i
+        #             if grid_h[i][j] != 0:
+        #                 self.__pygame.draw.rect(
+        #                     self.ui_configuration.screen,
+        #                     self.ui_configuration.t_color[grid_h[i][j]],
+        #                     Rect(self.__environment.dx, self.__environment.dy, self.ui_configuration.block_size,
+        #                          self.ui_configuration.block_size)
+        #                 )
 
         # Set max score
         if self.__environment.score > 999999:

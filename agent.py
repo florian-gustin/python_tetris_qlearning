@@ -9,7 +9,7 @@ ACTIONS = [pygame.event.Event(pygame.KEYDOWN, key=pygame.K_LEFT, mod=pygame.KMOD
 
 
 class Agent:
-    def __init__(self, alpha=1, gamma=1, exploration=1, cooling_rate=0.9999):
+    def __init__(self, alpha=1, gamma=1, exploration=0.5, cooling_rate=0.9999):
         self.last_action = None
         self.state = [0 for i in range(10)]
         self.qtables = [{}, {}, {}, {}, {}, {}, {}, ]
@@ -19,6 +19,7 @@ class Agent:
         self.__gamma = gamma
         self.__exploration = exploration
         self.__cooling_rate = cooling_rate
+
 
     def init_radar(self):
         self.radar = {"zone": [[0 for i in range(10)] for j in range(4)],
@@ -112,7 +113,7 @@ class Agent:
 
         if key is not None:
             event = pygame.event.Event(pygame.KEYDOWN, key=key, mod=pygame.KMOD_NONE)
-            #pygame.event.post(event)
+            pygame.event.post(event)
 
     def generate_reward(self):
         pass
