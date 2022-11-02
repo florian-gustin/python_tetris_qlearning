@@ -49,7 +49,6 @@ class Environment:
         if self.score > self.best_score:
             self.best_score = self.score
 
-
     def get_boundaries(self):
         boundaries = []
         for key, y in enumerate(self.matrix):
