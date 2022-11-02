@@ -1,6 +1,8 @@
+import os
 import random
 
 import pygame
+import pickle
 from pygame.constants import K_LEFT, K_RIGHT, K_UP
 
 ACTIONS = [pygame.event.Event(pygame.KEYDOWN, key=pygame.K_LEFT, mod=pygame.KMOD_NONE),
@@ -9,7 +11,7 @@ ACTIONS = [pygame.event.Event(pygame.KEYDOWN, key=pygame.K_LEFT, mod=pygame.KMOD
 
 
 class Agent:
-    def __init__(self, alpha=1, gamma=1, exploration=0.5, cooling_rate=0.9999):
+    def __init__(self, alpha=1, gamma=1, exploration=1, cooling_rate=0.9999):
         self.last_action = None
         self.state = [0 for i in range(10)]
         self.qtables = [{}, {}, {}, {}, {}, {}, {}, ]
@@ -26,6 +28,11 @@ class Agent:
                         "y": 19}
 
     def init_state_in_qtable(self):
+
+        if os.path.exists("agent.dat"):
+            self.load("agent.dat")
+            return
+
         index_array = []
         state_str = ''.join(map(str, self.state))
 
@@ -93,6 +100,14 @@ class Agent:
         # print(actions)
 
 
+    def save(self, filename):
+        with open(filename, 'wb') as file:
+            pickle.dump(self.qtables, file)
+
+    def load(self, filename):
+        with open(filename, 'rb') as file:
+            self.qtables = pickle.load(file)
+        print(self.qtables)
 
     def step(self, mino,  dx):
         if len(self.qtables) == 0:
@@ -113,7 +128,7 @@ class Agent:
 
         if key is not None:
             event = pygame.event.Event(pygame.KEYDOWN, key=key, mod=pygame.KMOD_NONE)
-            # pygame.event.post(event)
+            pygame.event.post(event)
 
     def generate_reward(self):
         pass

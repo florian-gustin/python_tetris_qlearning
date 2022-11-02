@@ -115,6 +115,7 @@ class TetrisEngine:
             self.__agent.step(self.__environment.mino, self.__environment.dx)
             if event.type == QUIT:
                 self.__environment.done = True
+                self.__agent.save("agent.dat")
             elif event.type == USEREVENT:
                 # Set speed
                 if not self.__environment.game_over:

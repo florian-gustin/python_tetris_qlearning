@@ -17,7 +17,7 @@ def main():
         # Game screen
         if environment.start:
             engine.on_game()
-            print(environment.dx)
+            #print(environment.dx)
 
         # Game over screen
         elif environment.game_over:
