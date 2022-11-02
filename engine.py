@@ -19,7 +19,7 @@ class TetrisEngine:
 
     def __init__(self, environment, agent) -> None:
         super().__init__()
-        self.__framerate = 5  # Bigger -> Slower
+        self.__framerate = 15  # Bigger -> Slower
         pygame.init()
         pygame.time.set_timer(USEREVENT, self.__framerate * 10)
         self.__pygame = pygame
@@ -148,8 +148,7 @@ class TetrisEngine:
 
                 # Create new mino
                 else:
-                    # Erase line
-                    self.__environment.try_erase_line(self.ui_configuration)
+
 
 
                     if self.__environment.hard_drop or self.__environment.bottom_count == 1:
@@ -181,7 +180,7 @@ class TetrisEngine:
 
                         if self.__environment.is_stackable(self.__environment.next_mino):
                             self.__environment.mino = self.__environment.next_mino
-                            self.__environment.next_mino = randint(1, 1)
+                            self.__environment.next_mino = randint(1, 7)
                             self.__environment.dx, self.__environment.dy = 3, 0
                             self.__environment.rotation = 0
                             self.__environment.hold = False
@@ -192,6 +191,8 @@ class TetrisEngine:
                     else:
                         self.__environment.bottom_count += 1
 
+                    # Erase line
+                    self.__environment.try_erase_line(self.ui_configuration)
 
                 # Increase level
                 self.__environment.goal -= self.__environment.erase_count
@@ -226,7 +227,7 @@ class TetrisEngine:
                         if self.__environment.hold_mino == -1:
                             self.__environment.hold_mino = self.__environment.mino
                             self.__environment.mino = self.__environment.next_mino
-                            self.__environment.next_mino = randint(1, 1)
+                            self.__environment.next_mino = randint(1, 7)
                             # self.environment.next_mino = randint(1, 7)
                         else:
                             self.__environment.hold_mino, self.__environment.mino = \
@@ -411,7 +412,7 @@ class TetrisEngine:
                     self.__environment.dx, self.__environment.dy = 3, 0
                     self.__environment.rotation = 0
                     self.__environment.mino = randint(1, 7)
-                    self.__environment.next_mino = randint(1, 1)
+                    self.__environment.next_mino = randint(1, 7)
                     self.__environment.hold_mino = -1
                     self.__environment.framerate = 30
                     self.__environment.score = 0

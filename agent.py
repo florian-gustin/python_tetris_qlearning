@@ -53,7 +53,7 @@ class Agent:
         state_str = self.table_to_str(boundaries)
         self.upsert_boundary_qtable(mino, state_str)
 
-        self.qtables[mino - 1][state_str][x][self.last_action] += value
+        self.qtables[mino - 1][state_str][x][self.last_action] = value
         #print(self.qtables)
 
         self.state = boundaries
@@ -113,7 +113,7 @@ class Agent:
 
         if key is not None:
             event = pygame.event.Event(pygame.KEYDOWN, key=key, mod=pygame.KMOD_NONE)
-            pygame.event.post(event)
+            # pygame.event.post(event)
 
     def generate_reward(self):
         pass
