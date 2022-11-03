@@ -31,7 +31,7 @@ def headless(environment, agent, game):
             reward = lines_count + holes_count
             agent.insert_reward_in_state_qtable(environment.mino, environment.dx,
                                                 reward,
-                                                environment.get_boundaries())
+                                                environment.get_state_boundaries())
             environment.goal -= environment.erase_count
             if environment.goal < 1 and environment.level < 15:
                 environment.level += 1

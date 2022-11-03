@@ -153,6 +153,8 @@ class TetrisEngine(Engine):
                         if stackable is False:
                             self.__pygame.time.set_timer(USEREVENT, 1)
 
+                    radar = self.__environment.get_state_boundaries()
+                    print(radar)
 
                     self.__agent.change_state(self.__environment.matrix)
                     lines_count = self.__environment.erase_count * LINE_CLEAR_REWARD
@@ -160,7 +162,7 @@ class TetrisEngine(Engine):
                     reward = lines_count + holes_count
                     self.__agent.insert_reward_in_state_qtable(self.__environment.mino, self.__environment.dx,
                                                                reward,
-                                                               self.__environment.get_boundaries())
+                                                               self.__environment.get_state_boundaries())
 
                 self.draw_board(self.__environment.next_mino, self.__environment.hold_mino,
                                 self.__environment.score,

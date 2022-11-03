@@ -10,7 +10,7 @@ from config import AGENT_ACTIONS, ACTIONS
 
 
 class Agent:
-    def __init__(self, alpha=1, gamma=1, exploration=0, cooling_rate=1):
+    def __init__(self, alpha=1, gamma=1, exploration=1, cooling_rate=1):
         self.last_action = None
         self.state = [0 for i in range(10)]
         self.qtables = [{}, {}, {}, {}, {}, {}, {}, ]
@@ -105,9 +105,10 @@ class Agent:
             pickle.dump(self.qtables, file)
 
     def load(self, filename):
+        start = time.time()
         with open(filename, 'rb') as file:
             self.qtables = pickle.load(file)
-        print(self.qtables)
+        print("qtables load in", time.time() - start, "sec")
 
     def step(self, mino,  dx):
         if len(self.qtables) == 0:

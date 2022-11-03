@@ -267,6 +267,41 @@ class Environment:
 
         return count
 
+    def get_state_boundaries(self):
+        radar = 4
+
+        boundaries = self.get_boundaries()
+        max_grid_bp = max(boundaries)
+
+        new_bp = []
+
+        for boundary in boundaries:
+            if max_grid_bp <= radar:
+                new_bp.append(boundary)
+                continue
+
+            if radar - (max_grid_bp - boundary) < 0:
+                new_bp.append(0)
+                continue
+            new_bp.append(radar - (max_grid_bp - boundary))
+
+        # if max_grid_bp < 4:
+        #     radar = max_grid_bp
+        #
+        # row_start = 21 - max_grid_bp
+        # row_end = max_grid_bp + radar
+        #
+        # radar = []
+        #
+        # count = 0
+        #
+        # for col in range(len(self.matrix)):
+        #     for row in range(row_start, row_end):
+
+
+
+
+        return new_bp
 
     def is_blockade_created(self):
         pass
