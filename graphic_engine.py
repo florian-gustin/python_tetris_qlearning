@@ -193,7 +193,6 @@ class TetrisEngine(Engine):
         self.__environment.next()
         self.__framerate = 15  # Bigger -> Slower
         pygame.time.set_timer(USEREVENT, self.__framerate * 10)
-        print("Game #", self.__environment.game_process_counter, "started")
         self.__environment.reset(True)
 
     def on_game_over(self):

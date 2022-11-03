@@ -21,14 +21,13 @@ class Game:
 
             return True
         else:
-            print("Game over")
             self.__environment.start = False
             self.__environment.game_over = True
 
         return False
 
     def hard_drop(self):
-        if self.__environment.hard_drop or self.__environment.bottom_count == 0:
+        if self.__environment.hard_drop or self.__environment.bottom_count == 1:
 
             self.__environment.set_previous_boundaries()
 

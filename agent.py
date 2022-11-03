@@ -10,7 +10,7 @@ from config import AGENT_ACTIONS, ACTIONS
 
 
 class Agent:
-    def __init__(self, alpha=1, gamma=1, exploration=1, cooling_rate=0.9999):
+    def __init__(self, alpha=1, gamma=1, exploration=0, cooling_rate=1):
         self.last_action = None
         self.state = [0 for i in range(10)]
         self.qtables = [{}, {}, {}, {}, {}, {}, {}, ]
@@ -80,24 +80,13 @@ class Agent:
 
         self.actions += 1
 
-        if time.time() - self.__timer > 5:
-            print("action per sec: ", self.actions)
-            self.__timer = time.time()
-            self.actions = 0
-
-
         if hash in self.qtables[mino-1]:
             actions = self.qtables[mino - 1][hash][piece_x + 2]
 
             if random.uniform(0, 1) < self.__exploration:
-                if self.__exploration < .9:
-                    print("IA choose a random action")
-                #self.__exploration *= self.__cooling_rate
+                self.__exploration *= self.__cooling_rate
                 return random.choice(ACTIONS)
             else:
-                if self.__exploration > .9:
-                    print("IA choose the best action")
-
                 return max(ACTIONS, key=actions.get)
 
         return random.choice(list({'NOTHING': 0, 'LEFT': 0, 'RIGHT': 0, 'ROTATE': 0}.keys()))
