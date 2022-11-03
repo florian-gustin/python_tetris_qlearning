@@ -137,68 +137,34 @@ class TetrisEngine(Engine):
                         # newevent = pygame.event.Event(KEYDOWN, K_LEFT)  # create the event
                         # pygame.event.post(newevent)  # a
 
-                # Draw a mino
                 self.__environment.draw_mino(self.__environment.dx, self.__environment.dy, self.__environment.mino,
                                              self.__environment.rotation)
                 self.draw_board(self.__environment.next_mino, self.__environment.hold_mino, self.__environment.score,
                                 self.__environment.level, self.__environment.goal)
 
-                # Erase a mino
-                if not self.__environment.game_over:
-                    self.__environment.erase_mino(self.__environment.dx, self.__environment.dy, self.__environment.mino,
-                                                  self.__environment.rotation)
+                if self.__game.update_state_mino() == "create":
+                    hard_drop = self.__game.hard_drop()
 
-                # Move mino down
-                if not self.__environment.is_bottom(self.__environment.dx, self.__environment.dy,
-                                                    self.__environment.mino,
-                                                    self.__environment.rotation):
-                    self.__environment.dy += 1
-
-                # Create new mino
-                else:
-                    # a mettre dans game TODO
-                    if self.__environment.hard_drop or self.__environment.bottom_count == 0:
+                    if hard_drop is True:
                         self.__agent.change_state(self.__environment.matrix)
 
-                        self.__environment.set_previous_boundaries()
-  # fake reward
+                        stackable = self.__game.is_stackable()
 
-
-                        self.__environment.hard_drop = False
-                        self.__environment.bottom_count = 0
-                        self.__environment.score += 10 * self.__environment.level
-                        self.__environment.draw_mino(self.__environment.dx, self.__environment.dy,
-                                                     self.__environment.mino,
-                                                     self.__environment.rotation)
-
-                        lines_count = self.__environment.erase_count * LINE_CLEAR_REWARD
-                        holes_count = self.__environment.holes_created_count() * HOLE_REWARD
-                        reward = lines_count + holes_count
-                        self.__agent.insert_reward_in_state_qtable(self.__environment.mino, self.__environment.dx,
-                                                                   reward,
-                                                                   self.__environment.get_boundaries())
-
-
-
-                        self.draw_board(self.__environment.next_mino, self.__environment.hold_mino,
-                                        self.__environment.score,
-                                        self.__environment.level, self.__environment.goal)
-
-                        if self.__environment.is_stackable(self.__environment.next_mino):
-                            self.__environment.mino = self.__environment.next_mino
-                            self.__environment.next_mino = randint(1, 7)
-                            self.__environment.dx, self.__environment.dy = 3, 0
-                            self.__environment.rotation = 0
-                            self.__environment.hold = False
-                        else:
-                            self.__environment.start = False
-                            self.__environment.game_over = True
+                        if stackable is False:
                             self.__pygame.time.set_timer(USEREVENT, 1)
-                    else:
-                        self.__environment.bottom_count += 1
 
-                    # Erase line
-                    self.__environment.try_erase_line(self.ui_configuration)
+
+                    self.__agent.change_state(self.__environment.matrix)
+                    lines_count = self.__environment.erase_count * LINE_CLEAR_REWARD
+                    holes_count = self.__environment.holes_created_count() * HOLE_REWARD
+                    reward = lines_count + holes_count
+                    self.__agent.insert_reward_in_state_qtable(self.__environment.mino, self.__environment.dx,
+                                                               reward,
+                                                               self.__environment.get_boundaries())
+
+                self.draw_board(self.__environment.next_mino, self.__environment.hold_mino,
+                                self.__environment.score,
+                                self.__environment.level, self.__environment.goal)
 
                 # Increase level
                 self.__environment.goal -= self.__environment.erase_count
@@ -214,16 +180,6 @@ class TetrisEngine(Engine):
                 if event.key == K_ESCAPE:
                     # self.ui_configuration.click_sound.play()
                     self.__environment.pause = True
-                # Hard drop
-                elif event.key == K_SPACE:
-                    self.ui_configuration.drop_sound.play()
-                    while not self.__environment.is_bottom(self.__environment.dx, self.__environment.dy,
-                                                           self.__environment.mino, self.__environment.rotation):
-                        self.__environment.dy += 1
-                    self.__environment.hard_drop = True
-                    self.__pygame.time.set_timer(USEREVENT, 1)
-                    self.__environment.draw_mino(self.__environment.dx, self.__environment.dy, self.__environment.mino,
-                                                 self.__environment.rotation)
                 # Hold
                 else:
                     self.__game.on_step(AGENT_ACTIONS[event.key])

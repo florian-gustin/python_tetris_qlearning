@@ -3,12 +3,12 @@ from tetri_mino import *
 
 
 class Environment:
-    def __init__(self) -> None:
+    def __init__(self, reset = False) -> None:
         super().__init__()
         # Initial values
         self.game_process_counter = 1
         self.best_score = 0
-        self.reset()
+        self.reset(reset)
 
     def reset(self, start=False):
         self.blink = False
@@ -277,7 +277,7 @@ class Environment:
     def set_previous_boundaries(self):
         self.previous_boundaries = self.get_boundaries()
 
-    def try_erase_line(self, ui_configuration=None):
+    def try_erase_line(self):
         self.erase_count = 0
         for j in range(21):
             is_full = True
@@ -292,18 +292,10 @@ class Environment:
                         self.matrix[i][k] = self.matrix[i][k - 1]
                     k -= 1
         if self.erase_count == 1:
-            if ui_configuration is not None:
-                ui_configuration.single_sound.play()
             self.score += 50 * self.level
         elif self.erase_count == 2:
-            if ui_configuration is not None:
-                ui_configuration.double_sound.play()
             self.score += 150 * self.level
         elif self.erase_count == 3:
-            if ui_configuration is not None:
-                ui_configuration.triple_sound.play()
             self.score += 350 * self.level
         elif self.erase_count == 4:
-            if ui_configuration is not None:
-                ui_configuration.tetris_sound.play()
             self.score += 1000 * self.level
