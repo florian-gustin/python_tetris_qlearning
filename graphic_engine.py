@@ -9,7 +9,7 @@ from pygame.rect import Rect
 
 from config import AGENT_ACTIONS, PYGAME_ACTIONS
 from engine import Engine
-from rewards import HOLE_REWARD, LINE_CLEAR_REWARD
+from rewards import HOLE_REWARD, LINE_CLEAR_REWARD, BLOCKADE_REWARD, BUMPINESS_REWARD
 from ui_configuration import *
 from tetri_mino import *
 import pygame
@@ -152,14 +152,16 @@ class TetrisEngine(Engine):
 
                         if stackable is False:
                             self.__pygame.time.set_timer(USEREVENT, 1)
-
                     radar = self.__environment.get_state_boundaries()
                     print(radar)
 
                     self.__agent.change_state(self.__environment.matrix)
                     lines_count = self.__environment.erase_count * LINE_CLEAR_REWARD
                     holes_count = self.__environment.holes_created_count() * HOLE_REWARD
-                    reward = lines_count + holes_count
+                    bp = self.__environment.is_bumpiness_increased_by(self.__agent.previous_bp, self.__environment.get_boundaries()) * BUMPINESS_REWARD
+                    is_blockade_created = self.__environment.is_blockade_created() * BLOCKADE_REWARD
+
+                    reward = lines_count + holes_count + bp + is_blockade_created
                     self.__agent.insert_reward_in_state_qtable(self.__environment.mino, self.__environment.dx,
                                                                reward,
                                                                self.__environment.get_state_boundaries())

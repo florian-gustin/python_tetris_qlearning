@@ -14,11 +14,9 @@ def headless(environment, agent, game):
     if environment.game_over is True:
         environment.next()
         environment.reset(True)
-        print("Game over:", agent.actions, "actions")
         agent.actions = 0
-        print("Game #", environment.game_process_counter, "started")
         if environment.game_process_counter % 1000 == 0 and environment.game_process_counter is not 0:
-            print("Saving")
+            print("Saving total game = ", environment.game_process_counter)
             agent.save("agent.dat")
 
     else:

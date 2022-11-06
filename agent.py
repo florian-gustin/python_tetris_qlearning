@@ -18,7 +18,7 @@ class Agent:
         self.__exploration = exploration
         self.__cooling_rate = cooling_rate
         self.__timer = time.time()
-
+        self.previous_bp = [0 for i in range(10)]
         self.actions = 0
 
 
@@ -55,6 +55,7 @@ class Agent:
         return ''.join(map(str, table))
 
     def insert_reward_in_state_qtable(self, mino, x, value, boundaries):
+        self.previous_bp = boundaries
         # self.__insert_reward_in_state_qtable(state,5, 50)
         state_str = self.table_to_str(boundaries)
         self.upsert_boundary_qtable(mino, state_str)
