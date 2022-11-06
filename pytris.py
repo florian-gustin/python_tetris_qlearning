@@ -53,10 +53,6 @@ def main():
 
     game = Game(environment)
 
-    engine = TetrisEngine(environment, agent, game)
-
-    learn = 0
-
     if args.headless is True:
         try:
             while True:
@@ -64,6 +60,7 @@ def main():
         except KeyboardInterrupt:
             agent.save("agent.dat")
     else:
+        engine = TetrisEngine(environment, agent, game)
 
         while not environment.done:
             # # Pause screen
