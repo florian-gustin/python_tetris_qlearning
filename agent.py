@@ -1,12 +1,9 @@
 import os
+import pickle
 import random
 import time
 
-import pygame
-import pickle
-from pygame.constants import K_LEFT, K_RIGHT, K_UP
-
-from config import AGENT_ACTIONS, ACTIONS
+from config import ACTIONS
 
 
 class Agent:
@@ -62,8 +59,10 @@ class Agent:
         state_str = self.table_to_str(boundaries)
         self.upsert_boundary_qtable(mino, state_str)
 
-        self.qtables[mino - 1][state_str][x][self.last_action] = value
-        #print(self.qtables)
+        maxQ = max(self.qtables[mino - 1][state_str][x].values())
+        self.qtables[mino - 1][state_str][x][self.last_action] += self.__alpha * \
+                                                                  (value + self.__gamma * maxQ - self.qtables[mino - 1][state_str][x][self.last_action])
+        #print(self.qtables[mino - 1][state_str][x])
 
         self.state = boundaries
 
@@ -88,8 +87,6 @@ class Agent:
                 return random.choice(ACTIONS)
             else:
                 return max(ACTIONS, key=actions.get)
-
-        return random.choice(list({'NOTHING': 0, 'LEFT': 0, 'RIGHT': 0, 'ROTATE': 0}.keys()))
 
         # if not hash in self.qtables[mino-1]:
         #     self.qtables[mino - 1][hash] = [{'NOTHING': 0, 'LEFT': 0, 'RIGHT': 0, 'ROTATE': 0} for i in range(11)]

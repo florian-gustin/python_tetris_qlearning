@@ -17,8 +17,13 @@ def headless(environment, agent, game):
         print("Game over:", agent.actions, "actions")
         agent.actions = 0
         print("Game #", environment.game_process_counter, "started")
+        if environment.game_process_counter % 1000 == 0 and environment.game_process_counter is not 0:
+            print("Saving")
+            agent.save("agent.dat")
 
     else:
+        action = agent.step(environment.mino, environment.dx)
+        game.on_step(action)
         if game.update_state_mino() == "create":
             hard_drop = game.hard_drop()
 
@@ -37,8 +42,7 @@ def headless(environment, agent, game):
                 environment.level += 1
                 environment.goal += environment.level * 5
 
-        action = agent.best_action(environment.mino, environment.dx)
-        game.on_step(action)
+
 def main():
     environment = Environment(True)
     agent = Agent()
