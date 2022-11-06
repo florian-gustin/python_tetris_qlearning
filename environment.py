@@ -3,11 +3,16 @@ from tetri_mino import *
 
 
 class Environment:
-    def __init__(self) -> None:
+    def __init__(self, reset = False) -> None:
         super().__init__()
         # Initial values
+        self.game_process_counter = 1
+        self.best_score = 0
+        self.reset(reset)
+
+    def reset(self, start=False):
         self.blink = False
-        self.start = False
+        self.start = start
         self.pause = False
         self.done = False
         self.game_over = False
@@ -36,10 +41,30 @@ class Environment:
 
         self.tetri_mino = TetriMino()
         self.erase_count = 0
+        self.previous_boundaries = [0,0,0,0,0,0,0,0,0,0]
+
+
+    def next(self):
+        self.game_process_counter += 1
+        if self.score > self.best_score:
+            self.best_score = self.score
+
+    def get_boundaries(self):
+        boundaries = []
+        for key, y in enumerate(self.matrix):
+            boundary = 0
+            for xkey, x in enumerate(y):
+                if x > 0:
+                    boundary = len(y) - xkey
+                    break
+
+            boundaries.append(boundary)
+
+        return boundaries
 
     # Returns true if mino is at bottom
     def is_bottom(self, x, y, mino, r):
-        grid = self.tetri_mino.mino_map[mino - 1][r]
+        grid = self.tetri_mino.mino_map[mino - 1][r]['GRID']
 
         for i in range(4):
             for j in range(4):
@@ -53,7 +78,7 @@ class Environment:
 
     # Returns true if mino is at the left edge
     def is_leftedge(self, x, y, mino, r):
-        grid = self.tetri_mino.mino_map[mino - 1][r]
+        grid = self.tetri_mino.mino_map[mino - 1][r]['GRID']
 
         for i in range(4):
             for j in range(4):
@@ -67,7 +92,7 @@ class Environment:
 
     # Returns true if mino is at the right edge
     def is_rightedge(self, x, y, mino, r):
-        grid = self.tetri_mino.mino_map[mino - 1][r]
+        grid = self.tetri_mino.mino_map[mino - 1][r]['GRID']
 
         for i in range(4):
             for j in range(4):
@@ -82,9 +107,9 @@ class Environment:
     # Returns true if turning right is possible
     def is_turnable_r(self, x, y, mino, r):
         if r != 3:
-            grid = self.tetri_mino.mino_map[mino - 1][r + 1]
+            grid = self.tetri_mino.mino_map[mino - 1][r + 1]['GRID']
         else:
-            grid = self.tetri_mino.mino_map[mino - 1][0]
+            grid = self.tetri_mino.mino_map[mino - 1][0]['GRID']
 
         for i in range(4):
             for j in range(4):
@@ -98,10 +123,11 @@ class Environment:
 
     # Returns true if turning left is possible
     def is_turnable_l(self, x, y, mino, r):
+        #simplifiable avec modulo
         if r != 0:
-            grid = self.tetri_mino.mino_map[mino - 1][r - 1]
+            grid = self.tetri_mino.mino_map[mino - 1][r - 1]['GRID']
         else:
-            grid = self.tetri_mino.mino_map[mino - 1][3]
+            grid = self.tetri_mino.mino_map[mino - 1][3]['GRID']
 
         for i in range(4):
             for j in range(4):
@@ -115,7 +141,7 @@ class Environment:
 
     # Returns true if new block is drawable
     def is_stackable(self, mino):
-        grid = self.tetri_mino.mino_map[mino - 1][0]
+        grid = self.tetri_mino.mino_map[mino - 1][0]['GRID']
 
         for i in range(4):
             for j in range(4):
@@ -127,7 +153,7 @@ class Environment:
 
     # Draw a tetrimino
     def draw_mino(self, x, y, mino, r):
-        grid = TetriMino.mino_map[mino - 1][r]
+        grid = TetriMino.mino_map[mino - 1][r]['GRID']
 
         tx, ty = x, y
         while not self.is_bottom(tx, ty, mino, r):
@@ -147,7 +173,7 @@ class Environment:
 
     # Erase a tetrimino
     def erase_mino(self, x, y, mino, r):
-        grid = TetriMino.mino_map[mino - 1][r]
+        grid = TetriMino.mino_map[mino - 1][r]['GRID']
 
         # Erase ghost
         for j in range(21):
@@ -160,8 +186,112 @@ class Environment:
             for j in range(4):
                 if grid[i][j] != 0:
                     self.matrix[x + j][y + i] = 0
+    def is_lines_cleared(self):
+        return self.erase_count != 0
 
-    def try_erase_line(self, ui_configuration=None):
+
+    def bumpiness(self):
+        total = 0
+
+        for index, col in enumerate(self.matrix):
+            total += self.calcul_column_height(index) - self.calcul_column_height(index+1)
+
+        return total
+
+    def holes_created_count(self):
+        max_grid_bp = max(self.get_boundaries())
+        radar = 4
+        if max_grid_bp < 4:
+            radar = max_grid_bp
+
+
+        count = 0
+
+        for col in range(len(self.matrix)):
+            block = False
+            row_start = (max_grid_bp-21)*-1
+            row_end = (max_grid_bp-21)*-1+radar
+            for row in range(row_start, row_end):
+                if self.matrix[col][row] > 0:
+                    block = True
+                elif self.matrix[col][row] == 0 and block is True:
+                    count += 1
+
+        return count
+
+    def get_state_boundaries(self):
+        radar = 4
+
+        boundaries = self.get_boundaries()
+        max_grid_bp = max(boundaries)
+
+        new_bp = []
+
+        for boundary in boundaries:
+            if max_grid_bp <= radar:
+                new_bp.append(boundary)
+                continue
+
+            if radar - (max_grid_bp - boundary) < 0:
+                new_bp.append(0)
+                continue
+            new_bp.append(radar - (max_grid_bp - boundary))
+
+        # if max_grid_bp < 4:
+        #     radar = max_grid_bp
+        #
+        # row_start = 21 - max_grid_bp
+        # row_end = max_grid_bp + radar
+        #
+        # radar = []
+        #
+        # count = 0
+        #
+        # for col in range(len(self.matrix)):
+        #     for row in range(row_start, row_end):
+
+
+
+
+        return new_bp
+
+    def is_blockade_created(self):
+        max_grid_bp = max(self.get_boundaries())
+        radar = 4
+        if max_grid_bp < 4:
+            radar = max_grid_bp
+        count = 0
+        for col in range(len(self.matrix)):
+            row_start = (max_grid_bp-21)*-1
+            row_end = (max_grid_bp-21)*-1+radar
+            for row in range(row_start, row_end):
+                if self.matrix[col][row] == 0 and self.matrix[col][row-1] and self.matrix[col][row-1] != 0 and self.matrix[col][row-2] and self.matrix[col][row-2] != 0:
+                    count += 1
+
+        return count
+
+
+    def is_bumpiness_increased_by(self, previous, current):
+        delta = max(current) - max(previous)
+        if delta > 0:
+            return delta
+        return 0
+
+
+    def is_bumpiness_increased(self):
+        return max(self.previous_boundaries) == max(self.get_boundaries())
+
+    def is_touching_the_floor(self, previous, current):
+        if min(previous) == 0:
+            for i in range(previous):
+                if previous[i] == 0 and current[i] != 0:
+                    return 1
+        return 0
+
+    def set_previous_boundaries(self):
+        self.previous_boundaries = self.get_boundaries()
+
+    def try_erase_line(self):
         self.erase_count = 0
         for j in range(21):
             is_full = True
@@ -176,18 +306,10 @@ class Environment:
                         self.matrix[i][k] = self.matrix[i][k - 1]
                     k -= 1
         if self.erase_count == 1:
-            if ui_configuration is not None:
-                ui_configuration.single_sound.play()
             self.score += 50 * self.level
         elif self.erase_count == 2:
-            if ui_configuration is not None:
-                ui_configuration.double_sound.play()
             self.score += 150 * self.level
         elif self.erase_count == 3:
-            if ui_configuration is not None:
-                ui_configuration.triple_sound.play()
             self.score += 350 * self.level
         elif self.erase_count == 4:
-            if ui_configuration is not None:
-                ui_configuration.tetris_sound.play()
             self.score += 1000 * self.level
