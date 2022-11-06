@@ -198,54 +198,6 @@ class Environment:
 
         return total
 
-    # def rec_get_holes_count(self, matrix, final_count, sticky_count, pos_x, pos_y, sticky, full):
-    #
-    #     if pos_x >= 0 or pos_x <= 9 and pos_y >= 0 or pos_y <= 21 :
-    #         is_wall_left = pos_x - 1 < 0
-    #         is_wall_right = pos_x + 1 == 9
-    #         is_wall_bottom = pos_y + 1 == 21
-    #         is_wall_top = pos_y - 1 == 0
-    #         is_block_top = matrix[pos_y-1] and  matrix[pos_y-1] != 0
-    #         is_block_bottom = matrix[pos_y + 1] and matrix[pos_y + 1] != 0
-    #         is_block_left = matrix[pos_y][pos_x-1] and matrix[pos_y][pos_x-1] != 0
-    #         is_block_right = matrix[pos_y][pos_x+1] and matrix[pos_y][pos_x+1] != 0
-    #         is_sticky_top = matrix[pos_y-1] and  matrix[pos_y-1] == 0
-    #         is_sticky_bottom = matrix[pos_y + 1] and matrix[pos_y + 1] == 0
-    #         is_sticky_left = matrix[pos_y][pos_x-1] and matrix[pos_y][pos_x-1] == 0
-    #         is_sticky_right = matrix[pos_y][pos_x+1] and matrix[pos_y][pos_x+1] == 0
-    #
-    #         is_sticky = is_sticky_top or is_sticky_bottom or is_sticky_left or is_sticky_right
-    #
-    #         is_left_blocked = is_wall_left or is_block_left
-    #         is_right_blocked = is_wall_right or is_block_right
-    #         is_bottom_blocked = is_wall_bottom or is_block_bottom
-    #         is_top_blocked = is_wall_top or is_block_top
-    #         blocked_count = [is_left_blocked, is_right_blocked, is_top_blocked, is_bottom_blocked].count(True)
-    #         temp_sticky_count = [is_sticky_left, is_sticky_left, is_sticky_top, is_sticky_bottom].count(True)
-    #
-    #         if is_top_blocked or is_wall_top:
-    #             if islef
-    #
-    #
-    #         if blocked_count == 3:
-    #             sticky = False
-    #             final_count += 1
-    #             sticky_count = 0
-    #         elif blocked_count == 2 and 0 < temp_sticky_count > 2:
-    #             sticky = True
-    #             final_count += 1
-    #             sticky_count = 0
-    #         elif
-    #
-    #         if is_wall_top or is_block_top or is_sticky_top:
-    #             final_count += 1
-    #             sticky_count += 1
-    #             sticky = True
-    #         elif not is_sticky
-    #
-    #     if sticky is True and full is True:
-    #         cou
-
     def holes_created_count(self):
         max_grid_bp = max(self.get_boundaries())
         radar = 4
@@ -304,10 +256,37 @@ class Environment:
         return new_bp
 
     def is_blockade_created(self):
-        pass
+        max_grid_bp = max(self.get_boundaries())
+        radar = 4
+        if max_grid_bp < 4:
+            radar = max_grid_bp
+        count = 0
+        for col in range(len(self.matrix)):
+            row_start = (max_grid_bp-21)*-1
+            row_end = (max_grid_bp-21)*-1+radar
+            for row in range(row_start, row_end):
+                if self.matrix[col][row] == 0 and self.matrix[col][row-1] and self.matrix[col][row-1] != 0 and self.matrix[col][row-2] and self.matrix[col][row-2] != 0:
+                    count += 1
+
+        return count
+
+
+    def is_bumpiness_increased_by(self, previous, current):
+        delta = max(current) - max(previous)
+        if delta > 0:
+            return delta
+        return 0
+
 
     def is_bumpiness_increased(self):
         return max(self.previous_boundaries) == max(self.get_boundaries())
+
+    def is_touching_the_floor(self, previous, current):
+        if min(previous) == 0:
+            for i in range(previous):
+                if previous[i] == 0 and current[i] != 0:
+                    return 1
+        return 0
 
     def set_previous_boundaries(self):
         self.previous_boundaries = self.get_boundaries()
