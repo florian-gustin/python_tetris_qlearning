@@ -32,13 +32,9 @@ class Agent:
             #self.load("agent.dat")
             return
 
-        index_array = []
-        state_str = ''.join(map(str, self.state))
 
-        for i in range(11):
-            index_array.append({'NOTHING': 0, 'LEFT': 0, 'RIGHT': 0, 'ROTATE': 0})
         for i in range(7):
-            self.qtables[i][state_str] = index_array
+            self.qtables[i] = {}
         # self.__qtable_I[state_str] = index_array
         print(self.qtables)
 
@@ -54,7 +50,8 @@ class Agent:
     def table_to_str(self, table):
         return ''.join(map(str, table))
 
-    def insert_reward_in_state_qtable(self, mino, x, value, boundaries):
+    def insert_reward_in_state_qtable(self, mino, x, value, boundaries, rotation):
+        x += 2
         self.previous_bp = boundaries
         # self.__insert_reward_in_state_qtable(state,5, 50)
         state_str = self.table_to_str(boundaries)

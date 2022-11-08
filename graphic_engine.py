@@ -117,6 +117,7 @@ class TetrisEngine(Engine):
 
         for event in self.__pygame.event.get():
             action = self.__agent.step(self.__environment.mino, self.__environment.dx)
+
             pygame.event.post(PYGAME_ACTIONS[action])
 
 
@@ -154,7 +155,6 @@ class TetrisEngine(Engine):
                             self.__pygame.time.set_timer(USEREVENT, 1)
                     radar = self.__environment.get_state_boundaries()
                     print(radar)
-
                     self.__agent.change_state(self.__environment.matrix)
                     lines_count = self.__environment.erase_count * LINE_CLEAR_REWARD
                     holes_count = self.__environment.holes_created_count() * HOLE_REWARD
@@ -164,7 +164,8 @@ class TetrisEngine(Engine):
                     reward = lines_count + holes_count + bp + is_blockade_created
                     self.__agent.insert_reward_in_state_qtable(self.__environment.mino, self.__environment.dx,
                                                                reward,
-                                                               self.__environment.get_state_boundaries())
+                                                               self.__environment.get_state_boundaries(),
+                                                               self.__environment.rotation)
 
                 self.draw_board(self.__environment.next_mino, self.__environment.hold_mino,
                                 self.__environment.score,
