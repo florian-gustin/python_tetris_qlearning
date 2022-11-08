@@ -29,7 +29,7 @@ class Agent:
     def init_state_in_qtable(self):
 
         if os.path.exists("agent.dat"):
-            self.load("agent.dat")
+            #self.load("agent.dat")
             return
 
         index_array = []
@@ -40,7 +40,7 @@ class Agent:
         for i in range(7):
             self.qtables[i][state_str] = index_array
         # self.__qtable_I[state_str] = index_array
-        #print(self.qtables)
+        print(self.qtables)
 
     def change_state(self, grid):
         tmp = []
@@ -58,21 +58,29 @@ class Agent:
         self.previous_bp = boundaries
         # self.__insert_reward_in_state_qtable(state,5, 50)
         state_str = self.table_to_str(boundaries)
-        self.upsert_boundary_qtable(mino, state_str)
-
-        maxQ = max(self.qtables[mino - 1][state_str][x].values())
-        self.qtables[mino - 1][state_str][x][self.last_action] += self.__alpha * \
-                                                                  (value + self.__gamma * maxQ - self.qtables[mino - 1][state_str][x][self.last_action])
-        #print(self.qtables[mino - 1][state_str][x])
+        if state_str not in self.qtables[mino - 1]:
+            self.upsert_boundary_qtable(mino, state_str)
+        print(rotation)
+        maxQ = max(self.qtables[mino - 1][state_str][x][rotation].values())
+        self.qtables[mino - 1][state_str][x][rotation][self.last_action] += self.__alpha * \
+                                                                  (value + self.__gamma * maxQ -
+                                                                   self.qtables[mino - 1][state_str][x][rotation][
+                                                                       self.last_action])
+        # print(self.qtables[mino - 1][state_str][x])
 
         self.state = boundaries
 
 
     def upsert_boundary_qtable(self, mino, state_str):
+        index_array = []
         self.qtables[mino - 1][state_str] = []
-        if len(self.qtables[mino - 1][state_str]) == 0:
-            for i in range(11):
-                self.qtables[mino - 1][state_str] = [{'NOTHING': 0, 'LEFT': 0, 'RIGHT': 0, 'ROTATE': 0} for i in range(11)]
+
+        for i in range(11):
+            rotation_array = []
+            for rotation in range(0, 4):
+                rotation_array.append({'NOTHING': 0, 'LEFT': 0, 'RIGHT': 0, 'ROTATE': 0})
+            index_array.append(rotation_array)
+        self.qtables[mino - 1][state_str] = index_array
 
     def best_action(self, mino, dx):
         hash = ''.join(str(x) for x in self.state)

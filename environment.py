@@ -267,7 +267,7 @@ class Environment:
             for row in range(row_start, row_end):
                 if self.matrix[col][row] == 0 and self.matrix[col][row-1] and self.matrix[col][row-1] != 0 and self.matrix[col][row-2] and self.matrix[col][row-2] != 0:
                     count += 1
-        print("blockade", count)
+        #print("blockade", count)
 
         return count
 
@@ -275,7 +275,7 @@ class Environment:
     def is_bumpiness_increased_by(self, previous, current):
         delta = max(current) - max(previous)
         if delta > 0:
-            print("bumpiness detected", delta)
+            #print("bumpiness detected", delta)
             return delta
         return 0
 
