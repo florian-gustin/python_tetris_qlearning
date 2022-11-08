@@ -27,7 +27,7 @@ class Game:
         return False
 
     def hard_drop(self):
-        if self.__environment.hard_drop or self.__environment.bottom_count == 1:
+        if self.__environment.hard_drop or self.__environment.bottom_count == 0:
 
             self.__environment.set_previous_boundaries()
 

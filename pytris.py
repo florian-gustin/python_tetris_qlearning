@@ -20,7 +20,7 @@ def headless(environment, agent, game):
             agent.save("agent.dat")
 
     else:
-        action = agent.step(environment.mino, environment.dx)
+        action = agent.step(environment.mino, environment.dx, environment.rotation)
         game.on_step(action)
         if game.update_state_mino() == "create":
             hard_drop = game.hard_drop()

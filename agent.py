@@ -79,21 +79,22 @@ class Agent:
             index_array.append(rotation_array)
         self.qtables[mino - 1][state_str] = index_array
 
-    def best_action(self, mino, dx):
+    def best_action(self, mino, dx, rotation):
         hash = ''.join(str(x) for x in self.state)
         piece_x = dx
 
         self.actions += 1
 
         if hash in self.qtables[mino-1]:
-            actions = self.qtables[mino - 1][hash][piece_x + 2]
+            actions = self.qtables[mino - 1][hash][piece_x + 2][rotation]
 
             if random.uniform(0, 1) < self.__exploration:
                 self.__exploration *= self.__cooling_rate
                 return random.choice(ACTIONS)
             else:
                 return max(ACTIONS, key=actions.get)
-
+        else:
+            return random.choice(ACTIONS)
         # if not hash in self.qtables[mino-1]:
         #     self.qtables[mino - 1][hash] = [{'NOTHING': 0, 'LEFT': 0, 'RIGHT': 0, 'ROTATE': 0} for i in range(11)]
         #     actions = self.qtables[mino - 1][hash][piece_x + 2]
@@ -113,11 +114,11 @@ class Agent:
             self.qtables = pickle.load(file)
         print("qtables load in", time.time() - start, "sec")
 
-    def step(self, mino,  dx):
+    def step(self, mino,  dx, rotation):
         if len(self.qtables) == 0:
             self.init_state_in_qtable()
         # get best rotation
-        action = self.best_action(mino, dx)
+        action = self.best_action(mino, dx, rotation)
         self.last_action = action
 
         #print(action)
