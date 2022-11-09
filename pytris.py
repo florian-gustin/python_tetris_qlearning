@@ -15,7 +15,7 @@ def headless(environment, agent, game):
         environment.next()
         environment.reset(True)
         agent.actions = 0
-        if environment.game_process_counter % 1000 == 0 and environment.game_process_counter is not 0:
+        if environment.game_process_counter % 1000 == 0 and environment.game_process_counter != 0:
             print("Saving total game = ", environment.game_process_counter)
             agent.save("agent.dat")
 
@@ -38,7 +38,7 @@ def headless(environment, agent, game):
             reward = lines_count + holes_count + bp + is_blockade_created
             agent.insert_reward_in_state_qtable(environment.mino, environment.dx,
                                                 reward,
-                                                environment.get_state_boundaries())
+                                                environment.get_state_boundaries(), environment.rotation)
             environment.goal -= environment.erase_count
             if environment.goal < 1 and environment.level < 15:
                 environment.level += 1
