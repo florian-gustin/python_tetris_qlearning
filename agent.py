@@ -65,11 +65,14 @@ class Agent:
 
 
     def upsert_boundary_qtable(self, mino, state_str, x, rotation):
-        try:
-            self.qtables[state_str][mino-1][x][rotation]
-        except KeyError:
-            a = {state_str: {mino - 1: {x: {rotation: {'NOTHING': 0, 'LEFT': 0, 'RIGHT': 0, 'ROTATE': 0}}}}}
-            self.qtables.update(a)
+        if state_str not in self.qtables:
+            self.qtables[state_str] = {}
+        if state_str not in self.qtables[state_str]:
+            self.qtables[state_str][mino - 1] = {}
+        if state_str not in self.qtables[state_str][mino - 1]:
+            self.qtables[state_str][mino - 1][x] = {}
+        if x not in self.qtables[state_str][mino - 1][x]:
+            self.qtables[state_str][mino - 1][x][rotation] = {'NOTHING': 0, 'LEFT': 0, 'RIGHT': 0, 'ROTATE': 0}
 
     def best_action(self, mino, dx, rotation):
         hash = ''.join(str(x) for x in self.state)
