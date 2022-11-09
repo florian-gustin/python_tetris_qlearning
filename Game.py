@@ -14,7 +14,7 @@ class Game:
     def is_stackable(self):
         if self.__environment.is_stackable(self.__environment.next_mino):
             self.__environment.mino = self.__environment.next_mino
-            self.__environment.next_mino = randint(1, 1)
+            self.__environment.next_mino = randint(1, 7)
             self.__environment.dx, self.__environment.dy = 3, 0
             self.__environment.rotation = 0
             self.__environment.hold = False

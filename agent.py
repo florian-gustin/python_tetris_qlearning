@@ -7,7 +7,7 @@ from config import ACTIONS
 
 
 class Agent:
-    def __init__(self, alpha=1, gamma=1, exploration=0, cooling_rate=1):
+    def __init__(self, alpha=1, gamma=1, exploration=1, cooling_rate=1):
         self.last_action = None
         self.state = [0 for i in range(10)]
         self.qtables = {}
@@ -33,7 +33,7 @@ class Agent:
             return
 
         self.qtables = {}
-        print(self.qtables)
+        #print(self.qtables)
 
     def change_state(self, grid):
         tmp = []
@@ -53,7 +53,7 @@ class Agent:
         # self.__insert_reward_in_state_qtable(state,5, 50)
         state_str = self.table_to_str(boundaries)
         self.upsert_boundary_qtable(mino, state_str, x, rotation)
-        print(rotation)
+        #print(rotation)
         maxQ = max(self.qtables[state_str][mino - 1][x][rotation].values())
         self.qtables[state_str][mino - 1][x][rotation][self.last_action] += self.__alpha * \
                                                                   (value + self.__gamma * maxQ -

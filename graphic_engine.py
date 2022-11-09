@@ -256,8 +256,8 @@ class TetrisEngine(Engine):
                     self.__environment.hold = False
                     self.__environment.dx, self.__environment.dy = 3, 0
                     self.__environment.rotation = 0
-                    self.__environment.mino = randint(1, 1)
-                    self.__environment.next_mino = randint(1, 1)
+                    self.__environment.mino = randint(1, 7)
+                    self.__environment.next_mino = randint(1, 7)
                     self.__environment.hold_mino = -1
                     self.__environment.framerate = 30
                     self.__environment.score = 0
