@@ -7,10 +7,10 @@ from config import ACTIONS
 
 
 class Agent:
-    def __init__(self, alpha=1, gamma=1, exploration=1, cooling_rate=1):
+    def __init__(self, alpha=1, gamma=1, exploration=0, cooling_rate=1):
         self.last_action = None
         self.state = [0 for i in range(10)]
-        self.qtables = [{}, {}, {}, {}, {}, {}, {}, ]
+        self.qtables = {}
         self.init_state_in_qtable()
         self.init_radar()
         self.__alpha = alpha
@@ -29,13 +29,10 @@ class Agent:
     def init_state_in_qtable(self):
 
         if os.path.exists("agent.dat"):
-            #self.load("agent.dat")
+            self.load("agent.dat")
             return
 
-
-        for i in range(7):
-            self.qtables[i] = {}
-        # self.__qtable_I[state_str] = index_array
+        self.qtables = {}
         print(self.qtables)
 
     def change_state(self, grid):
@@ -55,29 +52,24 @@ class Agent:
         self.previous_bp = boundaries
         # self.__insert_reward_in_state_qtable(state,5, 50)
         state_str = self.table_to_str(boundaries)
-        if state_str not in self.qtables[mino - 1]:
-            self.upsert_boundary_qtable(mino, state_str)
+        self.upsert_boundary_qtable(mino, state_str, x, rotation)
         print(rotation)
-        maxQ = max(self.qtables[mino - 1][state_str][x][rotation].values())
-        self.qtables[mino - 1][state_str][x][rotation][self.last_action] += self.__alpha * \
+        maxQ = max(self.qtables[state_str][mino - 1][x][rotation].values())
+        self.qtables[state_str][mino - 1][x][rotation][self.last_action] += self.__alpha * \
                                                                   (value + self.__gamma * maxQ -
-                                                                   self.qtables[mino - 1][state_str][x][rotation][
+                                                                   self.qtables[state_str][mino - 1][x][rotation][
                                                                        self.last_action])
         # print(self.qtables[mino - 1][state_str][x])
 
         self.state = boundaries
 
 
-    def upsert_boundary_qtable(self, mino, state_str):
-        index_array = []
-        self.qtables[mino - 1][state_str] = []
-
-        for i in range(11):
-            rotation_array = []
-            for rotation in range(0, 4):
-                rotation_array.append({'NOTHING': 0, 'LEFT': 0, 'RIGHT': 0, 'ROTATE': 0})
-            index_array.append(rotation_array)
-        self.qtables[mino - 1][state_str] = index_array
+    def upsert_boundary_qtable(self, mino, state_str, x, rotation):
+        try:
+            self.qtables[state_str][mino-1][x][rotation]
+        except KeyError:
+            a = {state_str: {mino - 1: {x: {rotation: {'NOTHING': 0, 'LEFT': 0, 'RIGHT': 0, 'ROTATE': 0}}}}}
+            self.qtables.update(a)
 
     def best_action(self, mino, dx, rotation):
         hash = ''.join(str(x) for x in self.state)
@@ -85,15 +77,15 @@ class Agent:
 
         self.actions += 1
 
-        if hash in self.qtables[mino-1]:
-            actions = self.qtables[mino - 1][hash][piece_x + 2][rotation]
+        try:
+            actions = self.qtables[hash][mino - 1][piece_x + 2][rotation]
 
             if random.uniform(0, 1) < self.__exploration:
                 self.__exploration *= self.__cooling_rate
                 return random.choice(ACTIONS)
             else:
                 return max(ACTIONS, key=actions.get)
-        else:
+        except KeyError:
             return random.choice(ACTIONS)
         # if not hash in self.qtables[mino-1]:
         #     self.qtables[mino - 1][hash] = [{'NOTHING': 0, 'LEFT': 0, 'RIGHT': 0, 'ROTATE': 0} for i in range(11)]

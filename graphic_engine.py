@@ -19,7 +19,7 @@ class TetrisEngine(Engine):
 
     def __init__(self, environment, agent, game) -> None:
         super().__init__()
-        self.__framerate = 15  # Bigger -> Slower
+        self.__framerate = 9  # Bigger -> Slower
         pygame.init()
         pygame.time.set_timer(USEREVENT, self.__framerate * 10)
         self.__pygame = pygame
@@ -196,7 +196,7 @@ class TetrisEngine(Engine):
 
     def on_reset(self):
         self.__environment.next()
-        self.__framerate = 15  # Bigger -> Slower
+        self.__framerate = 9  # Bigger -> Slower
         pygame.time.set_timer(USEREVENT, self.__framerate * 10)
         self.__environment.reset(True)
 

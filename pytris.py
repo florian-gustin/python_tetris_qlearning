@@ -26,19 +26,19 @@ def headless(environment, agent, game):
             hard_drop = game.hard_drop()
 
             if hard_drop is True:
+                agent.change_state(environment.matrix)
+                lines_count = environment.erase_count * LINE_CLEAR_REWARD
+                holes_count = environment.holes_created_count() * HOLE_REWARD
+                bp = environment.is_bumpiness_increased_by(agent.previous_bp,
+                                                                  environment.get_boundaries()) * BUMPINESS_REWARD
+                is_blockade_created = environment.is_blockade_created() * BLOCKADE_REWARD
+
+                reward = lines_count + holes_count + bp + is_blockade_created
+                agent.insert_reward_in_state_qtable(environment.mino, environment.dx,
+                                                    reward,
+                                                    environment.get_state_boundaries(), environment.rotation)
                 game.is_stackable()
 
-            agent.change_state(environment.matrix)
-            lines_count = environment.erase_count * LINE_CLEAR_REWARD
-            holes_count = environment.holes_created_count() * HOLE_REWARD
-            bp = environment.is_bumpiness_increased_by(agent.previous_bp,
-                                                              environment.get_boundaries()) * BUMPINESS_REWARD
-            is_blockade_created = environment.is_blockade_created() * BLOCKADE_REWARD
-
-            reward = lines_count + holes_count + bp + is_blockade_created
-            agent.insert_reward_in_state_qtable(environment.mino, environment.dx,
-                                                reward,
-                                                environment.get_state_boundaries(), environment.rotation)
             environment.goal -= environment.erase_count
             if environment.goal < 1 and environment.level < 15:
                 environment.level += 1
