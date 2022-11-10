@@ -79,6 +79,10 @@ class Agent:
         piece_x = dx
 
         self.actions += 1
+        if time.time() - self.__timer > 1:
+            print("Actions per sec : ", self.actions)
+            self.actions = 0
+            self.__timer = time.time()
 
         try:
             actions = self.qtables[hash][mino - 1][piece_x + 2][rotation]
