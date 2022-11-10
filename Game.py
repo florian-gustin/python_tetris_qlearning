@@ -70,8 +70,6 @@ class Game:
 
         return state
     def on_step(self, action):
-        self.__environment.erase_mino(self.__environment.dx, self.__environment.dy, self.__environment.mino,
-                                      self.__environment.rotation)
         # Turn right
         if action == ACTION_ROTATE:
 
