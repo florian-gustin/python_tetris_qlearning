@@ -114,7 +114,9 @@ class TetrisEngine(Engine):
                     self.__pygame.set_timer(USEREVENT, 1)
 
     def on_game(self):
-
+        self.__environment.erase_ghost()
+        self.__environment.draw_ghost(self.__environment.dx, self.__environment.dy, self.__environment.mino,
+                                      self.__environment.rotation)
         for event in self.__pygame.event.get():
             action = self.__agent.step(self.__environment.mino, self.__environment.dx, self.__environment.rotation)
 

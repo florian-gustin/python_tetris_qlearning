@@ -154,37 +154,35 @@ class Environment:
     def draw_mino(self, x, y, mino, r):
         grid = TetriMino.mino_map[mino - 1][r]['GRID']
 
-        tx, ty = x, y
-        while not self.is_bottom(tx, ty, mino, r):
-            ty += 1
-
-        # Draw ghost
-        for i in range(4):
-            for j in range(4):
-                if grid[i][j] != 0:
-                    self.matrix[tx + j][ty + i] = 8
-
         # Draw mino
         for i in range(4):
             for j in range(4):
                 if grid[i][j] != 0:
                     self.matrix[x + j][y + i] = grid[i][j]
 
+    def draw_ghost(self, x, y, mino, r):
+        grid = TetriMino.mino_map[mino - 1][r]['GRID']
+        tx, ty = x, y
+        while not self.is_bottom(tx, ty, mino, r):
+            ty += 1
+
+        for i in range(4):
+            for j in range(4):
+                if grid[i][j] != 0:
+                    self.matrix[tx + j][ty + i] = 8
+
     # Erase a tetrimino
     def erase_mino(self, x, y, mino, r):
         grid = TetriMino.mino_map[mino - 1][r]['GRID']
 
-        # Erase ghost
-        for j in range(21):
-            for i in range(10):
-                if self.matrix[i][j] == 8:
-                    self.matrix[i][j] = 0
-
-        # Erase mino
         for i in range(4):
             for j in range(4):
                 if grid[i][j] != 0:
                     self.matrix[x + j][y + i] = 0
+
+    def erase_ghost(self):
+        self.matrix = [[0 if j == 8 else j for j in i] for i in self.matrix]
+
     def is_lines_cleared(self):
         return self.erase_count != 0
 
