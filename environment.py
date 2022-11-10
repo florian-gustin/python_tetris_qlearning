@@ -1,4 +1,6 @@
 from random import randint
+
+from rewards import LINE_CLEAR_REWARD, HOLE_REWARD, BUMPINESS_REWARD
 from tetri_mino import *
 
 
@@ -41,7 +43,6 @@ class Environment:
 
         self.tetri_mino = TetriMino()
         self.erase_count = 0
-        self.previous_boundaries = [0] * 10
 
     def next(self):
         self.game_process_counter += 1
