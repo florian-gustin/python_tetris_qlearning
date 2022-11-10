@@ -9,7 +9,7 @@ from config import ACTIONS
 class Agent:
     def __init__(self, alpha=1, gamma=1, exploration=1, cooling_rate=1):
         self.last_action = None
-        self.state = [0 for i in range(10)]
+        self.state = [0] * 10
         self.qtables = {}
         self.init_state_in_qtable()
         self.init_radar()
@@ -18,12 +18,12 @@ class Agent:
         self.__exploration = exploration
         self.__cooling_rate = cooling_rate
         self.__timer = time.time()
-        self.previous_bp = [0 for i in range(10)]
+        self.previous_bp = [0] * 10
         self.actions = 0
 
 
     def init_radar(self):
-        self.radar = {"zone": [[0 for i in range(10)] for j in range(4)],
+        self.radar = {"zone": [[0] * 10 for _ in range(4)],
                         "y": 19}
 
     def init_state_in_qtable(self):

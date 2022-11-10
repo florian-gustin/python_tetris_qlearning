@@ -37,12 +37,11 @@ class Environment:
 
         self.width = 10  # Board width
         self.height = 20  # Board height
-        self.matrix = [[0 for y in range(self.height + 1)] for x in range(self.width)]  # Board matrix
+        self.matrix = [[0] * (self.height + 1) for _ in range(self.width)]  # Board matrix
 
         self.tetri_mino = TetriMino()
         self.erase_count = 0
-        self.previous_boundaries = [0,0,0,0,0,0,0,0,0,0]
-
+        self.previous_boundaries = [0] * 10
 
     def next(self):
         self.game_process_counter += 1
@@ -51,7 +50,7 @@ class Environment:
 
     def get_boundaries(self):
         boundaries = []
-        for key, y in enumerate(self.matrix):
+        for y in self.matrix:
             boundary = 0
             for xkey, x in enumerate(y):
                 if x > 0:
