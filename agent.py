@@ -17,7 +17,7 @@ class Agent:
         self.__gamma = gamma
         self.__exploration = exploration
         self.__cooling_rate = cooling_rate
-        self.__timer = time.time()
+        self.timer = time.time()
         self.previous_bp = [0] * 10
         self.actions = 0
 
