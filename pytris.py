@@ -1,5 +1,6 @@
 # PYTRIS™ Copyright (c) 2017 Jason Kim All Rights Reserved.
 import os
+import time
 
 import pygame.time
 
@@ -14,6 +15,11 @@ def headless(environment, agent, game):
     if environment.game_over is True:
         environment.next()
         environment.reset(True)
+
+        if time.time() - agent.timer > 1:
+            print("Actions per sec : ", agent.actions)
+            agent.actions = 0
+            agent.timer = time.time()
         if environment.game_process_counter % 1000 == 0 and environment.game_process_counter != 0:
             print("Saving total game = ", environment.game_process_counter)
             agent.save("agent.dat")

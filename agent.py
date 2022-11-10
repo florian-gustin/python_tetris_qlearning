@@ -75,22 +75,14 @@ class Agent:
             self.qtables[state_str][mino - 1][x][rotation] = {'NOTHING': 0, 'LEFT': 0, 'RIGHT': 0, 'ROTATE': 0}
 
     def best_action(self, mino, dx, rotation):
-        hash = ''.join(str(x) for x in self.state)
-        piece_x = dx
-
         self.actions += 1
-        if time.time() - self.__timer > 1:
-            print("Actions per sec : ", self.actions)
-            self.actions = 0
-            self.__timer = time.time()
-
         try:
-            actions = self.qtables[hash][mino - 1][piece_x + 2][rotation]
-
             if random.uniform(0, 1) < self.__exploration:
                 self.__exploration *= self.__cooling_rate
                 return random.choice(ACTIONS)
             else:
+                hash = ''.join(map(str, self.state))
+                actions = self.qtables[hash][mino - 1][dx + 2][rotation]
                 return max(ACTIONS, key=actions.get)
         except KeyError:
             return random.choice(ACTIONS)
