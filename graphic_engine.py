@@ -38,9 +38,6 @@ class TetrisEngine(Engine):
 
     def on_game(self):
         for event in self.__pygame.event.get():
-            action = self.__agent.step(self.__environment.mino, self.__environment.dx, self.__environment.rotation)
-
-            pygame.event.post(PYGAME_ACTIONS[action])
 
 
             if event.type == QUIT:
@@ -60,8 +57,7 @@ class TetrisEngine(Engine):
                         # newevent = pygame.event.Event(KEYDOWN, K_LEFT)  # create the event
                         # pygame.event.post(newevent)  # a
 
-                self.__environment.draw_mino(self.__environment.dx, self.__environment.dy, self.__environment.mino,
-                                             self.__environment.rotation)
+
 
                 if self.__game.update_state_mino() == "create":
                     hard_drop = self.__game.hard_drop()
@@ -103,6 +99,8 @@ class TetrisEngine(Engine):
         self.draw_board(self.__environment.next_mino, self.__environment.hold_mino,
                         self.__environment.score, self.__environment.level, self.__environment.goal)
 
+        self.__environment.draw_mino(self.__environment.dx, self.__environment.dy, self.__environment.mino,
+                                     self.__environment.rotation)
         self.__pygame.display.update()
 
     def on_reset(self):
