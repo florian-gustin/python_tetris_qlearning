@@ -61,10 +61,12 @@ class Game:
         if not self.__environment.is_bottom(self.__environment.dx, self.__environment.dy,
                                             self.__environment.mino,
                                             self.__environment.rotation):
+
             self.__environment.dy += 1
 
         # Create new mino
         else:
+
             state = "create"
                 # is stackable here
 
