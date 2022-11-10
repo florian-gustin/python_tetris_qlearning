@@ -7,7 +7,7 @@ from config import ACTIONS
 
 
 class Agent:
-    def __init__(self, alpha=1, gamma=1, exploration=1, cooling_rate=1):
+    def __init__(self, alpha=1, gamma=1, exploration=0, cooling_rate=1):
         self.last_action = None
         self.state = [0] * 10
         self.qtables = {}
@@ -21,6 +21,7 @@ class Agent:
         self.previous_bp = [0] * 10
         self.actions = 0
 
+        self.best_rewards = [-9999]*10
 
     def init_radar(self):
         self.radar = {"zone": [[0] * 10 for _ in range(4)],
@@ -63,7 +64,6 @@ class Agent:
 
         self.state = boundaries
 
-
     def upsert_boundary_qtable(self, mino, state_str, x, rotation):
         if state_str not in self.qtables:
             self.qtables[state_str] = {}
@@ -74,18 +74,34 @@ class Agent:
         if x not in self.qtables[state_str][mino - 1][x]:
             self.qtables[state_str][mino - 1][x][rotation] = {'NOTHING': 0, 'LEFT': 0, 'RIGHT': 0, 'ROTATE': 0}
 
+    def calcul_best_actions(self, mino, dx, rotation):
+
+        best_actions = [-99999] * 10
+
+        for i in range(0, 10):
+            _, best_actions[i] = self.best_action(mino, i, rotation)
+
+        return best_actions
+        #return max(best_actions)
+
     def best_action(self, mino, dx, rotation):
         self.actions += 1
+
+        eclate = None
+
         try:
             if random.uniform(0, 1) < self.__exploration:
+                eclate = 0
                 self.__exploration *= self.__cooling_rate
-                return random.choice(ACTIONS)
+                return random.choice(ACTIONS), eclate
             else:
                 hash = ''.join(map(str, self.state))
                 actions = self.qtables[hash][mino - 1][dx + 2][rotation]
-                return max(ACTIONS, key=actions.get)
+                eclate = actions[max(actions, key=actions.get)]
+                return max(actions, key=actions.get), eclate
         except KeyError:
-            return random.choice(ACTIONS)
+            eclate = 0
+            return random.choice(ACTIONS), eclate
         # if not hash in self.qtables[mino-1]:
         #     self.qtables[mino - 1][hash] = [{'NOTHING': 0, 'LEFT': 0, 'RIGHT': 0, 'ROTATE': 0} for i in range(11)]
         #     actions = self.qtables[mino - 1][hash][piece_x + 2]
@@ -109,7 +125,8 @@ class Agent:
         if len(self.qtables) == 0:
             self.init_state_in_qtable()
         # get best rotation
-        action = self.best_action(mino, dx, rotation)
+        self.calcul_best_actions(mino, dx, rotation)
+        action, _ = self.best_action(mino, dx, rotation)
         self.last_action = action
 
         #print(action)
