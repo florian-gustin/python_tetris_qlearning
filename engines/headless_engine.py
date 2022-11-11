@@ -10,7 +10,7 @@ class HeadlessEngine:
         self.agent = agent
         self.game = game
 
-    def run(self):
+    def on_game(self):
         if self.environment.game_over is True:
             self.environment.next()
             self.environment.reset(True)
