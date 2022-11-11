@@ -28,8 +28,8 @@ class Environment:
         self.dx, self.dy = 3, 0  # Minos location status
         self.rotation = 0  # Minos rotation status
 
-        self.mino = randint(1, 7)  # Current mino ## TODO : randint(1,7)
-        self.next_mino = randint(1, 7)  # Next mino ## TODO : randint(1,7)
+        self.mino = randint(1, 1)  # Current mino ## TODO : randint(1,7)
+        self.next_mino = randint(1, 1)  # Next mino ## TODO : randint(1,7)
 
         self.hold = False  # Hold status
         self.hold_mino = -1  # Holded mino

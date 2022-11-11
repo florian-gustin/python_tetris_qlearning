@@ -8,18 +8,18 @@ from pygame import QUIT, USEREVENT, KEYDOWN, K_ESCAPE, K_DOWN, K_SPACE, K_LSHIFT
 from pygame.rect import Rect
 
 from config import AGENT_ACTIONS, PYGAME_ACTIONS
-from engine import Engine
+from engines.engine import Engine
 from rewards import HOLE_REWARD, LINE_CLEAR_REWARD, BLOCKADE_REWARD, BUMPINESS_REWARD
 from ui_configuration import *
 from tetri_mino import *
 import pygame
 
 
-class TetrisEngine(Engine):
+class GraphicEngine(Engine):
 
     def __init__(self, environment, agent, game) -> None:
         super().__init__()
-        self.__framerate = 9  # Bigger -> Slower
+        self.__framerate = 5  # Bigger -> Slower
         pygame.init()
         pygame.time.set_timer(USEREVENT, self.__framerate * 10)
         self.__pygame = pygame
