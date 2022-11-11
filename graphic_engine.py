@@ -82,6 +82,12 @@ class TetrisEngine(Engine):
                                                                reward,
                                                                self.__environment.get_state_boundaries(),
                                                                self.__environment.rotation)
+                else :
+                    action = self.__agent.step(self.__environment.mino, self.__environment.dx,
+                                               self.__environment.rotation)
+
+                    pygame.event.post(PYGAME_ACTIONS[action])
+
 
                 # Increase level
                 self.__environment.goal -= self.__environment.erase_count
