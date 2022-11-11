@@ -1,32 +1,32 @@
 # PYTRIS™ Copyright (c) 2017 Jason Kim All Rights Reserved.
-import os
+import argparse
 import time
-
-import pygame.time
 
 from Game import Game
 from agent import Agent
-from graphic_engine import *
 from environment import *
-import argparse
+from graphic_engine import *
+
+save_time = time.time()
 
 
 def headless(environment, agent, game):
+    global save_time
+    if time.time() - agent.timer > 1:
+        print("Actions per sec : ", agent.actions)
+        agent.actions = 0
+        agent.timer = time.time()
+
+    if time.time() - save_time > 60:
+        print("Saving total game = ", environment.game_process_counter)
+        agent.save("agent.dat")
+        save_time = time.time()
+
     if environment.game_over is True:
         environment.next()
         environment.reset(True)
-
-        if time.time() - agent.timer > 1:
-            print("Actions per sec : ", agent.actions)
-            agent.actions = 0
-            agent.timer = time.time()
-        if environment.game_process_counter % 1000 == 0 and environment.game_process_counter != 0:
-            print("Saving total game = ", environment.game_process_counter)
-            agent.save("agent.dat")
-
     else:
-        action = agent.step(environment.mino, environment.dx, environment.rotation)
-        game.on_step(action)
+
         if game.update_state_mino() == "create":
             hard_drop = game.hard_drop()
 
@@ -35,7 +35,7 @@ def headless(environment, agent, game):
                 lines_count = environment.erase_count * LINE_CLEAR_REWARD
                 holes_count = environment.holes_created_count() * HOLE_REWARD
                 bp = environment.is_bumpiness_increased_by(agent.previous_bp,
-                                                                  environment.get_boundaries()) * BUMPINESS_REWARD
+                                                           environment.get_boundaries()) * BUMPINESS_REWARD
                 is_blockade_created = environment.is_blockade_created() * BLOCKADE_REWARD
 
                 reward = lines_count + holes_count + bp + is_blockade_created
@@ -48,6 +48,9 @@ def headless(environment, agent, game):
             if environment.goal < 1 and environment.level < 15:
                 environment.level += 1
                 environment.goal += environment.level * 5
+        else:
+            action = agent.step(environment.mino, environment.dx, environment.rotation)
+            game.on_step(action)
 
 
 def main():
@@ -77,7 +80,7 @@ def main():
             # Game screen
             if environment.start:
                 engine.on_game()
-                #print(environment.dx)
+                # print(environment.dx)
 
             # Game over screen
             elif environment.game_over:
