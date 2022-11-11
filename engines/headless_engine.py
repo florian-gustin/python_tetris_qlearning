@@ -4,11 +4,13 @@ from rewards import LINE_CLEAR_REWARD, HOLE_REWARD, BUMPINESS_REWARD, BLOCKADE_R
 
 
 class HeadlessEngine:
-    def __init__(self, environment, agent, game) -> None:
+    def __init__(self, environment, agent, game, dry) -> None:
         super().__init__()
         self.environment = environment
         self.agent = agent
         self.game = game
+        self.dry = dry
+        self.save_time = time.time()
 
     def on_game(self):
         if self.environment.game_over is True:
@@ -19,9 +21,12 @@ class HeadlessEngine:
                 print("Actions per sec : ", self.agent.actions)
                 self.agent.actions = 0
                 self.agent.timer = time.time()
-            if self.environment.game_process_counter % 1000 == 0 and self.environment.game_process_counter != 0:
-                print("Saving total game = ", self.environment.game_process_counter)
-                self.agent.save("self.agent.dat")
+
+            if self.dry is False:
+                if time.time() - self.save_time > 60:
+                    print("Saving total game = ", self.environment.game_process_counter)
+                    self.agent.save("agent.dat")
+                    self.save_time = time.time()
 
         else:
 

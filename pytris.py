@@ -15,16 +15,22 @@ def main():
 
     parser = argparse.ArgumentParser()
     parser.add_argument("--headless", help="Run IA in headless", type=bool, default=False, required=False)
+    parser.add_argument("--dry", help="Run IA without saving the data", type=bool, default=False, required=False)
     args = parser.parse_args()
 
     game = Game(environment)
 
     if args.headless is True:
+        if args.dry is True:
+            print("You running in dry-run mode, the save is disabled")
         try:
+            headless = HeadlessEngine(environment, agent, game, args.dry)
             while True:
-                HeadlessEngine(environment, agent, game).on_game()
+                headless.on_game()
         except KeyboardInterrupt:
-            agent.save("agent.dat")
+            if args.dry is False:
+                print("Saving data")
+                agent.save("agent.dat")
     else:
         engine = GraphicEngine(environment, agent, game)
 

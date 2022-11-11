@@ -28,6 +28,7 @@ class GraphicEngine(Engine):
         self.__agent = agent
         self.ui_configuration = UIConfiguration(self.__pygame)
         self.__game = game
+        self.__rotation = 0
 
 
     def quit(self):
@@ -54,9 +55,6 @@ class GraphicEngine(Engine):
                         # pygame.time.set_timer(pygame.KEYDOWN, self.__framerate * 10)
                         # newevent = pygame.event.Event(KEYDOWN, K_LEFT)  # create the event
                         # pygame.event.post(newevent)  # a
-
-
-
                 if self.__game.update_state_mino() == "create":
                     hard_drop = self.__game.hard_drop()
 
@@ -67,22 +65,23 @@ class GraphicEngine(Engine):
 
                         if stackable is False:
                             self.__pygame.time.set_timer(USEREVENT, 1)
-                    radar = self.__environment.get_state_boundaries()
-                    print(radar)
-                    self.__agent.change_state(self.__environment.matrix)
-                    lines_count = self.__environment.erase_count * LINE_CLEAR_REWARD
-                    holes_count = self.__environment.holes_created_count() * HOLE_REWARD
-                    bp = self.__environment.is_bumpiness_increased_by(self.__agent.previous_bp, self.__environment.get_boundaries()) * BUMPINESS_REWARD
-                    is_blockade_created = self.__environment.is_blockade_created() * BLOCKADE_REWARD
+                        radar = self.__environment.get_state_boundaries()
 
-                    reward = lines_count + holes_count + bp + is_blockade_created
-                    self.__agent.insert_reward_in_state_qtable(self.__environment.mino, self.__environment.dx,
-                                                               reward,
-                                                               self.__environment.get_state_boundaries(),
-                                                               self.__environment.rotation)
+                        self.__agent.change_state(self.__environment.matrix)
+                        lines_count = self.__environment.erase_count * LINE_CLEAR_REWARD
+                        holes_count = self.__environment.holes_created_count() * HOLE_REWARD
+                        bp = self.__environment.is_bumpiness_increased_by(self.__agent.previous_bp, self.__environment.get_boundaries()) * BUMPINESS_REWARD
+                        is_blockade_created = self.__environment.is_blockade_created() * BLOCKADE_REWARD
+
+                        reward = lines_count + holes_count + bp + is_blockade_created
+                        self.__agent.insert_reward_in_state_qtable(self.__environment.mino, self.__environment.dx,
+                                                                   reward,
+                                                                   self.__environment.get_state_boundaries(),
+                                                                   self.__rotation)
                 else :
                     action = self.__agent.step(self.__environment.mino, self.__environment.dx,
                                                self.__environment.rotation)
+                    self.__rotation = self.__environment.rotation
 
                     pygame.event.post(PYGAME_ACTIONS[action])
 
