@@ -38,8 +38,6 @@ class GraphicEngine(Engine):
 
     def on_game(self):
         for event in self.__pygame.event.get():
-
-
             if event.type == QUIT:
                 self.__environment.done = True
                 self.__agent.save("agent.dat")

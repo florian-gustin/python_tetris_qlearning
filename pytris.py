@@ -22,7 +22,7 @@ def main():
     if args.headless is True:
         try:
             while True:
-                HeadlessEngine(environment, agent, game).run()
+                HeadlessEngine(environment, agent, game).on_game()
         except KeyboardInterrupt:
             agent.save("agent.dat")
     else:
