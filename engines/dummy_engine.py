@@ -33,20 +33,18 @@ class DummyEngine:
             # is started
             if not self.__environment.game_over:
                 self.start()
-
             # is game quitted
             if event.type == QUIT:
                 self.is_quitted()
             # use events to move the piece
             elif event.type == KEYDOWN:
                 self.handle_events(event)
-
+            # MAIN LOGIC
             else:
                 # update or create the piece if False
-                if self.__game.update_state_mino() is False:
+                if self.is_updating_state_mino() is False:
                     # check if bottom is reach
-                    self.__is_bottom_reached = self.__game.is_bottom_reached()
-                    self.__environment.try_erase_line()
+                    self.__is_bottom_reached = self.is_bottom_reached()
                     if self.__is_bottom_reached is True:
                         # insert the reward only if bottom is reached
                         self.insert_reward()
@@ -55,22 +53,29 @@ class DummyEngine:
                         # if not created it means the grid is full
                         if self.__is_mino_created is False:
                             self.set_game_over()
-                            self.__pygame.time.set_timer(USEREVENT, 1)
                         # find all the events to move the piece
                         # find the current rotation desired
                         # find the current x desired
                         self.__events, self.__current_rotation, self.__current_x = self.__agent.best_actions(
-                            self.__environment.mino, self.__current_x)
-
+                            self.__environment.mino, self.__environment.dx)
+                        self.__environment.dx = self.__current_x
                         # placing mino, publishing events to move the piece
                         self.placing_mino()
 
         # update display
         self.update_display()
 
+    def is_updating_state_mino(self):
+        return self.__game.update_state_mino()
+
     def is_quitted(self):
         self.__environment.done = True
         # self.__agent.save("agent.dat")
+
+    def is_bottom_reached(self):
+        tmp = self.__game.is_bottom_reached()
+        self.__environment.try_erase_line()
+        return tmp
 
     def update_display(self):
         self.__environment.draw_mino(self.__environment.dx, self.__environment.dy, self.__environment.mino,
@@ -87,6 +92,7 @@ class DummyEngine:
 
     def set_game_over(self):
         self.__game.set_game_over()
+        self.__pygame.time.set_timer(USEREVENT, 1)
 
     def start(self):
         self.set_speed()
