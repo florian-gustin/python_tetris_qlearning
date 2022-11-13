@@ -110,6 +110,8 @@ class Agent:
         print(table_action)
         return table_action, rotation , x
 
+    def get_keys_from_value(self, d, val):
+        return [k for k, v in d.items() if v == val]
 
     def best_action(self, mino, boundaries):
         self.actions += 1
@@ -122,7 +124,9 @@ class Agent:
             hash = ''.join(map(str, boundaries))
             x_rewards = []
             for x, rotations in self.qtables[hash][mino - 1].items():
-                x_rewards.append(max(rotations.values()))
+                val = max(rotations.values())
+                test = (self.get_keys_from_value(rotations, val)[0], val)
+                x_rewards.append(test)
             x_index = x_rewards.index(max(x_rewards))
             rotation = list(self.qtables[hash][mino - 1][x_index].keys())[list(self.qtables[hash][mino - 1][x_index]).index(max(x_rewards))]
             return rotation, x_index
