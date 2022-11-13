@@ -159,6 +159,8 @@ class Environment:
         for i in range(4):
             for j in range(4):
                 if grid[i][j] != 0:
+                    print("x + j = ", x + j, "y + i =", y + i)
+
                     self.matrix[x + j][y + i] = grid[i][j]
 
     def draw_ghost(self, x, y, mino, r):
