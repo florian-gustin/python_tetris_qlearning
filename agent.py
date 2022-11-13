@@ -57,6 +57,9 @@ class Agent:
         #print(rotation)
         print(state_str)
         maxQ = max(self.qtables[state_str][mino - 1][x])
+
+        # (1 - self.__alpha) * qtable[action] + self.__alpha * (reward + self.__gamma * max_q)  <- version du projet noe pieerre
+
         tmp = self.__alpha * \
               (value + self.__gamma * maxQ -
                self.qtables[state_str][mino - 1][x][rotation])
