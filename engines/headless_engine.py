@@ -71,7 +71,7 @@ class HeadlessEngine:
         return self.__game.update_state_mino()
 
     def update_display(self):
-        self.__environment.draw_mino(self.__environment.dx, self.__environment.dy, self.__environment.next_mino,
+        self.__environment.draw_mino(self.__environment.dx, self.__environment.dy, self.__environment.mino,
                                      self.__environment.rotation)
 
     def is_bottom_reached(self):
@@ -86,7 +86,6 @@ class HeadlessEngine:
             self.__game.on_step(action)
 
     def set_game_over(self):
-        self.__agent.actions += 1
         self.__game.set_game_over()
         self.on_reset()
 

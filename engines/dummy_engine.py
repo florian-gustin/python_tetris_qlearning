@@ -92,7 +92,7 @@ class DummyEngine:
         return tmp
 
     def update_display(self):
-        self.__environment.draw_mino(self.__environment.dx, self.__environment.dy, self.__environment.next_mino,
+        self.__environment.draw_mino(self.__environment.dx, self.__environment.dy, self.__environment.mino,
                                      self.__environment.rotation)
         self.draw_board(self.__environment.next_mino, self.__environment.hold_mino,
                         self.__environment.score, self.__environment.level, self.__environment.goal)

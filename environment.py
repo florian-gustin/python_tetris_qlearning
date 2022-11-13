@@ -30,8 +30,8 @@ class Environment:
         self.dx, self.dy = 3, 0  # Minos location status
         self.rotation = 0  # Minos rotation status
 
-        self.mino = randint(1, 1)  # Current mino ## TODO : randint(1,7)
-        self.next_mino = randint(1, 1)  # Next mino ## TODO : randint(1,7)
+        self.mino = randint(1,4)  # Current mino ## TODO : randint(1,4)
+        self.next_mino = randint(1,4)  # Next mino ## TODO : randint(1,4)
 
         self.hold = False  # Hold status
         self.hold_mino = -1  # Holded mino
@@ -110,7 +110,7 @@ class Environment:
 
     # Returns true if turning right is possible
     def is_turnable_r(self, x, y, mino, r):
-        if r != 3:
+        if r != (len(self.tetri_mino.mino_map[mino - 1]) - 1):
             grid = self.tetri_mino.mino_map[mino - 1][r + 1]['GRID']
         else:
             grid = self.tetri_mino.mino_map[mino - 1][0]['GRID']
@@ -131,7 +131,7 @@ class Environment:
         if r != 0:
             grid = self.tetri_mino.mino_map[mino - 1][r - 1]['GRID']
         else:
-            grid = self.tetri_mino.mino_map[mino - 1][3]['GRID']
+            grid = self.tetri_mino.mino_map[mino - 1][len(self.tetri_mino.mino_map[mino - 1]) - 1]['GRID']
 
         for i in range(4):
             for j in range(4):
@@ -149,7 +149,7 @@ class Environment:
 
         for i in range(4):
             for j in range(4):
-                # print(grid[i][j], matrix[3 + j][i])
+                #print(grid[i][j],  self.matrix[3 + j][i])
                 if grid[i][j] != 0 and self.matrix[3 + j][i] != 0:
                     return False
 

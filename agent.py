@@ -8,7 +8,7 @@ from tetri_mino import TetriMino
 
 
 class Agent:
-    def __init__(self, alpha=1, gamma=1, exploration=0, cooling_rate=1):
+    def __init__(self, alpha=1, gamma=1, exploration=0.2, cooling_rate=1):
         self.last_action = 0
         self.state = [0] * 10
         self.qtables = {}
@@ -52,18 +52,24 @@ class Agent:
 
     def insert_reward_in_state_qtable(self, mino, x, value, state_str, rotation):
         #print(state_str)
-        maxQ = max(self.qtables[state_str][mino - 1][rotation])
+        try:
+            #print("ROTATION", rotation)
+            #print("MINO - 1", mino - 1)
+            #print(self.qtables[state_str][mino - 1][rotation])
+            maxQ = max(self.qtables[state_str][mino - 1][rotation])
 
-        # (1 - self.__alpha) * qtable[action] + self.__alpha * (reward + self.__gamma * max_q)  <- version du projet noe pieerre
+            # (1 - self.__alpha) * qtable[action] + self.__alpha * (reward + self.__gamma * max_q)  <- version du projet noe pieerre
 
-        tmp = self.__alpha * \
-              (value + self.__gamma * maxQ -
-               self.qtables[state_str][mino - 1][rotation][x])
-        self.qtables[state_str][mino - 1][rotation][x] += tmp
-        #print("INSERT QTABLE : key = ", state_str, ", mino = ", mino - 1, ", x = ", x, ", rotation = ", rotation,
-        #      ", value = ", tmp)
+            tmp = self.__alpha * \
+                  (value + self.__gamma * maxQ -
+                   self.qtables[state_str][mino - 1][rotation][x])
+            self.qtables[state_str][mino - 1][rotation][x] += tmp
+            #print("INSERT QTABLE : key = ", state_str, ", mino = ", mino - 1, ", x = ", x, ", rotation = ", rotation,
+            #      ", value = ", tmp)
 
-        self.state = state_str
+            self.state = state_str
+        except:
+            pass
 
     def upsert_boundary_qtable(self, mino, state_str):
         self.previous_state = state_str
@@ -79,6 +85,8 @@ class Agent:
                 self.qtables[state_str][mino - 1][i] = {}
                 for x in range(x_range):
                     self.qtables[state_str][mino - 1][i][x] = 0
+
+        pass
 
     def best_actions(self, mino, dx, boundaries):
 
@@ -101,14 +109,22 @@ class Agent:
         return table_action, rotation, x
 
     def best_action(self, mino, boundaries):
+        self.actions += 1
+
         if random.uniform(0, 1) < self.__exploration:
             self.__exploration *= self.__cooling_rate
-            return random.randint(0, 3), random.randint(0, 9)
+            rotation = len(TetriMino.mino_map[mino - 1])-1
+            #print("MINO - 1", mino - 1)
+            #print("ROTATION", rotation)
+            x_range = TetriMino.mino_map[mino - 1][rotation]['X_RANGE']-1
+            #print("XRANGE", x_range)
+            return random.randint(0, rotation), random.randint(0, x_range)
         else:
             hash = ''.join(map(str, boundaries))
             best_rotation = 0
             best_x = 0
             best_reward = None
+            #print("MINOOOO", mino)
             for rotation, xs in self.qtables[hash][mino - 1].items():
                 for x, reward in xs.items():
                     if best_reward is None or reward > best_reward:

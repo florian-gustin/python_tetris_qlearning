@@ -3,7 +3,7 @@ from random import randint
 from config import ACTION_ROTATE, ACTION_LEFT, ACTION_RIGHT
 from environment import Environment
 from rewards import HOLE_REWARD, LINE_CLEAR_REWARD
-
+from tetri_mino import *
 
 class Game:
 
@@ -14,7 +14,7 @@ class Game:
     def is_mino_created(self):
         if self.__environment.is_stackable(self.__environment.next_mino):
             self.__environment.mino = self.__environment.next_mino
-            self.__environment.next_mino = randint(1, 1)
+            self.__environment.next_mino = randint(1,4)
             self.__environment.dx, self.__environment.dy = 3, 0
             self.__environment.rotation = 0
             self.__environment.hold = False
@@ -99,7 +99,7 @@ class Game:
                 # self.ui_configuration.move_sound.play()
                 self.__environment.dx -= 2
                 self.__environment.rotation += 1
-            if self.__environment.rotation == 4:
+            if self.__environment.rotation == len(TetriMino.mino_map[self.__environment.mino - 1]):
                 self.__environment.rotation = 0
             self.__environment.draw_mino(self.__environment.dx, self.__environment.dy,
                                          self.__environment.mino, self.__environment.rotation)
