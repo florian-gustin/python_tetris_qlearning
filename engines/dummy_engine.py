@@ -2,7 +2,6 @@ import pygame
 from pygame import USEREVENT, QUIT, K_DOWN, KEYDOWN
 from pygame.rect import Rect
 
-from config import PYGAME_ACTIONS, AGENT_ACTIONS
 from rewards import LINE_CLEAR_REWARD, HOLE_REWARD, BUMPINESS_REWARD, BLOCKADE_REWARD
 from tetri_mino import TetriMino
 from ui_configuration import UIConfiguration
@@ -12,7 +11,7 @@ class DummyEngine:
 
     def __init__(self, environment, agent, game) -> None:
         super().__init__()
-        self.__framerate = 5  # Bigger -> Slower
+        self.__framerate = 2 # Bigger -> Slower
         pygame.init()
         pygame.time.set_timer(USEREVENT, self.__framerate * 10)
         self.__pygame = pygame
@@ -62,10 +61,6 @@ class DummyEngine:
                     # placing mino, publishing events to move the piece
                     self.placing_mino()
 
-            # use events to move the piece
-            if event.type == KEYDOWN:
-                self.handle_events(event)
-
             # is game quitted
             if event.type == QUIT:
                 self.is_quitted()
@@ -103,13 +98,6 @@ class DummyEngine:
                         self.__environment.score, self.__environment.level, self.__environment.goal)
         self.__pygame.display.update()
 
-    def handle_events(self, event):
-        pass
-        # self.__environment.erase_mino(self.__environment.dx, self.__environment.dy, self.__environment.mino,
-        #                               self.__environment.rotation)
-
-        # self.__game.on_step(AGENT_ACTIONS[event.key])
-
     def set_game_over(self):
         self.__game.set_game_over()
         self.__pygame.time.set_timer(USEREVENT, 1)
@@ -125,7 +113,6 @@ class DummyEngine:
             self.__environment.erase_mino(self.__environment.dx, self.__environment.dy, self.__environment.mino,
                                           self.__environment.rotation)
             self.__game.on_step(action)
-            # self.__pygame.event.post(PYGAME_ACTIONS[action])
             print("EVENT PUBLISHED : ", action)
 
     def insert_reward(self):
@@ -149,17 +136,12 @@ class DummyEngine:
         else:
             self.__pygame.time.set_timer(USEREVENT, self.__framerate * 10)
 
-            #
-            # pygame.time.set_timer(pygame.KEYDOWN, self.__framerate * 10)
-            # newevent = pygame.event.Event(KEYDOWN, K_LEFT)  # create the event
-            # pygame.event.post(newevent)  # a
-
     def on_reset(self):
         self.__environment.next()
-        self.__framerate = 5  # Bigger -> Slower
+        self.__framerate = 2 # Bigger -> Slower
         pygame.time.set_timer(USEREVENT, self.__framerate * 1)
         self.__current_rotation = 0
-        self.__current_x = 3
+        self.__current_x = 0
         self.__environment.reset(True)
 
     def draw_block(self, x, y, color):
