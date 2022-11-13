@@ -21,9 +21,11 @@ def main():
     game = Game(environment)
 
     if args.headless is True:
+        engine = HeadlessEngine(environment, agent, game)
+
         try:
             while True:
-                HeadlessEngine(environment, agent, game).on_game()
+                engine.execute()
         except KeyboardInterrupt:
             agent.save("agent.dat")
     else:

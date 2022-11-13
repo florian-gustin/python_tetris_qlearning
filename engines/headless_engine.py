@@ -1,51 +1,130 @@
 import time
 
 from rewards import LINE_CLEAR_REWARD, HOLE_REWARD, BUMPINESS_REWARD, BLOCKADE_REWARD
+from config import AGENT_ACTIONS, PYGAME_ACTIONS
 
 
 class HeadlessEngine:
+
     def __init__(self, environment, agent, game) -> None:
         super().__init__()
-        self.environment = environment
-        self.agent = agent
-        self.game = game
+        self.__environment = environment
+        self.__game = game
+        self.__agent = agent
+        self.__is_mino_created = self.create_mino()
+        self.__is_bottom_reached = True
+        self.__events = []
+        self.__current_rotation = 0
+        self.__current_x = 0
+        self.__agent.init_state_in_qtable()
+        self.__action = []
+        self.time = time.time()
+        self.save_time = time.time()
 
-    def on_game(self):
-        if self.environment.game_over is True:
-            self.environment.next()
-            self.environment.reset(True)
+    def execute(self):
 
-            if time.time() - self.agent.timer > 1:
-                print("Actions per sec : ", self.agent.actions)
-                self.agent.actions = 0
-                self.agent.timer = time.time()
-            if self.environment.game_process_counter % 1000 == 0 and self.environment.game_process_counter != 0:
-                print("Saving total game = ", self.environment.game_process_counter)
-                self.agent.save("self.agent.dat")
+        if time.time() - self.time > 1:
+            print("Actions per sec : ", self.__agent.actions)
+            self.__agent.actions = 0
+            self.time = time.time()
+        if time.time() - self.save_time > 60:
+            self.save_time = time.time()
+            print("Saving total game = ", self.__environment.game_process_counter)
+            self.__agent.save("agent.dat")
 
-        else:
+        if not self.__environment.game_over:
+            self.start()
+            # print("DEMARRAGE")
+        # update or create the piece if False
+        if self.is_updating_state_mino() is False:
+            # check if bottom is reach
+            if self.is_bottom_reached() is True:
+                # insert the reward only if bottom is reached
+                self.insert_reward()
+                # then create a mino if possible
+                # if not created it means the grid is full
+                if self.create_mino() is False:
+                    self.set_game_over()
+        # preparing the piece
+        elif self.__environment.dy < 2:
+            # get boundaries
+            # init the key values formula in qtable if not existing
+            self.preparing_piece_in_qtable()
+            # find all the events to move the piece
+            # find the current rotation desired
+            # find the current x desired
+            self.__events, self.__current_rotation, self.__current_x = self.get_best_action()
+            # placing mino, publishing events to move the piece
+            self.placing_mino()
 
-            if self.game.update_state_mino() == "create":
-                hard_drop = self.game.is_bottom_reached()
+            self.handle_events()
+        self.update_display()
 
-                if hard_drop is True:
-                    self.agent.change_state(self.environment.matrix)
-                    lines_count = self.environment.erase_count * LINE_CLEAR_REWARD
-                    holes_count = self.environment.holes_created_count() * HOLE_REWARD
-                    bp = self.environment.is_bumpiness_increased_by(self.agent.previous_bp,
-                                                               self.environment.get_boundaries()) * BUMPINESS_REWARD
-                    is_blockade_created = self.environment.is_blockade_created() * BLOCKADE_REWARD
+    def preparing_piece_in_qtable(self):
+        self.__environment.set_previous_boundaries()
+        self.__agent.upsert_boundary_qtable(self.__environment.mino,
+                                            self.__environment.previous_boundaries)
 
-                    reward = lines_count + holes_count + bp + is_blockade_created
-                    self.agent.insert_reward_in_state_qtable(self.environment.mino, self.environment.dx,
-                                                        reward,
-                                                        self.environment.get_boundaries(), self.environment.rotation)
-                    self.game.create_mino_or_game_over()
+    def get_best_action(self):
+        return self.__agent.best_actions(
+            self.__environment.mino, self.__environment.dx, self.__environment.get_boundaries())
 
-                self.environment.goal -= self.environment.erase_count
-                if self.environment.goal < 1 and self.environment.level < 15:
-                    self.environment.level += 1
-                    self.environment.goal += self.environment.level * 5
-            else:
-                action = self.agent.step(self.environment.mino, self.environment.dx, self.environment.rotation)
-                self.game.on_step(action, 0)
+    def is_updating_state_mino(self):
+        return self.__game.update_state_mino()
+
+    def update_display(self):
+        self.__environment.draw_mino(self.__environment.dx, self.__environment.dy, self.__environment.next_mino,
+                                     self.__environment.rotation)
+
+    def is_quitted(self):
+        self.__environment.done = True
+        self.__agent.save("agent.dat")
+
+    def is_bottom_reached(self):
+        tmp = self.__game.is_bottom_reached()
+        self.__environment.try_erase_line()
+        return tmp
+
+    def handle_events(self,):
+        self.__environment.erase_mino(self.__environment.dx, self.__environment.dy, self.__environment.mino,
+                                      self.__environment.rotation)
+
+        self.__game.on_step(self.__action)
+
+    def set_game_over(self):
+        self.__game.set_game_over()
+        self.on_reset()
+
+    def start(self):
+        pass
+
+    def create_mino(self):
+        return self.__game.is_mino_created()
+
+    def placing_mino(self):
+        for action in self.__events:
+            self.__action = action
+            self.__game.on_step(PYGAME_ACTIONS[action])
+
+    def insert_reward(self):
+
+        lines_count = self.__environment.erase_count * LINE_CLEAR_REWARD
+        holes_count = self.__environment.holes_created_count() * HOLE_REWARD
+        bp = self.__environment.is_bumpiness_increased_by(self.__agent.previous_state,
+                                                          self.__environment.get_boundaries()) * BUMPINESS_REWARD
+        is_blockade_created = self.__environment.is_blockade_created() * BLOCKADE_REWARD
+
+        reward = lines_count + holes_count + bp + is_blockade_created
+        self.__agent.insert_reward_in_state_qtable(self.__environment.mino, self.__current_x,
+                                                   reward,
+                                                   self.__agent.table_to_str(self.__environment.previous_boundaries),
+                                                   self.__current_rotation)
+
+    def set_speed(self):
+        pass
+
+    def on_reset(self):
+        self.__environment.next()
+        self.__current_rotation = 0
+        self.__current_x = 3
+        self.__environment.reset(True)
