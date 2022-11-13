@@ -7,7 +7,7 @@ from pygame import QUIT, USEREVENT, KEYDOWN, K_ESCAPE, K_DOWN, K_SPACE, K_LSHIFT
     K_RIGHT, K_RETURN
 from pygame.rect import Rect
 
-from config import AGENT_ACTIONS, PYGAME_ACTIONS
+from config import AGENT_ACTIONS, PYGAME_ACTIONS, ACTION_LEFT
 from engines.engine import Engine
 from rewards import HOLE_REWARD, LINE_CLEAR_REWARD, BLOCKADE_REWARD, BUMPINESS_REWARD
 from ui_configuration import *
@@ -28,6 +28,13 @@ class GraphicEngine(Engine):
         self.__agent = agent
         self.ui_configuration = UIConfiguration(self.__pygame)
         self.__game = game
+        self.__rotation = 0
+        self.__dx = 3
+
+        self.__agent.upsert_boundary_qtable(self.__environment.mino,
+                                            self.__environment.get_boundaries(),
+                                            self.__environment.dx, self.__rotation)
+
 
 
     def quit(self):
@@ -54,37 +61,39 @@ class GraphicEngine(Engine):
                         # pygame.time.set_timer(pygame.KEYDOWN, self.__framerate * 10)
                         # newevent = pygame.event.Event(KEYDOWN, K_LEFT)  # create the event
                         # pygame.event.post(newevent)  # a
-
-
-
                 if self.__game.update_state_mino() == "create":
-                    hard_drop = self.__game.hard_drop()
+                    hard_drop = self.__game.is_bottom_reached()
 
                     if hard_drop is True:
-                        self.__agent.change_state(self.__environment.matrix)
+                        # self.__agent.change_state(self.__environment.matrix)
+                        print("print2", self.__environment.dx)
 
-                        stackable = self.__game.is_stackable()
+
+                        print("print3", self.__environment.dx)
+
+                        # self.__agent.change_state(self.__environment.matrix)
+                        lines_count = self.__environment.erase_count * LINE_CLEAR_REWARD
+                        holes_count = self.__environment.holes_created_count() * HOLE_REWARD
+                        bp = self.__environment.is_bumpiness_increased_by(self.__agent.previous_state,
+                                                                          self.__environment.get_boundaries()) * BUMPINESS_REWARD
+                        is_blockade_created = self.__environment.is_blockade_created() * BLOCKADE_REWARD
+                        print("print4", self.__environment.dx)
+
+                        reward = lines_count + holes_count + bp + is_blockade_created
+                        self.__agent.insert_reward_in_state_qtable(self.__environment.mino, self.__environment.dx,
+                                                                   reward,
+                                                                   self.__agent.previous_bp,
+                                                                   self.__rotation)
+
+                        stackable = self.__game.create_mino_or_game_over()
 
                         if stackable is False:
                             self.__pygame.time.set_timer(USEREVENT, 1)
-                    radar = self.__environment.get_state_boundaries()
-                    print(radar)
-                    self.__agent.change_state(self.__environment.matrix)
-                    lines_count = self.__environment.erase_count * LINE_CLEAR_REWARD
-                    holes_count = self.__environment.holes_created_count() * HOLE_REWARD
-                    bp = self.__environment.is_bumpiness_increased_by(self.__agent.previous_bp, self.__environment.get_boundaries()) * BUMPINESS_REWARD
-                    is_blockade_created = self.__environment.is_blockade_created() * BLOCKADE_REWARD
+                        actions = self.__agent.step(self.__environment.mino, self.__environment.dx)
+                        print("print1", self.__environment.dx)
 
-                    reward = lines_count + holes_count + bp + is_blockade_created
-                    self.__agent.insert_reward_in_state_qtable(self.__environment.mino, self.__environment.dx,
-                                                               reward,
-                                                               self.__environment.get_state_boundaries(),
-                                                               self.__environment.rotation)
-                else :
-                    action = self.__agent.step(self.__environment.mino, self.__environment.dx,
-                                               self.__environment.rotation)
-
-                    pygame.event.post(PYGAME_ACTIONS[action])
+                        for action in actions:
+                            pygame.event.post(PYGAME_ACTIONS[action])
 
 
                 # Increase level
@@ -95,24 +104,33 @@ class GraphicEngine(Engine):
                     self.__framerate = int(self.__framerate * 0.8)
 
             elif event.type == KEYDOWN:
+                self.__dx = self.__environment.dx
                 self.__environment.erase_mino(self.__environment.dx, self.__environment.dy, self.__environment.mino,
                                               self.__environment.rotation)
 
                 self.__game.on_step(AGENT_ACTIONS[event.key])
+            self.__agent.upsert_boundary_qtable(self.__environment.mino,
+                                                self.__environment.get_boundaries(),
+                                                self.__environment.dx, self.__rotation)
+
+
+
+        self.__environment.draw_mino(self.__environment.dx, self.__environment.dy, self.__environment.mino,
+                                     self.__environment.rotation) # ?
 
         self.draw_board(self.__environment.next_mino, self.__environment.hold_mino,
                         self.__environment.score, self.__environment.level, self.__environment.goal)
 
-        self.__environment.draw_mino(self.__environment.dx, self.__environment.dy, self.__environment.mino,
-                                     self.__environment.rotation)
+
         self.__pygame.display.update()
 
     def on_reset(self):
         self.__environment.next()
         self.__framerate = 9  # Bigger -> Slower
         pygame.time.set_timer(USEREVENT, self.__framerate * 10)
+        self.__rotation = 0
+        self.__dx = 3
         self.__environment.reset(True)
-
 
     def draw_block(self, x, y, color):
         self.__pygame.draw.rect(

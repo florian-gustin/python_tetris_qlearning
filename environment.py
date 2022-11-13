@@ -156,10 +156,21 @@ class Environment:
         grid = TetriMino.mino_map[mino - 1][r]['GRID']
 
         # Draw mino
-        for i in range(4):
-            for j in range(4):
-                if grid[i][j] != 0:
-                    self.matrix[x + j][y + i] = grid[i][j]
+        try:
+            for i in range(4):
+                for j in range(4):
+
+                    if grid[i][j] != 0:
+                        xx = x + j
+                        yy = y + i
+                        t = self.matrix[x + j][y + i]
+                        g = grid[i][j]
+                        self.matrix[x + j][y + i] = grid[i][j]
+        except:
+            pass
+
+
+
 
     def draw_ghost(self, x, y, mino, r):
         grid = TetriMino.mino_map[mino - 1][r]['GRID']
@@ -175,10 +186,13 @@ class Environment:
     # Erase a tetrimino
     def erase_mino(self, x, y, mino, r):
         grid = TetriMino.mino_map[mino - 1][r]['GRID']
-
         for i in range(4):
             for j in range(4):
+                if x + j > 9:
+                    j = 0
+
                 if grid[i][j] != 0:
+
                     self.matrix[x + j][y + i] = 0
 
     def erase_ghost(self):

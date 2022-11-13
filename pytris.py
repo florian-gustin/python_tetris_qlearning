@@ -1,6 +1,7 @@
 # PYTRIS™ Copyright (c) 2017 Jason Kim All Rights Reserved.
-
-from Game import Game
+from engines.dummy_engine import DummyEngine
+from engines.gui_engine import GUIEngine
+from game import Game
 from agent import Agent
 from engines.headless_engine import HeadlessEngine
 from engines.graphic_engine import *
@@ -26,7 +27,7 @@ def main():
         except KeyboardInterrupt:
             agent.save("agent.dat")
     else:
-        engine = GraphicEngine(environment, agent, game)
+        engine = DummyEngine(environment, agent, game)
 
         while not environment.done:
             # # Pause screen
@@ -35,7 +36,7 @@ def main():
 
             # Game screen
             if environment.start:
-                engine.on_game()
+                engine.execute()
                 #print(environment.dx)
 
             # Game over screen
@@ -43,9 +44,6 @@ def main():
                 engine.on_reset()
                 # engine.on_game_over()
 
-            # Start screen
-            else:
-                engine.on_start()
 
         engine.quit()
 

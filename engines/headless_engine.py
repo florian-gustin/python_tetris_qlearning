@@ -26,7 +26,7 @@ class HeadlessEngine:
         else:
 
             if self.game.update_state_mino() == "create":
-                hard_drop = self.game.hard_drop()
+                hard_drop = self.game.is_bottom_reached()
 
                 if hard_drop is True:
                     self.agent.change_state(self.environment.matrix)
@@ -39,8 +39,8 @@ class HeadlessEngine:
                     reward = lines_count + holes_count + bp + is_blockade_created
                     self.agent.insert_reward_in_state_qtable(self.environment.mino, self.environment.dx,
                                                         reward,
-                                                        self.environment.get_state_boundaries(), self.environment.rotation)
-                    self.game.is_stackable()
+                                                        self.environment.get_boundaries(), self.environment.rotation)
+                    self.game.create_mino_or_game_over()
 
                 self.environment.goal -= self.environment.erase_count
                 if self.environment.goal < 1 and self.environment.level < 15:
@@ -48,4 +48,4 @@ class HeadlessEngine:
                     self.environment.goal += self.environment.level * 5
             else:
                 action = self.agent.step(self.environment.mino, self.environment.dx, self.environment.rotation)
-                self.game.on_step(action)
+                self.game.on_step(action, 0)
