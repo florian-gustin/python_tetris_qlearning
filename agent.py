@@ -22,8 +22,13 @@ class Agent:
         self.previous_bp = "000000000"
         self.previous_state = [0] * 10
         self.actions = 0
-
+        self.reward_count = 0
+        self.reward_count_history = []
         self.best_rewards = [-9999] * 10
+
+    def reset_reward_counter(self):
+        self.reward_count_history.append(self.reward_count)
+        self.reward_count = 0
 
     def init_radar(self):
         self.radar = {"zone": [[0] * 10 for _ in range(4)],
@@ -59,10 +64,12 @@ class Agent:
               (value + self.__gamma * maxQ -
                self.qtables[state_str][mino - 1][rotation][x])
         self.qtables[state_str][mino - 1][rotation][x] += tmp
+        self.reward_count += tmp
         print("INSERT QTABLE : key = ", state_str, ", mino = ", mino - 1, ", x = ", x, ", rotation = ", rotation,
               ", value = ", tmp)
 
         self.state = state_str
+
 
     def upsert_boundary_qtable(self, mino, state_str):
         self.previous_state = state_str

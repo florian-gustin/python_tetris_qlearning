@@ -142,6 +142,7 @@ class DummyEngine:
         pygame.time.set_timer(USEREVENT, self.__framerate * 1)
         self.__current_rotation = 0
         self.__current_x = 0
+        self.__agent.reset_reward_counter()
         self.__environment.reset(True)
 
     def draw_block(self, x, y, color):
@@ -175,7 +176,7 @@ class DummyEngine:
         for i in range(4):
             for j in range(4):
                 dx = 220 + self.ui_configuration.block_size * j
-                dy = 140 + self.ui_configuration.block_size * i
+                dy = 65 + self.ui_configuration.block_size * i
                 if grid_n[i][j] != 0:
                     self.__pygame.draw.rect(
                         self.ui_configuration.screen,
@@ -188,22 +189,26 @@ class DummyEngine:
             self.__environment.score = 999999
 
         # Draw texts
-        text_hold = self.ui_configuration.h5.render("HOLD", 1, self.ui_configuration.black)
+        # text_hold = self.ui_configuration.h5.render("HOLD", 1, self.ui_configuration.black)
         text_next = self.ui_configuration.h5.render("NEXT", 1, self.ui_configuration.black)
+        text_reward = self.ui_configuration.h5.render("REWARDS", 1, self.ui_configuration.black)
         text_score = self.ui_configuration.h5.render("SCORE", 1, self.ui_configuration.black)
         score_value = self.ui_configuration.h4.render(str(score), 1, self.ui_configuration.black)
-        text_level = self.ui_configuration.h5.render("LEVEL", 1, self.ui_configuration.black)
-        level_value = self.ui_configuration.h4.render(str(level), 1, self.ui_configuration.black)
+        reward_value = self.ui_configuration.h4.render(str(self.__agent.reward_count), 1, self.ui_configuration.black)
+        # text_level = self.ui_configuration.h5.render("LEVEL", 1, self.ui_configuration.black)
+        # level_value = self.ui_configuration.h4.render(str(level), 1, self.ui_configuration.black)
         text_goal = self.ui_configuration.h5.render("GOAL", 1, self.ui_configuration.black)
         goal_value = self.ui_configuration.h4.render(str(goal), 1, self.ui_configuration.black)
 
         # Place texts
-        self.ui_configuration.screen.blit(text_hold, (215, 14))
-        self.ui_configuration.screen.blit(text_next, (215, 104))
+        # self.ui_configuration.screen.blit(text_hold, (215, 14))
+        self.ui_configuration.screen.blit(text_next, (215, 14))
+        self.ui_configuration.screen.blit(text_reward, (215, 120))
+        self.ui_configuration.screen.blit(reward_value, (220, 140))
         self.ui_configuration.screen.blit(text_score, (215, 194))
-        self.ui_configuration.screen.blit(score_value, (220, 210))
-        self.ui_configuration.screen.blit(text_level, (215, 254))
-        self.ui_configuration.screen.blit(level_value, (220, 270))
+        self.ui_configuration.screen.blit(score_value, (220, 215))
+        # self.ui_configuration.screen.blit(text_level, (215, 254))
+        # self.ui_configuration.screen.blit(level_value, (220, 270))
         self.ui_configuration.screen.blit(text_goal, (215, 314))
         self.ui_configuration.screen.blit(goal_value, (220, 330))
 
