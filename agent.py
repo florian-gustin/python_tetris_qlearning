@@ -110,8 +110,6 @@ class Agent:
         print(table_action)
         return table_action, rotation , x
 
-    def get_keys_from_value(self, d, val):
-        return [k for k, v in d.items() if v == val]
 
     def best_action(self, mino, boundaries):
         self.actions += 1
@@ -120,23 +118,27 @@ class Agent:
             self.__exploration *= self.__cooling_rate
             return random.randint(0, 3), random.randint(0, 9)
         else:
-            # TODO : ca marche pas les boundaries sont pas coherent
-            hash = ''.join(map(str, boundaries))
-            x_rewards = []
-            for x, rotations in self.qtables[hash][mino - 1].items():
-                val = max(rotations.values())
-                test = (self.get_keys_from_value(rotations, val)[0], val)
-                x_rewards.append(test)
-            x_index = x_rewards.index(max(x_rewards))
-            rotation = list(self.qtables[hash][mino - 1][x_index].keys())[list(self.qtables[hash][mino - 1][x_index]).index(max(x_rewards))]
-            return rotation, x_index
-        # if not hash in self.qtables[mino-1]:
-        #     self.qtables[mino - 1][hash] = [{'NOTHING': 0, 'LEFT': 0, 'RIGHT': 0, 'ROTATE': 0} for i in range(11)]
-        #     actions = self.qtables[mino - 1][hash][piece_x + 2]
-        # else:
-        #     actions = self.qtables[mino - 1][hash][piece_x + 2]
 
-        # print(actions)
+            try:
+                hash = ''.join(map(str, boundaries))
+                rotations_indexes = []
+                rotations_rewards = []
+                for x, rotations in self.qtables[hash][mino - 1].items():
+                    c_key = max(rotations, key=rotations.get)
+                    c_rew = max(rotations.values())
+                    rotations_indexes.append(c_key)
+                    rotations_rewards.append(c_rew)
+
+                x_reward = max(rotations_rewards)
+                tmp_index = rotations_rewards.index(x_reward)
+                x_rotation = rotations_indexes[tmp_index]
+
+                # rotation = list(self.qtables[hash][mino - 1][x_index].keys())[list(self.qtables[hash][mino - 1][x_index]).index(max(x_rewards))]
+                return x_rotation, tmp_index
+            except:
+                pass
+
+
 
 
     def save(self, filename):

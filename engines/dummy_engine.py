@@ -89,7 +89,7 @@ class DummyEngine:
 
     def is_quitted(self):
         self.__environment.done = True
-        # self.__agent.save("agent.dat")
+        self.__agent.save("agent.dat")
 
     def is_bottom_reached(self):
         tmp = self.__game.is_bottom_reached()
