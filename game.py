@@ -121,4 +121,4 @@ class Game:
             self.__environment.draw_mino(self.__environment.dx, self.__environment.dy,
                                          self.__environment.mino, self.__environment.rotation)
 
-        print("EVENT CONSUMED : ", action, ", x = ", self.__environment.dx)
+        #print("EVENT CONSUMED : ", action, ", x = ", self.__environment.dx)

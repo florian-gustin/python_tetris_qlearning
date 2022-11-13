@@ -22,7 +22,6 @@ class Agent:
         self.previous_state = [0] * 10
         self.actions = 0
 
-        self.best_rewards = [-9999]*10
 
 
     def init_radar(self):
@@ -55,7 +54,7 @@ class Agent:
         # self.previous_bp = boundaries
         # self.__insert_reward_in_state_qtable(state,5, 50)
         #print(rotation)
-        print(state_str)
+        #print(state_str)
         maxQ = max(self.qtables[state_str][mino - 1][x])
 
         # (1 - self.__alpha) * qtable[action] + self.__alpha * (reward + self.__gamma * max_q)  <- version du projet noe pieerre
@@ -64,7 +63,7 @@ class Agent:
               (value + self.__gamma * maxQ -
                self.qtables[state_str][mino - 1][x][rotation])
         self.qtables[state_str][mino - 1][x][rotation] += tmp
-        print("INSERT QTABLE : key = ", state_str, ", mino = ", mino-1, ", x = ", x, ", rotation = ", rotation, ", value = ", tmp)
+        #print("INSERT QTABLE : key = ", state_str, ", mino = ", mino-1, ", x = ", x, ", rotation = ", rotation, ", value = ", tmp)
 
         self.state = state_str
 
@@ -110,7 +109,7 @@ class Agent:
         else:
             for i in range(dx, x):
                 table_action.append(ACTION_RIGHT)
-        print(table_action)
+        #print(table_action)
         return table_action, rotation , x
 
 

@@ -76,10 +76,6 @@ class HeadlessEngine:
         self.__environment.draw_mino(self.__environment.dx, self.__environment.dy, self.__environment.next_mino,
                                      self.__environment.rotation)
 
-    def is_quitted(self):
-        self.__environment.done = True
-        self.__agent.save("agent.dat")
-
     def is_bottom_reached(self):
         tmp = self.__game.is_bottom_reached()
         self.__environment.try_erase_line()
@@ -107,7 +103,6 @@ class HeadlessEngine:
             self.__game.on_step(PYGAME_ACTIONS[action])
 
     def insert_reward(self):
-
         lines_count = self.__environment.erase_count * LINE_CLEAR_REWARD
         holes_count = self.__environment.holes_created_count() * HOLE_REWARD
         bp = self.__environment.is_bumpiness_increased_by(self.__agent.previous_state,
@@ -119,7 +114,6 @@ class HeadlessEngine:
                                                    reward,
                                                    self.__agent.table_to_str(self.__environment.previous_boundaries),
                                                    self.__current_rotation)
-
     def set_speed(self):
         pass
 

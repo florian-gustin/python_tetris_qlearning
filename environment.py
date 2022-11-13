@@ -13,11 +13,13 @@ class Environment:
         self.reset(reset)
 
     def reset(self, start=False):
-        self.blink = False
         self.start = start
-        self.pause = False
         self.done = False
         self.game_over = False
+        self.boundaries = [0]*10
+        self.max_bp = 0
+        self.previous_boundaries = [0]*10
+        self.previous_max_bp = 0
 
         self.score = 0
         self.level = 1
@@ -34,9 +36,6 @@ class Environment:
         self.hold = False  # Hold status
         self.hold_mino = -1  # Holded mino
 
-        self.name_location = 0
-        self.name = [65, 65, 65]
-
         self.width = 10  # Board width
         self.height = 20  # Board height
         self.matrix = [[0] * (self.height + 1) for _ in range(self.width)]  # Board matrix
@@ -50,6 +49,9 @@ class Environment:
             self.best_score = self.score
 
     def get_boundaries(self):
+        if self.previous_boundaries != self.boundaries:
+            return self.boundaries
+
         boundaries = []
         for y in self.matrix:
             boundary = 0
@@ -60,6 +62,8 @@ class Environment:
 
             boundaries.append(boundary)
 
+        self.boundaries = boundaries
+        self.max_bp = max(boundaries)
         return boundaries
 
     # Returns true if mino is at bottom
@@ -159,12 +163,7 @@ class Environment:
         try:
             for i in range(4):
                 for j in range(4):
-
                     if grid[i][j] != 0:
-                        xx = x + j
-                        yy = y + i
-                        t = self.matrix[x + j][y + i]
-                        g = grid[i][j]
                         self.matrix[x + j][y + i] = grid[i][j]
         except:
             pass
@@ -210,7 +209,7 @@ class Environment:
         return total
 
     def holes_created_count(self):
-        max_grid_bp = max(self.get_boundaries())
+        max_grid_bp = self.max_bp
         radar = 4
         if max_grid_bp < 4:
             radar = max_grid_bp
@@ -230,44 +229,10 @@ class Environment:
 
         return count
 
-    def get_state_boundaries(self):
-        radar = 4
 
-        boundaries = self.get_boundaries()
-        max_grid_bp = max(boundaries)
-
-        new_bp = []
-
-        for boundary in boundaries:
-            if max_grid_bp <= radar:
-                new_bp.append(boundary)
-                continue
-
-            if radar - (max_grid_bp - boundary) < 0:
-                new_bp.append(0)
-                continue
-            new_bp.append(radar - (max_grid_bp - boundary))
-
-        # if max_grid_bp < 4:
-        #     radar = max_grid_bp
-        #
-        # row_start = 21 - max_grid_bp
-        # row_end = max_grid_bp + radar
-        #
-        # radar = []
-        #
-        # count = 0
-        #
-        # for col in range(len(self.matrix)):
-        #     for row in range(row_start, row_end):
-
-
-
-
-        return new_bp
 
     def is_blockade_created(self):
-        max_grid_bp = max(self.get_boundaries())
+        max_grid_bp = self.max_bp
         radar = 4
         if max_grid_bp < 4:
             radar = max_grid_bp
@@ -284,7 +249,7 @@ class Environment:
 
 
     def is_bumpiness_increased_by(self, previous, current):
-        delta = max(current) - max(previous)
+        delta = self.max_bp - self.previous_max_bp
         if delta > 0:
             #print("bumpiness detected", delta)
             return delta
@@ -292,7 +257,7 @@ class Environment:
 
 
     def is_bumpiness_increased(self):
-        return max(self.previous_boundaries) == max(self.get_boundaries())
+        return self.previous_max_bp == self.max_bp
 
     def is_touching_the_floor(self, previous, current):
         if min(previous) == 0:
@@ -302,7 +267,8 @@ class Environment:
         return 0
 
     def set_previous_boundaries(self):
-        self.previous_boundaries = self.get_boundaries()
+        self.previous_max_bp = self.max_bp
+        self.previous_boundaries = self.boundaries
 
     def try_erase_line(self):
         self.erase_count = 0
