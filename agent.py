@@ -64,7 +64,7 @@ class Agent:
               (value + self.__gamma * maxQ -
                self.qtables[state_str][mino - 1][x][rotation])
         self.qtables[state_str][mino - 1][x][rotation] += tmp
-        print("INSERT QTABLE : key = ", state_str, ", mino = ", mino-1, ", x = ", x, ", rotation = ", rotation, ", value = ", tmp)
+         #print("INSERT QTABLE : key = ", state_str, ", mino = ", mino-1, ", x = ", x, ", rotation = ", rotation, ", value = ", tmp)
 
         self.state = state_str
 
@@ -110,7 +110,7 @@ class Agent:
         else:
             for i in range(dx, x):
                 table_action.append(ACTION_RIGHT)
-        print(table_action)
+        #print(table_action)
         return table_action, rotation , x
 
 
@@ -152,7 +152,7 @@ class Agent:
         start = time.time()
         with open(filename, 'rb') as file:
             self.qtables = pickle.load(file)
-        print("qtables load in", time.time() - start, "sec")
+        #print("qtables load in", time.time() - start, "sec")
 
     def step(self, mino,  dx):
         if len(self.qtables) == 0:

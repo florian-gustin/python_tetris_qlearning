@@ -1,6 +1,6 @@
 import time
 
-from rewards import LINE_CLEAR_REWARD, HOLE_REWARD, BUMPINESS_REWARD, BLOCKADE_REWARD
+from rewards import LINE_CLEAR_REWARD, HOLE_REWARD, BUMPINESS_REWARD, TOUCHING_WALL, TOUCHING_BLOCK, BLOCKADE_REWARD
 from config import AGENT_ACTIONS, PYGAME_ACTIONS
 
 
@@ -109,12 +109,15 @@ class HeadlessEngine:
     def insert_reward(self):
 
         lines_count = self.__environment.erase_count * LINE_CLEAR_REWARD
-        holes_count = self.__environment.holes_created_count() * HOLE_REWARD
+        holes_count, blockades_count = self.__environment.holes_created_count()
+        wall_count, adjacency_count = self.__environment.touching_block_count()
+        holes_reward = holes_count * HOLE_REWARD
+        blockades_reward = blockades_count * BLOCKADE_REWARD
+        wall_touch_reward = wall_count * TOUCHING_WALL
+        adjacency_reward = adjacency_count * TOUCHING_BLOCK
         bp = self.__environment.is_bumpiness_increased_by(self.__agent.previous_state,
                                                           self.__environment.get_boundaries()) * BUMPINESS_REWARD
-        is_blockade_created = self.__environment.is_blockade_created() * BLOCKADE_REWARD
-
-        reward = lines_count + holes_count + bp + is_blockade_created
+        reward = lines_count + bp + holes_reward + blockades_reward + wall_touch_reward + adjacency_reward
         self.__agent.insert_reward_in_state_qtable(self.__environment.mino, self.__current_x,
                                                    reward,
                                                    self.__agent.table_to_str(self.__environment.previous_boundaries),

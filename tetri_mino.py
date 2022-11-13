@@ -22,7 +22,7 @@ class TetriMino:
                     ],
                     'BOUNDARIES': [4],
                     'VOLUME': [4],
-                    'START_X': 2
+                    'START_X': 0
                 },
                 {
                     'GRID': [
@@ -45,7 +45,7 @@ class TetriMino:
                     ],
                     'BOUNDARIES': [4],
                     'VOLUME': [4],
-                    'START_X': 1
+                    'START_X': 0
                 }
 
         ],

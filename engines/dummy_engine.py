@@ -3,7 +3,7 @@ from pygame import USEREVENT, QUIT, K_DOWN, KEYDOWN
 from pygame.rect import Rect
 
 from config import PYGAME_ACTIONS, AGENT_ACTIONS
-from rewards import LINE_CLEAR_REWARD, HOLE_REWARD, BUMPINESS_REWARD, BLOCKADE_REWARD
+from rewards import LINE_CLEAR_REWARD, HOLE_REWARD, BUMPINESS_REWARD, TOUCHING_WALL, TOUCHING_BLOCK, BLOCKADE_REWARD
 from tetri_mino import TetriMino
 from ui_configuration import UIConfiguration
 
@@ -12,7 +12,7 @@ class DummyEngine:
 
     def __init__(self, environment, agent, game) -> None:
         super().__init__()
-        self.__framerate = 5  # Bigger -> Slower
+        self.__framerate = 1  # Bigger -> Slower
         pygame.init()
         pygame.time.set_timer(USEREVENT, self.__framerate * 10)
         self.__pygame = pygame
@@ -41,7 +41,7 @@ class DummyEngine:
                 if self.is_updating_state_mino() is False:
                     # check if bottom is reach
                     if self.is_bottom_reached() is True:
-                        print("BAS DU TERRAIN ATTEINT")
+                        #print("BAS DU TERRAIN ATTEINT")
                         # insert the reward only if bottom is reached
                         self.insert_reward()
                         # then create a mino if possible
@@ -57,8 +57,8 @@ class DummyEngine:
                     # find the current rotation desired
                     # find the current x desired
                     self.__events, self.__current_rotation, self.__current_x = self.get_best_action()
-                    print("RECUPERATION DE LA DESTINATION : events = ", self.__events, ", rotation = ",
-                          self.__current_rotation, ", x = ", self.__current_x)
+                    #print("RECUPERATION DE LA DESTINATION : events = ", self.__events, ", rotation = ",
+                    #      self.__current_rotation, ", x = ", self.__current_x)
                     # placing mino, publishing events to move the piece
                     self.placing_mino()
 
@@ -75,10 +75,10 @@ class DummyEngine:
 
     def preparing_piece_in_qtable(self):
         self.__environment.set_previous_boundaries()
-        print("PREVIOUS BOUNDARIES SETTED : ", self.__environment.previous_boundaries)
+        #print("PREVIOUS BOUNDARIES SETTED : ", self.__environment.previous_boundaries)
         self.__agent.upsert_boundary_qtable(self.__environment.mino,
                                             self.__environment.previous_boundaries)
-        print("INSERTION DU BOUNDARIES DANS LA QTABLE : ", self.__environment.previous_boundaries)
+        #print("INSERTION DU BOUNDARIES DANS LA QTABLE : ", self.__environment.previous_boundaries)
 
     def get_best_action(self):
         return self.__agent.best_actions(
@@ -122,17 +122,23 @@ class DummyEngine:
     def placing_mino(self):
         for action in self.__events:
             self.__pygame.event.post(PYGAME_ACTIONS[action])
-            print("EVENT PUBLISHED : ", PYGAME_ACTIONS[action])
+            #print("EVENT PUBLISHED : ", PYGAME_ACTIONS[action])
 
     def insert_reward(self):
 
         lines_count = self.__environment.erase_count * LINE_CLEAR_REWARD
-        holes_count = self.__environment.holes_created_count() * HOLE_REWARD
+        holes_count, blockades_count = self.__environment.holes_created_count()
+        wall_count, adjacency_count = self.__environment.touching_block_count()
+        holes_reward = holes_count*HOLE_REWARD
+        blockades_reward = blockades_count*BLOCKADE_REWARD
+        wall_touch_reward = wall_count*TOUCHING_WALL
+        adjacency_reward = adjacency_count*TOUCHING_BLOCK
         bp = self.__environment.is_bumpiness_increased_by(self.__agent.previous_state,
                                                           self.__environment.get_boundaries()) * BUMPINESS_REWARD
-        is_blockade_created = self.__environment.is_blockade_created() * BLOCKADE_REWARD
+        # is_blockade_created = self.__environment.is_blockade_created() * BLOCKADE_REWARD
 
-        reward = lines_count + holes_count + bp + is_blockade_created
+        reward = lines_count + bp + holes_reward + blockades_reward + wall_touch_reward + adjacency_reward
+        print("here ::::::::: ", reward)
         self.__agent.insert_reward_in_state_qtable(self.__environment.mino, self.__current_x,
                                                    reward,
                                                    self.__agent.table_to_str(self.__environment.previous_boundaries),
@@ -152,7 +158,7 @@ class DummyEngine:
 
     def on_reset(self):
         self.__environment.next()
-        self.__framerate = 9  # Bigger -> Slower
+        self.__framerate = 1  # Bigger -> Slower
         pygame.time.set_timer(USEREVENT, self.__framerate * 10)
         self.__current_rotation = 0
         self.__current_x = 3
