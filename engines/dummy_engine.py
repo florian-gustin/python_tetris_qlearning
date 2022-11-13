@@ -104,10 +104,11 @@ class DummyEngine:
         self.__pygame.display.update()
 
     def handle_events(self, event):
-        self.__environment.erase_mino(self.__environment.dx, self.__environment.dy, self.__environment.mino,
-                                      self.__environment.rotation)
+        pass
+        # self.__environment.erase_mino(self.__environment.dx, self.__environment.dy, self.__environment.mino,
+        #                               self.__environment.rotation)
 
-        self.__game.on_step(AGENT_ACTIONS[event.key])
+        # self.__game.on_step(AGENT_ACTIONS[event.key])
 
     def set_game_over(self):
         self.__game.set_game_over()
@@ -121,8 +122,11 @@ class DummyEngine:
 
     def placing_mino(self):
         for action in self.__events:
-            self.__pygame.event.post(PYGAME_ACTIONS[action])
-            print("EVENT PUBLISHED : ", PYGAME_ACTIONS[action])
+            self.__environment.erase_mino(self.__environment.dx, self.__environment.dy, self.__environment.mino,
+                                          self.__environment.rotation)
+            self.__game.on_step(action)
+            # self.__pygame.event.post(PYGAME_ACTIONS[action])
+            print("EVENT PUBLISHED : ", action)
 
     def insert_reward(self):
 
@@ -152,8 +156,8 @@ class DummyEngine:
 
     def on_reset(self):
         self.__environment.next()
-        self.__framerate = 9  # Bigger -> Slower
-        pygame.time.set_timer(USEREVENT, self.__framerate * 10)
+        self.__framerate = 5  # Bigger -> Slower
+        pygame.time.set_timer(USEREVENT, self.__framerate * 1)
         self.__current_rotation = 0
         self.__current_x = 3
         self.__environment.reset(True)

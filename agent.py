@@ -7,7 +7,7 @@ from config import ACTIONS, ACTION_ROTATE, ACTION_LEFT, ACTION_RIGHT
 
 
 class Agent:
-    def __init__(self, alpha=1, gamma=1, exploration=0, cooling_rate=1):
+    def __init__(self, alpha=0.5, gamma=0.8, exploration=0, cooling_rate=1):
         self.last_action = 0
         self.state = [0] * 10
         self.qtables = {}
@@ -102,14 +102,14 @@ class Agent:
 
         rotation, x = self.best_action(mino, boundaries)
 
-        for i in range(rotation):
-            table_action.append(ACTION_ROTATE)
         if dx > x:
             for i in range(x, dx):
                 table_action.append(ACTION_LEFT)
         else:
             for i in range(dx, x):
                 table_action.append(ACTION_RIGHT)
+        for i in range(rotation):
+            table_action.append(ACTION_ROTATE)
         print(table_action)
         return table_action, rotation , x
 
