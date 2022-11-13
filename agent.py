@@ -1,7 +1,10 @@
 import os
 import pickle
 import random
+import shutil
 import time
+import lzma
+
 
 from config import ACTIONS, ACTION_ROTATE, ACTION_LEFT, ACTION_RIGHT
 from tetri_mino import TetriMino
@@ -134,12 +137,13 @@ class Agent:
             return best_rotation, best_x
 
     def save(self, filename):
-        with open(filename, 'wb') as file:
+        with lzma.open(filename + ".tmp", 'w') as file:
             pickle.dump(self.qtables, file)
+        shutil.move(filename + ".tmp", filename)
 
     def load(self, filename):
         start = time.time()
-        with open(filename, 'rb') as file:
+        with lzma.open(filename, 'r') as file:
             self.qtables = pickle.load(file)
         print("qtables load in", time.time() - start, "sec")
 
