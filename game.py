@@ -29,29 +29,20 @@ class Game:
 
     def is_bottom_reached(self):
         if self.__environment.hard_drop or self.__environment.bottom_count == 0:
-
-            self.__environment.set_previous_boundaries()
-
             self.__environment.hard_drop = False
             self.__environment.bottom_count = 0
             self.__environment.score += 10 * self.__environment.level
             self.__environment.draw_mino(self.__environment.dx, self.__environment.dy,
                                          self.__environment.mino,
                                          self.__environment.rotation)
-
-            # self.__environment.try_erase_line()
-
             return True
 
         else:
             self.__environment.bottom_count += 1
-
-        # Erase line
-        # self.__environment.try_erase_line()
-
-        return False
+            return False
 
     def update_state_mino(self):
+        status = False
         # Erase a mino
         if not self.__environment.game_over:
             self.__environment.erase_mino(self.__environment.dx, self.__environment.dy, self.__environment.mino,
@@ -62,9 +53,9 @@ class Game:
                                             self.__environment.mino,
                                             self.__environment.rotation):
             self.__environment.dy += 1
+            status = True
 
-        else:
-            return False
+        return status
 
 
 
@@ -129,3 +120,5 @@ class Game:
                 self.__environment.dx += 1
             self.__environment.draw_mino(self.__environment.dx, self.__environment.dy,
                                          self.__environment.mino, self.__environment.rotation)
+
+        print("EVENT CONSUMED : ", action, ", x = ", self.__environment.dx)

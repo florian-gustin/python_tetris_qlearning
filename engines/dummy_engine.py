@@ -21,49 +21,68 @@ class DummyEngine:
         self.__game = game
         self.__agent = agent
         self.ui_configuration = UIConfiguration(self.__pygame)
-        self.__is_mino_created = False
+        self.__is_mino_created = self.create_mino()
         self.__is_bottom_reached = True
         self.__events = []
         self.__current_rotation = 0
-        self.__current_x = 3
+        self.__current_x = 0
         self.__agent.init_state_in_qtable()
 
     def execute(self):
         for event in self.__pygame.event.get():
-            # is started
-            if not self.__environment.game_over:
-                self.start()
-            # is game quitted
-            if event.type == QUIT:
-                self.is_quitted()
-            # use events to move the piece
-            elif event.type == KEYDOWN:
-                self.handle_events(event)
+
             # MAIN LOGIC
-            else:
+            if event.type == USEREVENT:
+                # is started
+                if not self.__environment.game_over:
+                    self.start()
+                    # print("DEMARRAGE")
                 # update or create the piece if False
                 if self.is_updating_state_mino() is False:
                     # check if bottom is reach
-                    self.__is_bottom_reached = self.is_bottom_reached()
-                    if self.__is_bottom_reached is True:
+                    if self.is_bottom_reached() is True:
+                        print("BAS DU TERRAIN ATTEINT")
                         # insert the reward only if bottom is reached
                         self.insert_reward()
                         # then create a mino if possible
-                        self.__is_mino_created = self.create_mino()
                         # if not created it means the grid is full
-                        if self.__is_mino_created is False:
+                        if self.create_mino() is False:
                             self.set_game_over()
-                        # find all the events to move the piece
-                        # find the current rotation desired
-                        # find the current x desired
-                        self.__events, self.__current_rotation, self.__current_x = self.__agent.best_actions(
-                            self.__environment.mino, self.__environment.dx)
-                        self.__environment.dx = self.__current_x
-                        # placing mino, publishing events to move the piece
-                        self.placing_mino()
+                # preparing the piece
+                elif self.__environment.dy < 2:
+                    # get boundaries
+                    # init the key values formula in qtable if not existing
+                    self.preparing_piece_in_qtable()
+                    # find all the events to move the piece
+                    # find the current rotation desired
+                    # find the current x desired
+                    self.__events, self.__current_rotation, self.__current_x = self.get_best_action()
+                    print("RECUPERATION DE LA DESTINATION : events = ", self.__events, ", rotation = ",
+                          self.__current_rotation, ", x = ", self.__current_x)
+                    # placing mino, publishing events to move the piece
+                    self.placing_mino()
+
+            # use events to move the piece
+            if event.type == KEYDOWN:
+                self.handle_events(event)
+
+            # is game quitted
+            if event.type == QUIT:
+                self.is_quitted()
 
         # update display
         self.update_display()
+
+    def preparing_piece_in_qtable(self):
+        self.__environment.set_previous_boundaries()
+        print("PREVIOUS BOUNDARIES SETTED : ", self.__environment.previous_boundaries)
+        self.__agent.upsert_boundary_qtable(self.__environment.mino,
+                                            self.__environment.previous_boundaries)
+        print("INSERTION DU BOUNDARIES DANS LA QTABLE : ", self.__environment.previous_boundaries)
+
+    def get_best_action(self):
+        return self.__agent.best_actions(
+            self.__environment.mino, self.__environment.dx, self.__environment.get_boundaries())
 
     def is_updating_state_mino(self):
         return self.__game.update_state_mino()
@@ -78,7 +97,7 @@ class DummyEngine:
         return tmp
 
     def update_display(self):
-        self.__environment.draw_mino(self.__environment.dx, self.__environment.dy, self.__environment.mino,
+        self.__environment.draw_mino(self.__environment.dx, self.__environment.dy, self.__environment.next_mino,
                                      self.__environment.rotation)
         self.draw_board(self.__environment.next_mino, self.__environment.hold_mino,
                         self.__environment.score, self.__environment.level, self.__environment.goal)
@@ -102,11 +121,10 @@ class DummyEngine:
 
     def placing_mino(self):
         for action in self.__events:
-            pygame.event.post(PYGAME_ACTIONS[action])
+            self.__pygame.event.post(PYGAME_ACTIONS[action])
+            print("EVENT PUBLISHED : ", PYGAME_ACTIONS[action])
 
     def insert_reward(self):
-        self.__agent.upsert_boundary_qtable(self.__environment.mino,
-                                            self.__environment.get_boundaries())
 
         lines_count = self.__environment.erase_count * LINE_CLEAR_REWARD
         holes_count = self.__environment.holes_created_count() * HOLE_REWARD
@@ -117,11 +135,11 @@ class DummyEngine:
         reward = lines_count + holes_count + bp + is_blockade_created
         self.__agent.insert_reward_in_state_qtable(self.__environment.mino, self.__current_x,
                                                    reward,
-                                                   self.__agent.previous_bp,
+                                                   self.__agent.table_to_str(self.__environment.previous_boundaries),
                                                    self.__current_rotation)
 
     def set_speed(self):
-        keys_pressed = pygame.key.get_pressed()
+        keys_pressed = self.__pygame.key.get_pressed()
         if keys_pressed[K_DOWN]:
             self.__pygame.time.set_timer(USEREVENT, self.__framerate * 1)
         else:

@@ -57,10 +57,11 @@ class Agent:
         #print(rotation)
         print(state_str)
         maxQ = max(self.qtables[state_str][mino - 1][x])
-        self.qtables[state_str][mino - 1][x][self.last_action] += self.__alpha * \
-                                                                  (value + self.__gamma * maxQ -
-                                                                   self.qtables[state_str][mino - 1][x][self.last_action])
-        print(self.qtables[state_str][mino - 1][x][self.last_action])
+        tmp = self.__alpha * \
+              (value + self.__gamma * maxQ -
+               self.qtables[state_str][mino - 1][x][rotation])
+        self.qtables[state_str][mino - 1][x][rotation] += tmp
+        print("INSERT QTABLE : key = ", state_str, ", mino = ", mino-1, ", x = ", x, ", rotation = ", rotation, ", value = ", tmp)
 
         self.state = state_str
 
@@ -91,13 +92,12 @@ class Agent:
         return max(best_actions), best_actions.index(max(best_actions))
 
 
-    def best_actions(self, mino, dx):
+    def best_actions(self, mino, dx, boundaries):
         self.actions += 1
-
 
         table_action = [] # tout les actions que doit faire l'agent ici
 
-        rotation, x = self.best_action(mino, dx)
+        rotation, x = self.best_action(mino, boundaries)
 
         for i in range(rotation):
             table_action.append(ACTION_ROTATE)
@@ -111,14 +111,15 @@ class Agent:
         return table_action, rotation , x
 
 
-    def best_action(self, mino, dx):
+    def best_action(self, mino, boundaries):
         self.actions += 1
 
         if random.uniform(0, 1) < self.__exploration:
             self.__exploration *= self.__cooling_rate
             return random.randint(0, 3), random.randint(0, 9)
         else:
-            hash = ''.join(map(str, self.state))
+            # TODO : ca marche pas les boundaries sont pas coherent
+            hash = ''.join(map(str, boundaries))
             x_rewards = []
             for x, rotations in self.qtables[hash][mino - 1].items():
                 x_rewards.append(max(rotations.values()))

@@ -192,7 +192,6 @@ class Environment:
                     j = 0
 
                 if grid[i][j] != 0:
-
                     self.matrix[x + j][y + i] = 0
 
     def erase_ghost(self):
