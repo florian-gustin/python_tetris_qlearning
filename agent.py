@@ -51,7 +51,7 @@ class Agent:
         return ''.join(map(str, table))
 
     def insert_reward_in_state_qtable(self, mino, x, value, state_str, rotation):
-        print(state_str)
+        #print(state_str)
         maxQ = max(self.qtables[state_str][mino - 1][rotation])
 
         # (1 - self.__alpha) * qtable[action] + self.__alpha * (reward + self.__gamma * max_q)  <- version du projet noe pieerre
@@ -60,8 +60,8 @@ class Agent:
               (value + self.__gamma * maxQ -
                self.qtables[state_str][mino - 1][rotation][x])
         self.qtables[state_str][mino - 1][rotation][x] += tmp
-        print("INSERT QTABLE : key = ", state_str, ", mino = ", mino - 1, ", x = ", x, ", rotation = ", rotation,
-              ", value = ", tmp)
+        #print("INSERT QTABLE : key = ", state_str, ", mino = ", mino - 1, ", x = ", x, ", rotation = ", rotation,
+        #      ", value = ", tmp)
 
         self.state = state_str
 
@@ -81,7 +81,6 @@ class Agent:
                     self.qtables[state_str][mino - 1][i][x] = 0
 
     def best_actions(self, mino, dx, boundaries):
-        self.actions += 1
 
         table_action = []  # tout les actions que doit faire l'agent ici
 
@@ -98,11 +97,10 @@ class Agent:
             for i in range(dx, x):
                 table_action.append(ACTION_RIGHT)
 
-        print(table_action)
+        #print(table_action)
         return table_action, rotation, x
 
     def best_action(self, mino, boundaries):
-        self.actions += 1
         if random.uniform(0, 1) < self.__exploration:
             self.__exploration *= self.__cooling_rate
             return random.randint(0, 3), random.randint(0, 9)

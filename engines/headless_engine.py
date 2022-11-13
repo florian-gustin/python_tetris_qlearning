@@ -17,7 +17,6 @@ class HeadlessEngine:
         self.__current_rotation = 0
         self.__current_x = 0
         self.__agent.init_state_in_qtable()
-        self.__action = []
         self.time = time.time()
         self.save_time = time.time()
 
@@ -57,7 +56,6 @@ class HeadlessEngine:
             # placing mino, publishing events to move the piece
             self.placing_mino()
 
-            self.handle_events()
         self.update_display()
 
     def preparing_piece_in_qtable(self):
@@ -81,13 +79,14 @@ class HeadlessEngine:
         self.__environment.try_erase_line()
         return tmp
 
-    def handle_events(self,):
-        self.__environment.erase_mino(self.__environment.dx, self.__environment.dy, self.__environment.mino,
-                                      self.__environment.rotation)
-
-        self.__game.on_step(self.__action)
+    def placing_mino(self):
+        for action in self.__events:
+            self.__environment.erase_mino(self.__environment.dx, self.__environment.dy, self.__environment.mino,
+                                          self.__environment.rotation)
+            self.__game.on_step(action)
 
     def set_game_over(self):
+        self.__agent.actions += 1
         self.__game.set_game_over()
         self.on_reset()
 
@@ -99,8 +98,9 @@ class HeadlessEngine:
 
     def placing_mino(self):
         for action in self.__events:
-            self.__action = action
-            self.__game.on_step(PYGAME_ACTIONS[action])
+            self.__environment.erase_mino(self.__environment.dx, self.__environment.dy, self.__environment.mino,
+                                          self.__environment.rotation)
+            self.__game.on_step(action)
 
     def insert_reward(self):
         lines_count = self.__environment.erase_count * LINE_CLEAR_REWARD
