@@ -23,7 +23,7 @@ class TetriMino:
                     ],
                     'BOUNDARIES': [4],
                     'VOLUME': [4],
-                    'START_X': 2,
+                    'START_X': 0,
                     'X_RANGE': 10
                 },
 
@@ -40,7 +40,7 @@ class TetriMino:
                     'BOUNDARIES': [2, 1, 1],
                     'VOLUME': [2, 1, 1],
                     'START_X': 0,
-                    'X_RANGE': 6
+                    'X_RANGE': 8
                 }
 ,
                 {
@@ -52,8 +52,8 @@ class TetriMino:
                     ],
                     'BOUNDARIES': [3, 3],
                     'VOLUME': [3, 1],
-                    'START_X': 1,
-                    'X_RANGE': 5
+                    'START_X': 0,
+                    'X_RANGE': 9
                 }
 ,
                 {
@@ -66,7 +66,7 @@ class TetriMino:
                     'BOUNDARIES': [2, 2, 2],
                     'VOLUME': [1, 1, 2],
                     'START_X': 0,
-                    'X_RANGE': 6
+                    'X_RANGE': 8
                 }
 ,
                 {
@@ -79,7 +79,7 @@ class TetriMino:
                     'BOUNDARIES': [1, 3],
                     'VOLUME': [1, 3],
                     'START_X': 0,
-                    'X_RANGE': 5
+                    'X_RANGE': 9
                 }
 
         ],
@@ -95,7 +95,7 @@ class TetriMino:
                     'BOUNDARIES': [1, 1, 2],
                     'VOLUME': [1, 1, 2],
                     'START_X': 0,
-                    'X_RANGE': 6
+                    'X_RANGE': 8
                 }
 ,
                 {
@@ -107,8 +107,8 @@ class TetriMino:
                     ],
                     'BOUNDARIES': [3, 1],
                     'VOLUME': [3, 1],
-                    'START_X': 1,
-                    'X_RANGE': 5
+                    'START_X': 0,
+                    'X_RANGE': 9
                 }
 ,
                 {
@@ -116,12 +116,12 @@ class TetriMino:
                         [3, 3, 3, 0],
                         [3, 0, 0, 0],
                         [0, 0, 0, 0],
-                        [0, 0, 0, 0], #
+                        [0, 0, 0, 0],
                     ],
-                    'BOUNDARIES': [2, 2, 2],
+                    'BOUNDARIES': [2, 1, 1],
                     'VOLUME': [2, 1, 1],
                     'START_X': 0,
-                    'X_RANGE': 6
+                    'X_RANGE': 8
                 }
 ,
                 {
@@ -131,10 +131,10 @@ class TetriMino:
                         [0, 3, 0, 0],
                         [0, 0, 0, 0]
                     ],
-                    'BOUNDARIES': [3, 3],
+                    'BOUNDARIES': [1, 3],
                     'VOLUME': [1, 3],
                     'START_X': 0,
-                    'X_RANGE': 5
+                    'X_RANGE': 9
                 },
         ],
         ########################################### O
@@ -148,8 +148,8 @@ class TetriMino:
                     ],
                     'BOUNDARIES': [2, 2],
                     'VOLUME': [2, 2],
-                    'START_X': 1,
-                    'X_RANGE': 5
+                    'START_X': 0,
+                    'X_RANGE': 9
                 },
         ],
         ########################################### S
@@ -161,31 +161,10 @@ class TetriMino:
                         [0, 0, 0, 0],
                         [0, 0, 0, 0]
                     ],
-                    'BOUNDARIES': [1, 2, 2],
+                    'BOUNDARIES': [1, 2, 1],
                     'VOLUME': [1, 2, 1],
-                    'START_X': 0
-                },
-                {
-                    'GRID': [
-                        [0, 5, 0, 0],
-                        [0, 5, 5, 0],
-                        [0, 0, 5, 0],
-                        [0, 0, 0, 0]
-                    ],
-                    'BOUNDARIES': [3, 2],
-                    'VOLUME': [2, 2],
-                    'START_X': 1
-                },
-                {
-                    'GRID': [
-                        [0, 0, 0, 0],
-                        [0, 5, 5, 0],
-                        [5, 5, 0, 0],
-                        [0, 0, 0, 0]
-                    ],
-                    'BOUNDARIES': [1, 2, 2],
-                    'VOLUME': [1, 2, 1],
-                    'START_X': 0
+                    'START_X': 0,
+                    'X_RANGE': 8
                 },
                 {
                     'GRID': [
@@ -194,9 +173,10 @@ class TetriMino:
                         [0, 5, 0, 0],
                         [0, 0, 0, 0]
                     ],
-                    'BOUNDARIES': [3, 2],
+                    'BOUNDARIES': [2, 2],
                     'VOLUME': [2, 2],
-                    'START_X': 0
+                    'START_X': 0,
+                    'X_RANGE': 9
                 }
         ],
         ########################################### T
@@ -210,29 +190,32 @@ class TetriMino:
                     ],
                     'BOUNDARIES': [1, 2, 1],
                     'VOLUME': [1, 2, 1],
-                    'START_X': 0
+                    'START_X': 0,
+                    'X_RANGE': 8
                 },
                 {
                     'GRID': [
-                        [0, 6, 0, 0],
-                        [0, 6, 6, 0],
-                        [0, 6, 0, 0],
+                        [6, 0, 0, 0],
+                        [6, 6, 0, 0],
+                        [6, 0, 0, 0],
                         [0, 0, 0, 0]
                     ],
                     'BOUNDARIES': [3, 2],
                     'VOLUME': [3, 1],
-                    'START_X': 1
+                    'START_X': 0,
+                    'X_RANGE': 9
                 },
                 {
                     'GRID': [
-                        [0, 0, 0, 0],
                         [6, 6, 6, 0],
                         [0, 6, 0, 0],
-                        [0, 0, 0, 0]
+                        [0, 0, 0, 0],
+                        [0, 0, 0, 0],
                     ],
                     'BOUNDARIES': [2, 2, 2],
                     'VOLUME': [1, 2, 1],
-                    'START_X': 0
+                    'START_X': 0,
+                    'X_RANGE': 8
                 },
                 {
                     'GRID': [
@@ -243,7 +226,8 @@ class TetriMino:
                     ],
                     'BOUNDARIES': [2, 3],
                     'VOLUME': [1, 3],
-                    'START_X': 0
+                    'START_X': 0,
+                    'X_RANGE': 9
                 }
         ],
         ########################################### Z
@@ -257,29 +241,8 @@ class TetriMino:
                     ],
                     'BOUNDARIES': [2, 2, 1],
                     'VOLUME': [1, 2, 1],
-                    'START_X': 0
-                },
-                {
-                    'GRID': [
-                        [0, 0, 7, 0],
-                        [0, 7, 7, 0],
-                        [0, 7, 0, 0],
-                        [0, 0, 0, 0]
-                    ],
-                    'BOUNDARIES': [2, 3],
-                    'VOLUME': [2, 2],
-                    'START_X': 1
-                },
-                {
-                    'GRID': [
-                        [0, 0, 0, 0],
-                        [7, 7, 0, 0],
-                        [0, 7, 7, 0],
-                        [0, 0, 0, 0]
-                    ],
-                    'BOUNDARIES': [2, 2, 1],
-                    'VOLUME': [1, 2, 1],
-                    'START_X': 0
+                    'START_X': 0,
+                    'X_RANGE': 8
                 },
                 {
                     'GRID': [
@@ -290,7 +253,8 @@ class TetriMino:
                     ],
                     'BOUNDARIES': [2, 3],
                     'VOLUME': [2, 2],
-                    'START_X': 0
+                    'START_X': 0,
+                    'X_RANGE': 9
                 }
         ]
     ]
