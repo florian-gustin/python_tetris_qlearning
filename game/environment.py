@@ -1,11 +1,10 @@
 from random import randint
 
-from rewards import LINE_CLEAR_REWARD, HOLE_REWARD, BUMPINESS_REWARD
-from tetri_mino import *
+from constants.tetri_mino import *
 
 
 class Environment:
-    def __init__(self, reset = False) -> None:
+    def __init__(self, reset=False) -> None:
         super().__init__()
         # Initial values
         self.game_process_counter = 1
@@ -16,9 +15,9 @@ class Environment:
         self.start = start
         self.done = False
         self.game_over = False
-        self.boundaries = [0]*10
+        self.boundaries = [0] * 10
         self.max_bp = 0
-        self.previous_boundaries = [0]*10
+        self.previous_boundaries = [0] * 10
         self.previous_max_bp = 0
 
         self.score = 0
@@ -30,8 +29,8 @@ class Environment:
         self.dx, self.dy = 3, 0  # Minos location status
         self.rotation = 0  # Minos rotation status
 
-        self.mino = randint(1,4)  # Current mino ## TODO : randint(1,4)
-        self.next_mino = randint(1,4)  # Next mino ## TODO : randint(1,4)
+        self.mino = randint(1, 4)  # Current mino ## TODO : randint(1,4)
+        self.next_mino = randint(1, 4)  # Next mino ## TODO : randint(1,4)
 
         self.hold = False  # Hold status
         self.hold_mino = -1  # Holded mino
@@ -132,7 +131,7 @@ class Environment:
 
     # Returns true if turning left is possible
     def is_turnable_l(self, x, y, mino, r):
-        #simplifiable avec modulo
+        # simplifiable avec modulo
         if r != 0:
             grid = self.tetri_mino.mino_map[mino - 1][r - 1]['GRID']
         else:
@@ -154,7 +153,7 @@ class Environment:
 
         for i in range(4):
             for j in range(4):
-                #print(grid[i][j],  self.matrix[3 + j][i])
+                # print(grid[i][j],  self.matrix[3 + j][i])
                 if grid[i][j] != 0 and self.matrix[3 + j][i] != 0:
                     return False
 
@@ -172,9 +171,6 @@ class Environment:
                         self.matrix[x + j][y + i] = grid[i][j]
         except:
             pass
-
-
-
 
     def draw_ghost(self, x, y, mino, r):
         grid = TetriMino.mino_map[mino - 1][r]['GRID']
@@ -204,12 +200,11 @@ class Environment:
     def is_lines_cleared(self):
         return self.erase_count != 0
 
-
     def bumpiness(self):
         total = 0
 
         for index, col in enumerate(self.matrix):
-            total += self.calcul_column_height(index) - self.calcul_column_height(index+1)
+            total += self.calcul_column_height(index) - self.calcul_column_height(index + 1)
 
         return total
 
@@ -219,13 +214,12 @@ class Environment:
         if max_grid_bp < 4:
             radar = max_grid_bp
 
-
         count = 0
 
         for col in range(len(self.matrix)):
             block = False
-            row_start = (max_grid_bp-21)*-1
-            row_end = (max_grid_bp-21)*-1+radar
+            row_start = (max_grid_bp - 21) * -1
+            row_end = (max_grid_bp - 21) * -1 + radar
             for row in range(row_start, row_end):
                 if self.matrix[col][row] > 0:
                     block = True
@@ -234,8 +228,6 @@ class Environment:
 
         return count
 
-
-
     def is_blockade_created(self):
         max_grid_bp = self.max_bp
         radar = 4
@@ -243,23 +235,22 @@ class Environment:
             radar = max_grid_bp
         count = 0
         for col in range(len(self.matrix)):
-            row_start = (max_grid_bp-21)*-1
-            row_end = (max_grid_bp-21)*-1+radar
+            row_start = (max_grid_bp - 21) * -1
+            row_end = (max_grid_bp - 21) * -1 + radar
             for row in range(row_start, row_end):
-                if self.matrix[col][row] == 0 and self.matrix[col][row-1] and self.matrix[col][row-1] != 0 and self.matrix[col][row-2] and self.matrix[col][row-2] != 0:
+                if self.matrix[col][row] == 0 and self.matrix[col][row - 1] and self.matrix[col][row - 1] != 0 and \
+                        self.matrix[col][row - 2] and self.matrix[col][row - 2] != 0:
                     count += 1
-        #print("blockade", count)
+        # print("blockade", count)
 
         return count
-
 
     def is_bumpiness_increased_by(self, previous, current):
         delta = self.max_bp - self.previous_max_bp
         if delta > 0:
-            #print("bumpiness detected", delta)
+            # print("bumpiness detected", delta)
             return delta
         return 0
-
 
     def is_bumpiness_increased(self):
         return self.previous_max_bp == self.max_bp

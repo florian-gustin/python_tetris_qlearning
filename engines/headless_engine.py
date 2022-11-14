@@ -1,7 +1,6 @@
 import time
 
-from rewards import LINE_CLEAR_REWARD, HOLE_REWARD, BUMPINESS_REWARD, BLOCKADE_REWARD
-from config import AGENT_ACTIONS, PYGAME_ACTIONS
+from constants.rewards import LINE_CLEAR_REWARD, HOLE_REWARD, BUMPINESS_REWARD, BLOCKADE_REWARD
 
 
 class HeadlessEngine:

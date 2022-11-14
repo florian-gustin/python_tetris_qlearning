@@ -6,8 +6,8 @@ import time
 import lzma
 
 
-from config import ACTIONS, ACTION_ROTATE, ACTION_LEFT, ACTION_RIGHT
-from tetri_mino import TetriMino
+from constants.config import ACTION_ROTATE, ACTION_LEFT, ACTION_RIGHT
+from constants.tetri_mino import TetriMino
 
 
 class Agent:
@@ -25,8 +25,13 @@ class Agent:
         self.previous_bp = "000000000"
         self.previous_state = [0] * 10
         self.actions = 0
+        self.reward_count = 0
+        self.reward_count_history = []
 
 
+    def reset_reward_counter(self):
+        self.reward_count_history.append(self.reward_count)
+        self.reward_count = 0
 
     def init_radar(self):
         self.radar = {"zone": [[0] * 10 for _ in range(4)],
@@ -34,8 +39,8 @@ class Agent:
 
     def init_state_in_qtable(self):
         if len(self.qtables) == 0:
-            if os.path.exists("agent.dat"):
-                self.load("agent.dat")
+            if os.path.exists("../agent.dat"):
+                self.load("../agent.dat")
                 return
 
             self.qtables = {}
@@ -67,6 +72,7 @@ class Agent:
                   (value + self.__gamma * maxQ -
                    self.qtables[state_str][mino - 1][rotation][x])
             self.qtables[state_str][mino - 1][rotation][x] += tmp
+            self.reward_count += tmp
             #print("INSERT QTABLE : key = ", state_str, ", mino = ", mino - 1, ", x = ", x, ", rotation = ", rotation,
             #      ", value = ", tmp)
 

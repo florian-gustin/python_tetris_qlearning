@@ -1,16 +1,15 @@
-# PYTRIS™ Copyright (c) 2017 Jason Kim All Rights Reserved.
-from engines.dummy_engine import DummyEngine
-from engines.gui_engine import GUIEngine
-from game import Game
-from agent import Agent
-from engines.headless_engine import HeadlessEngine
-from engines.graphic_engine import *
-from environment import *
 import argparse
 
+from agent import Agent
+from engines.dummy_engine import DummyEngine
+from engines.headless_engine import HeadlessEngine
+from game.environment import *
+from game import Game
+from graph.statistic import Statistic
 
 
 def main():
+    statistic = Statistic()
     environment = Environment(True)
     agent = Agent()
 
@@ -28,6 +27,7 @@ def main():
                 engine.execute()
         except KeyboardInterrupt:
             agent.save("agent.dat")
+            statistic.apply(agent.reward_count_history)
     else:
         engine = DummyEngine(environment, agent, game)
 

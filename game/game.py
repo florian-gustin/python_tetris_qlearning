@@ -1,9 +1,8 @@
 from random import randint
 
-from config import ACTION_ROTATE, ACTION_LEFT, ACTION_RIGHT
+from constants.config import ACTION_ROTATE, ACTION_LEFT, ACTION_RIGHT
 from environment import Environment
-from rewards import HOLE_REWARD, LINE_CLEAR_REWARD
-from tetri_mino import *
+from constants.tetri_mino import *
 
 class Game:
 
