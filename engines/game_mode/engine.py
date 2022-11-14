@@ -13,7 +13,6 @@ class Engine:
         self.events = []
         self.current_rotation = 0
         self.current_x = 0
-        self.agent.init_state_in_qtable()
 
     def execute(self):
         pass
@@ -76,3 +75,4 @@ class Engine:
         self.current_rotation = 0
         self.current_x = 3
         self.environment.reset(True)
+        self.agent.reset_reward_counter()

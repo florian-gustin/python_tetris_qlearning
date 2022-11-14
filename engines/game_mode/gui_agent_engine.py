@@ -67,8 +67,8 @@ class GUIAgentEngine(Engine):
 
     def is_quitted(self):
         self.environment.done = True
-        self.agent.save("history.dat", self.agent.reward_count_history)
-        self.agent.save("agent.dat", self.agent.qtables)
+        self.agent.save_history("history.dat")
+        self.agent.save_qtable("agent.dat")
 
     def update_display(self):
         super().update_display()
@@ -94,7 +94,6 @@ class GUIAgentEngine(Engine):
 
     def on_reset(self):
         super().on_reset()
-        self.agent.reset_reward_counter()
         self.framerate = 2  # Bigger -> Slower
         pygame.time.set_timer(USEREVENT, self.framerate * 1)
 

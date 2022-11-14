@@ -33,7 +33,7 @@ class Agent:
         self.reward_count = 0
 
     def reset_history(self):
-        self.reward_count_history.clear()
+        self.reward_count_history = []
 
     def init_radar(self):
         self.radar = {"zone": [[0] * 10 for _ in range(4)],
@@ -142,13 +142,26 @@ class Agent:
                         best_reward = reward
             return best_rotation, best_x
 
-    def save(self, filename, reference):
+    def save_qtable(self, filename):
         with lzma.open(filename + ".tmp", 'w') as file:
-            pickle.dump(reference, file)
+            pickle.dump(self.qtables, file)
+        shutil.move(filename + ".tmp", filename)
+
+    def save_history(self, filename):
+        with open(filename + ".tmp", 'a') as file:
+            for reward in self.reward_count_history:
+                file.write(str(reward)+"\n")
         shutil.move(filename + ".tmp", filename)
 
     def load_qtable(self, filename):
         start = time.time()
         with lzma.open(filename, 'r') as file:
-            reference = pickle.load(file)
+            self.qtables = pickle.load(file)
         print(filename, " load in", time.time() - start, "sec")
+
+    def load_history(self, filename):
+        history = []
+        with open(filename, 'r') as file:
+            for line in file:
+                history.append(int(line))
+        return history

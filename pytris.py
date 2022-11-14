@@ -34,6 +34,7 @@ def main():
                 # engine.on_game_over()
 
         engine.quit()
+        statistic.apply(agent.load_history('history.dat'))
 
     elif args.mode == "headless-agent":
         engine = HeadlessAgentEngine(environment, agent, game)
@@ -41,9 +42,9 @@ def main():
             while True:
                 engine.execute()
         except KeyboardInterrupt:
-            agent.save("history.dat", agent.reward_count_history)
-            agent.save("agent.dat", agent.qtables)
-            statistic.apply(agent.reward_count_history)
+            agent.save_history("history.dat")
+            agent.save_qtable("agent.dat")
+            statistic.apply(agent.load_history('history.dat'))
 
     else:
         engine = GUIPlayerEngine(environment)
