@@ -39,8 +39,8 @@ class Agent:
 
     def init_state_in_qtable(self):
         if len(self.qtables) == 0:
-            if os.path.exists("../agent.dat"):
-                self.load("../agent.dat")
+            if os.path.exists("agent.dat"):
+                self.load("agent.dat")
                 return
 
             self.qtables = {}

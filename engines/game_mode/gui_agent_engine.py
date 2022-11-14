@@ -2,38 +2,30 @@ import pygame
 from pygame import USEREVENT, QUIT, K_DOWN
 from pygame.rect import Rect
 
-from constants.rewards import LINE_CLEAR_REWARD, HOLE_REWARD, BUMPINESS_REWARD, BLOCKADE_REWARD
 from constants.tetri_mino import TetriMino
 from constants.ui_configuration import UIConfiguration
+from engines.game_mode.engine import Engine
 
 
-class DummyEngine:
+class GUIAgentEngine(Engine):
 
     def __init__(self, environment, agent, game) -> None:
-        super().__init__()
-        self.__framerate = 2 # Bigger -> Slower
+        super().__init__(environment, agent, game)
+        self.framerate = 2  # Bigger -> Slower
         pygame.init()
-        pygame.time.set_timer(USEREVENT, self.__framerate * 10)
-        self.__pygame = pygame
-        self.__clock = pygame.time.Clock()
-        self.__environment = environment
-        self.__game = game
-        self.__agent = agent
-        self.ui_configuration = UIConfiguration(self.__pygame)
-        self.__is_mino_created = self.create_mino()
-        self.__is_bottom_reached = True
-        self.__events = []
-        self.__current_rotation = 0
-        self.__current_x = 0
-        self.__agent.init_state_in_qtable()
+        pygame.time.set_timer(USEREVENT, self.framerate * 10)
+        self.pygame = pygame
+        self.clock = pygame.time.Clock()
+        self.ui_configuration = UIConfiguration(self.pygame)
 
     def execute(self):
-        for event in self.__pygame.event.get():
+        super().execute()
+        for event in self.pygame.event.get():
 
             # MAIN LOGIC
             if event.type == USEREVENT:
                 # is started
-                if not self.__environment.game_over:
+                if not self.environment.game_over:
                     self.start()
                     # print("DEMARRAGE")
                 # update or create the piece if False
@@ -48,16 +40,16 @@ class DummyEngine:
                         if self.create_mino() is False:
                             self.set_game_over()
                 # preparing the piece
-                elif self.__environment.dy < 2 and self.__environment.dx == 3 and self.__environment.rotation == 0:
+                elif self.environment.dy < 2 and self.environment.dx == 3 and self.environment.rotation == 0:
                     # get boundaries
                     # init the key values formula in qtable if not existing
                     self.preparing_piece_in_qtable()
                     # find all the events to move the piece
                     # find the current rotation desired
                     # find the current x desired
-                    self.__events, self.__current_rotation, self.__current_x = self.get_best_action()
-                    print("RECUPERATION DE LA DESTINATION : events = ", self.__events, ", rotation = ",
-                          self.__current_rotation, ", x = ", self.__current_x)
+                    self.events, self.current_rotation, self.current_x = self.get_best_action()
+                    print("RECUPERATION DE LA DESTINATION : events = ", self.events, ", rotation = ",
+                          self.current_rotation, ", x = ", self.current_x)
                     # placing mino, publishing events to move the piece
                     self.placing_mino()
 
@@ -69,88 +61,48 @@ class DummyEngine:
         self.update_display()
 
     def preparing_piece_in_qtable(self):
-        self.__environment.set_previous_boundaries()
-        print("PREVIOUS BOUNDARIES SETTED : ", self.__environment.previous_boundaries)
-        self.__agent.upsert_boundary_qtable(self.__environment.mino,
-                                            self.__environment.previous_boundaries)
-        print("INSERTION DU BOUNDARIES DANS LA QTABLE : ", self.__environment.previous_boundaries)
-
-    def get_best_action(self):
-        return self.__agent.best_actions(
-            self.__environment.mino, self.__environment.dx, self.__environment.scale_boundaries(self.__environment.get_boundaries()))
-
-    def is_updating_state_mino(self):
-        return self.__game.update_state_mino()
+        super().preparing_piece_in_qtable()
+        print("PREVIOUS BOUNDARIES SETTED : ", self.environment.previous_boundaries)
+        print("INSERTION DU BOUNDARIES DANS LA QTABLE : ", self.environment.previous_boundaries)
 
     def is_quitted(self):
-        self.__environment.done = True
-        self.__agent.save("agent.dat")
-
-    def is_bottom_reached(self):
-        tmp = self.__game.is_bottom_reached()
-        self.__environment.try_erase_line()
-        return tmp
+        self.environment.done = True
+        self.agent.save("agent.dat")
 
     def update_display(self):
-        self.__environment.draw_mino(self.__environment.dx, self.__environment.dy, self.__environment.mino,
-                                     self.__environment.rotation)
-        self.draw_board(self.__environment.next_mino, self.__environment.hold_mino,
-                        self.__environment.score, self.__environment.level, self.__environment.goal)
-        self.__pygame.display.update()
+        super().update_display()
+        self.draw_board(self.environment.next_mino, self.environment.hold_mino,
+                        self.environment.score, self.environment.level, self.environment.goal)
+        self.pygame.display.update()
 
     def set_game_over(self):
-        self.__game.set_game_over()
-        self.__pygame.time.set_timer(USEREVENT, 1)
+        super().set_game_over()
+        self.pygame.time.set_timer(USEREVENT, 1)
 
     def start(self):
+        super().start()
         self.set_speed()
 
-    def create_mino(self):
-        return self.__game.is_mino_created()
-
-    def placing_mino(self):
-        for action in self.__events:
-            self.__environment.erase_mino(self.__environment.dx, self.__environment.dy, self.__environment.mino,
-                                          self.__environment.rotation)
-            self.__game.on_step(action)
-            print("EVENT PUBLISHED : ", action)
-
-    def insert_reward(self):
-
-        lines_count = self.__environment.erase_count * LINE_CLEAR_REWARD
-        holes_count = self.__environment.holes_created_count() * HOLE_REWARD
-        bp = self.__environment.is_bumpiness_increased_by(self.__agent.previous_state,
-                                                          self.__environment.get_boundaries()) * BUMPINESS_REWARD
-        is_blockade_created = self.__environment.is_blockade_created() * BLOCKADE_REWARD
-
-        reward = lines_count + holes_count + bp + is_blockade_created
-        self.__agent.insert_reward_in_state_qtable(self.__environment.mino, self.__current_x,
-                                                   reward,
-                                                   self.__agent.table_to_str(self.__environment.previous_boundaries),
-                                                   self.__current_rotation)
-
     def set_speed(self):
-        keys_pressed = self.__pygame.key.get_pressed()
+        super().set_speed()
+        keys_pressed = self.pygame.key.get_pressed()
         if keys_pressed[K_DOWN]:
-            self.__pygame.time.set_timer(USEREVENT, self.__framerate * 1)
+            self.pygame.time.set_timer(USEREVENT, self.framerate * 1)
         else:
-            self.__pygame.time.set_timer(USEREVENT, self.__framerate * 10)
+            self.pygame.time.set_timer(USEREVENT, self.framerate * 10)
 
     def on_reset(self):
-        self.__environment.next()
-        self.__framerate = 2 # Bigger -> Slower
-        pygame.time.set_timer(USEREVENT, self.__framerate * 1)
-        self.__current_rotation = 0
-        self.__current_x = 0
-        self.__environment.reset(True)
+        super().on_reset()
+        self.framerate = 2  # Bigger -> Slower
+        pygame.time.set_timer(USEREVENT, self.framerate * 1)
 
     def draw_block(self, x, y, color):
-        self.__pygame.draw.rect(
+        self.pygame.draw.rect(
             self.ui_configuration.screen,
             color,
             Rect(x, y, self.ui_configuration.block_size, self.ui_configuration.block_size)
         )
-        self.__pygame.draw.rect(
+        self.pygame.draw.rect(
             self.ui_configuration.screen,
             self.ui_configuration.grey_1,
             Rect(x, y, self.ui_configuration.block_size, self.ui_configuration.block_size),
@@ -163,7 +115,7 @@ class DummyEngine:
         self.ui_configuration.screen.fill(self.ui_configuration.grey_1)
 
         # Draw sidebar
-        self.__pygame.draw.rect(
+        self.pygame.draw.rect(
             self.ui_configuration.screen,
             self.ui_configuration.white,
             Rect(204, 0, 96, 374)
@@ -177,15 +129,15 @@ class DummyEngine:
                 dx = 220 + self.ui_configuration.block_size * j
                 dy = 65 + self.ui_configuration.block_size * i
                 if grid_n[i][j] != 0:
-                    self.__pygame.draw.rect(
+                    self.pygame.draw.rect(
                         self.ui_configuration.screen,
                         self.ui_configuration.t_color[grid_n[i][j]],
                         Rect(dx, dy, self.ui_configuration.block_size, self.ui_configuration.block_size)
                     )
 
         # Set max score
-        if self.__environment.score > 999999:
-            self.__environment.score = 999999
+        if self.environment.score > 999999:
+            self.environment.score = 999999
 
         # Draw texts
         # text_hold = self.ui_configuration.h5.render("HOLD", 1, self.ui_configuration.black)
@@ -193,7 +145,7 @@ class DummyEngine:
         text_reward = self.ui_configuration.h5.render("REWARDS", 1, self.ui_configuration.black)
         text_score = self.ui_configuration.h5.render("SCORE", 1, self.ui_configuration.black)
         score_value = self.ui_configuration.h4.render(str(score), 1, self.ui_configuration.black)
-        reward_value = self.ui_configuration.h4.render(str(self.__agent.reward_count), 1, self.ui_configuration.black)
+        reward_value = self.ui_configuration.h4.render(str(self.agent.reward_count), 1, self.ui_configuration.black)
         # text_level = self.ui_configuration.h5.render("LEVEL", 1, self.ui_configuration.black)
         # level_value = self.ui_configuration.h4.render(str(level), 1, self.ui_configuration.black)
         text_goal = self.ui_configuration.h5.render("GOAL", 1, self.ui_configuration.black)
@@ -212,8 +164,11 @@ class DummyEngine:
         self.ui_configuration.screen.blit(goal_value, (220, 330))
 
         # Draw board
-        for x in range(self.__environment.width):
-            for y in range(self.__environment.height):
+        for x in range(self.environment.width):
+            for y in range(self.environment.height):
                 dx = 17 + self.ui_configuration.block_size * x
                 dy = 17 + self.ui_configuration.block_size * y
-                self.draw_block(dx, dy, self.ui_configuration.t_color[self.__environment.matrix[x][y + 1]])
+                self.draw_block(dx, dy, self.ui_configuration.t_color[self.environment.matrix[x][y + 1]])
+
+    def quit(self):
+        self.pygame.quit()

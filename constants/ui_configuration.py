@@ -15,9 +15,9 @@ class UIConfiguration:
         self.lines = None
 
         # Fonts
-        self.font_path = "../assets/fonts/OpenSans-Light.ttf"
-        self.font_path_b = "../assets/fonts/OpenSans-Bold.ttf"
-        self.font_path_i = "../assets/fonts/Inconsolata/Inconsolata.otf"
+        self.font_path = "assets/fonts/OpenSans-Light.ttf"
+        self.font_path_b = "assets/fonts/OpenSans-Bold.ttf"
+        self.font_path_i = "assets/fonts/Inconsolata/Inconsolata.otf"
 
         self.h1 = self.__pygame.font.Font(self.font_path, 50)
         self.h2 = self.__pygame.font.Font(self.font_path, 30)

@@ -1,19 +1,19 @@
 from random import randint
 
 from constants.config import ACTION_ROTATE, ACTION_LEFT, ACTION_RIGHT
-from environment import Environment
 from constants.tetri_mino import *
+from game.environment import Environment
+
 
 class Game:
 
     def __init__(self, environment: Environment):
         self.__environment = environment
 
-
     def is_mino_created(self):
         if self.__environment.is_stackable(self.__environment.next_mino):
             self.__environment.mino = self.__environment.next_mino
-            self.__environment.next_mino = randint(1,4)
+            self.__environment.next_mino = randint(1, 4)
             self.__environment.dx, self.__environment.dy = 3, 0
             self.__environment.rotation = 0
             self.__environment.hold = False
@@ -55,8 +55,6 @@ class Game:
             status = True
 
         return status
-
-
 
     def on_step(self, action):
         # Turn right
@@ -120,4 +118,4 @@ class Game:
             self.__environment.draw_mino(self.__environment.dx, self.__environment.dy,
                                          self.__environment.mino, self.__environment.rotation)
 
-        #print("EVENT CONSUMED : ", action, ", x = ", self.__environment.dx)
+        # print("EVENT CONSUMED : ", action, ", x = ", self.__environment.dx)
