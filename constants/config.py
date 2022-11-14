@@ -1,4 +1,10 @@
+from random import randint
+
 import pygame
+
+
+def rand_tetrimino():
+    return randint(1, 7)
 
 
 ACTION_LEFT = "LEFT"

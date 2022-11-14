@@ -1,6 +1,5 @@
-from random import randint
 
-from constants.config import ACTION_ROTATE, ACTION_LEFT, ACTION_RIGHT
+from constants.config import ACTION_ROTATE, ACTION_LEFT, ACTION_RIGHT, rand_tetrimino
 from constants.tetri_mino import *
 from game.environment import Environment
 
@@ -13,7 +12,7 @@ class Game:
     def is_mino_created(self):
         if self.__environment.is_stackable(self.__environment.next_mino):
             self.__environment.mino = self.__environment.next_mino
-            self.__environment.next_mino = randint(1, 4)
+            self.__environment.next_mino = rand_tetrimino()
             self.__environment.dx, self.__environment.dy = 3, 0
             self.__environment.rotation = 0
             self.__environment.hold = False

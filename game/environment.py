@@ -1,5 +1,5 @@
-from random import randint
 
+from constants.config import rand_tetrimino
 from constants.tetri_mino import *
 
 
@@ -29,8 +29,8 @@ class Environment:
         self.dx, self.dy = 3, 0  # Minos location status
         self.rotation = 0  # Minos rotation status
 
-        self.mino = randint(1, 4)  # Current mino ## TODO : randint(1,4)
-        self.next_mino = randint(1, 4)  # Next mino ## TODO : randint(1,4)
+        self.mino = rand_tetrimino()  # Current mino ## TODO : randint(1,4)
+        self.next_mino = rand_tetrimino()  # Next mino ## TODO : randint(1,4)
 
         self.hold = False  # Hold status
         self.hold_mino = -1  # Holded mino

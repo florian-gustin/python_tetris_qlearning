@@ -5,7 +5,6 @@ import shutil
 import time
 import lzma
 
-
 from constants.config import ACTION_ROTATE, ACTION_LEFT, ACTION_RIGHT
 from constants.tetri_mino import TetriMino
 
@@ -28,7 +27,6 @@ class Agent:
         self.reward_count = 0
         self.reward_count_history = []
 
-
     def reset_reward_counter(self):
         self.reward_count_history.append(self.reward_count)
         self.reward_count = 0
@@ -44,7 +42,7 @@ class Agent:
                 return
 
             self.qtables = {}
-            #print(self.qtables)
+            # print(self.qtables)
 
     def change_state(self, grid):
         tmp = []
@@ -54,16 +52,15 @@ class Agent:
                     tmp.append(y)
                     self.state = tmp
 
-
     def table_to_str(self, table):
         return ''.join(map(str, table))
 
     def insert_reward_in_state_qtable(self, mino, x, value, state_str, rotation):
-        #print(state_str)
+        # print(state_str)
         try:
-            #print("ROTATION", rotation)
-            #print("MINO - 1", mino - 1)
-            #print(self.qtables[state_str][mino - 1][rotation])
+            # print("ROTATION", rotation)
+            # print("MINO - 1", mino - 1)
+            # print(self.qtables[state_str][mino - 1][rotation])
             maxQ = max(self.qtables[state_str][mino - 1][rotation])
 
             # (1 - self.__alpha) * qtable[action] + self.__alpha * (reward + self.__gamma * max_q)  <- version du projet noe pieerre
@@ -73,7 +70,7 @@ class Agent:
                    self.qtables[state_str][mino - 1][rotation][x])
             self.qtables[state_str][mino - 1][rotation][x] += tmp
             self.reward_count += tmp
-            #print("INSERT QTABLE : key = ", state_str, ", mino = ", mino - 1, ", x = ", x, ", rotation = ", rotation,
+            # print("INSERT QTABLE : key = ", state_str, ", mino = ", mino - 1, ", x = ", x, ", rotation = ", rotation,
             #      ", value = ", tmp)
 
             self.state = state_str
@@ -114,7 +111,7 @@ class Agent:
             for i in range(dx, x):
                 table_action.append(ACTION_RIGHT)
 
-        #print(table_action)
+        # print(table_action)
         return table_action, rotation, x
 
     def best_action(self, mino, boundaries):
@@ -122,18 +119,18 @@ class Agent:
 
         if random.uniform(0, 1) < self.__exploration:
             self.__exploration *= self.__cooling_rate
-            rotation = len(TetriMino.mino_map[mino - 1])-1
-            #print("MINO - 1", mino - 1)
-            #print("ROTATION", rotation)
-            x_range = TetriMino.mino_map[mino - 1][rotation]['X_RANGE']-1
-            #print("XRANGE", x_range)
+            rotation = len(TetriMino.mino_map[mino - 1]) - 1
+            # print("MINO - 1", mino - 1)
+            # print("ROTATION", rotation)
+            x_range = TetriMino.mino_map[mino - 1][rotation]['X_RANGE'] - 1
+            # print("XRANGE", x_range)
             return random.randint(0, rotation), random.randint(0, x_range)
         else:
             hash = ''.join(map(str, boundaries))
             best_rotation = 0
             best_x = 0
             best_reward = None
-            #print("MINOOOO", mino)
+            # print("MINOOOO", mino)
             for rotation, xs in self.qtables[hash][mino - 1].items():
                 for x, reward in xs.items():
                     if best_reward is None or reward > best_reward:
@@ -152,4 +149,3 @@ class Agent:
         with lzma.open(filename, 'r') as file:
             self.qtables = pickle.load(file)
         print("qtables load in", time.time() - start, "sec")
-
