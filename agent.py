@@ -11,7 +11,7 @@ from tetri_mino import TetriMino
 
 
 class Agent:
-    def __init__(self, alpha=1, gamma=1, exploration=0.2, cooling_rate=1):
+    def __init__(self, alpha=1, gamma=1, exploration=0, cooling_rate=1):
         self.last_action = 0
         self.state = [0] * 10
         self.qtables = {}

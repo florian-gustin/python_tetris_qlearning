@@ -26,10 +26,11 @@ class HeadlessEngine:
             print("Actions per sec : ", self.__agent.actions)
             self.__agent.actions = 0
             self.time = time.time()
-        if time.time() - self.save_time > 60:
-            self.save_time = time.time()
+        if time.time() - self.save_time > 300:
             print("Saving total game = ", self.__environment.game_process_counter)
+            self.__environment.game_process_counter = 0
             self.__agent.save("agent.dat")
+            self.save_time = time.time()
 
         if not self.__environment.game_over:
             self.start()
