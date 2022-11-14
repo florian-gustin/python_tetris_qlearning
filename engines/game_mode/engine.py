@@ -26,7 +26,7 @@ class Engine:
     def get_best_action(self):
         return self.agent.best_actions(
             self.environment.mino, self.environment.dx,
-            self.environment.scale_boundaries(self.environment.get_boundaries()))
+            self.environment.get_boundaries())
 
     def is_updating_state_mino(self):
         return self.game.update_state_mino()
