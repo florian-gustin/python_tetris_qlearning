@@ -48,6 +48,14 @@ class Environment:
         if self.score > self.best_score:
             self.best_score = self.score
 
+    def scale_boundaries(self, boundaries):
+        maxBoundary = self.max_bp
+        if maxBoundary > 4:
+            for count, value in enumerate(boundaries):
+                new_boundary = boundaries[count] - maxBoundary + 4
+                boundaries[count] = new_boundary if new_boundary >= 0 else 0
+        return boundaries
+
     def get_boundaries(self):
         if self.previous_boundaries != self.boundaries:
             return self.boundaries
@@ -268,7 +276,8 @@ class Environment:
 
     def set_previous_boundaries(self):
         self.previous_max_bp = self.max_bp
-        self.previous_boundaries = self.boundaries
+        boundaries = self.get_boundaries()
+        self.previous_boundaries = self.scale_boundaries(boundaries)
 
     def try_erase_line(self):
         self.erase_count = 0

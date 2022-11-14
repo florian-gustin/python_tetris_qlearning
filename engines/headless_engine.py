@@ -66,7 +66,7 @@ class HeadlessEngine:
 
     def get_best_action(self):
         return self.__agent.best_actions(
-            self.__environment.mino, self.__environment.dx, self.__environment.get_boundaries())
+            self.__environment.mino, self.__environment.dx, self.__environment.scale_boundaries(self.__environment.get_boundaries()))
 
     def is_updating_state_mino(self):
         return self.__game.update_state_mino()
