@@ -265,7 +265,7 @@ class Environment:
     def set_previous_boundaries(self):
         self.previous_max_bp = self.max_bp
         boundaries = self.get_boundaries()
-        self.previous_boundaries = self.scale_boundaries(boundaries)
+        self.previous_boundaries = self.get_boundaries()
 
     def try_erase_line(self):
         self.erase_count = 0
