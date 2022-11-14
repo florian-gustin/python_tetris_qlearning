@@ -57,9 +57,6 @@ class Environment:
         return boundaries
 
     def get_boundaries(self):
-        if self.previous_boundaries != self.boundaries:
-            return self.boundaries
-
         boundaries = []
         for y in self.matrix:
             boundary = 0

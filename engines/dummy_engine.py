@@ -48,7 +48,7 @@ class DummyEngine:
                         if self.create_mino() is False:
                             self.set_game_over()
                 # preparing the piece
-                elif self.__environment.dy < 2:
+                elif self.__environment.dy < 2 and self.__environment.dx == 3 and self.__environment.rotation == 0:
                     # get boundaries
                     # init the key values formula in qtable if not existing
                     self.preparing_piece_in_qtable()
