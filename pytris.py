@@ -41,7 +41,8 @@ def main():
             while True:
                 engine.execute()
         except KeyboardInterrupt:
-            agent.save("agent.dat")
+            agent.save("history.dat", agent.reward_count_history)
+            agent.save("agent.dat", agent.qtables)
             statistic.apply(agent.reward_count_history)
 
     else:

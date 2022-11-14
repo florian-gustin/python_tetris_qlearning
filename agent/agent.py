@@ -13,6 +13,8 @@ class Agent:
     def __init__(self, alpha=1, gamma=1, exploration=0, cooling_rate=1):
         self.last_action = 0
         self.state = [0] * 10
+        self.reward_count = 0
+        self.reward_count_history = []
         self.qtables = {}
         self.init_state_in_qtable()
         self.init_radar()
@@ -24,12 +26,14 @@ class Agent:
         self.previous_bp = "000000000"
         self.previous_state = [0] * 10
         self.actions = 0
-        self.reward_count = 0
-        self.reward_count_history = []
+
 
     def reset_reward_counter(self):
         self.reward_count_history.append(self.reward_count)
         self.reward_count = 0
+
+    def reset_history(self):
+        self.reward_count_history.clear()
 
     def init_radar(self):
         self.radar = {"zone": [[0] * 10 for _ in range(4)],
@@ -38,11 +42,10 @@ class Agent:
     def init_state_in_qtable(self):
         if len(self.qtables) == 0:
             if os.path.exists("agent.dat"):
-                self.load("agent.dat")
-                return
-
-            self.qtables = {}
-            # print(self.qtables)
+                self.load_qtable("agent.dat")
+            else:
+                self.qtables = {}
+        return
 
     def change_state(self, grid):
         tmp = []
@@ -68,7 +71,7 @@ class Agent:
             tmp = self.__alpha * \
                   (value + self.__gamma * maxQ -
                    self.qtables[state_str][mino - 1][rotation][x])
-            self.qtables[state_str][mino - 1][rotation][x] += tmp
+            self.qtables[state_str][mino - 1][rotation][x] = tmp
             self.reward_count += tmp
             # print("INSERT QTABLE : key = ", state_str, ", mino = ", mino - 1, ", x = ", x, ", rotation = ", rotation,
             #      ", value = ", tmp)
@@ -139,13 +142,13 @@ class Agent:
                         best_reward = reward
             return best_rotation, best_x
 
-    def save(self, filename):
+    def save(self, filename, reference):
         with lzma.open(filename + ".tmp", 'w') as file:
-            pickle.dump(self.qtables, file)
+            pickle.dump(reference, file)
         shutil.move(filename + ".tmp", filename)
 
-    def load(self, filename):
+    def load_qtable(self, filename):
         start = time.time()
         with lzma.open(filename, 'r') as file:
-            self.qtables = pickle.load(file)
-        print("qtables load in", time.time() - start, "sec")
+            reference = pickle.load(file)
+        print(filename, " load in", time.time() - start, "sec")

@@ -17,9 +17,9 @@ class HeadlessAgentEngine(Engine):
             self.agent.actions = 0
             self.time = time.time()
         if time.time() - self.save_time > 300:
-            print("Saving total game = ", self.environment.game_process_counter)
+            print("Saving total game = ", self.environment.game_process_counter, ", taille qtable = ", len(self.agent.qtables))
             self.environment.game_process_counter = 0
-            self.agent.save("agent.dat")
+            self.agent.save("agent.dat", self.agent.qtables)
             self.save_time = time.time()
 
         if not self.environment.game_over:
@@ -52,3 +52,9 @@ class HeadlessAgentEngine(Engine):
     def set_game_over(self):
         super().set_game_over()
         self.on_reset()
+        if time.time() - self.save_time > 300:
+            self.agent.save("history.dat", self.agent.reward_count_history)
+            self.agent.reset_history()
+            print("Saving history = ", max(self.agent.reward_count_history))
+
+
