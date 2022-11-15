@@ -32,7 +32,7 @@ class Merge:
                         if qtable[key] == 0:
                             qtable[key] = value
                         else:
-                            qtable[key] = (qtable[key] + value) / len(self.qtable_files)
+                            qtable[key] = (qtable[key] + value) / 2
         self.qtable = qtable
 
     def save(self):
