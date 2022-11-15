@@ -4,13 +4,13 @@ import pygame
 
 
 def rand_tetrimino():
-    return randint(1, 7)  # randint(3, 5)
+    return randint(1, 1)  # randint(3, 5)
 
 
 HEIGHT_ENVIRONMENT = 8
 EXPLORATION = 0
-ALPHA = 0
-GAMMA = 0
+ALPHA = 1
+GAMMA = 1
 
 ACTION_LEFT = "LEFT"
 ACTION_RIGHT = "RIGHT"
