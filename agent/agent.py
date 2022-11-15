@@ -6,6 +6,8 @@ import time
 import lzma
 from sys import getsizeof
 
+import xxhash
+
 from constants.config import ACTION_ROTATE, ACTION_LEFT, ACTION_RIGHT
 from constants.tetri_mino import TetriMino
 
@@ -61,19 +63,24 @@ class Agent:
         return ''.join(map(str, table))
 
     def insert_reward_in_state_qtable(self, mino, x, value, state_str, rotation):
-        # print(state_str)
         try:
+            # print(state_str)
             # print("ROTATION", rotation)
             # print("MINO - 1", mino - 1)
             # print(self.qtables[state_str][mino - 1][rotation])
-            maxQ = max(self.qtables[state_str][mino - 1][rotation])
+            maxQ = None
+            # print("MINOOOO", mino)
+            for rot in range(len(TetriMino.mino_map[mino - 1])):
+                for x_ in range(TetriMino.mino_map[mino - 1][rot]['X_RANGE']):
+                    reward = self.qtables[xxhash.xxh32_digest(state_str + ':' + str(mino - 1) + ':' + str(rot) + ':' + str(x_))]
+                    if maxQ is None or reward > maxQ:
+                        maxQ = reward
 
             # (1 - self.__alpha) * qtable[action] + self.__alpha * (reward + self.__gamma * max_q)  <- version du projet noe pieerre
 
             tmp = self.__alpha * \
-                  (value + self.__gamma * maxQ -
-                   self.qtables[state_str][mino - 1][rotation][x])
-            self.qtables[state_str][mino - 1][rotation][x] = tmp
+                  (value + self.__gamma * maxQ - self.qtables[xxhash.xxh32_digest(state_str+':'+str(mino - 1)+':'+str(rotation)+':'+str(x))])
+            self.qtables[xxhash.xxh32_digest(state_str+':'+str(mino - 1)+':'+str(rotation)+':'+str(x))] = tmp
             self.reward_count += tmp
             # print("INSERT QTABLE : key = ", state_str, ", mino = ", mino - 1, ", x = ", x, ", rotation = ", rotation,
             #      ", value = ", tmp)
@@ -86,18 +93,13 @@ class Agent:
         self.previous_state = state_str
         state_str = self.table_to_str(state_str)
         self.previous_bp = state_str
-        if state_str not in self.qtables:
-            self.qtables[state_str] = {}
-        if mino - 1 not in self.qtables[state_str]:
-            self.qtables[state_str][mino - 1] = {}
-        if len(self.qtables[state_str][mino - 1]) == 0:
-            for i in range(len(TetriMino.mino_map[mino - 1])):
-                x_range = TetriMino.mino_map[mino - 1][i]['X_RANGE']
-                self.qtables[state_str][mino - 1][i] = {}
-                for x in range(x_range):
-                    self.qtables[state_str][mino - 1][i][x] = 0
 
-        pass
+        for rotation in range(len(TetriMino.mino_map[mino - 1])):
+            x_range = TetriMino.mino_map[mino - 1][rotation]['X_RANGE']
+            for x in range(x_range):
+                if state_str+':'+str(mino - 1)+':'+str(rotation)+':'+str(x) not in self.qtables:
+                    self.qtables[xxhash.xxh32_digest(state_str+':'+str(mino - 1)+':'+str(rotation)+':'+str(x))] = 0
+
 
     def best_actions(self, mino, dx, boundaries):
 
@@ -136,8 +138,9 @@ class Agent:
             best_x = 0
             best_reward = None
             # print("MINOOOO", mino)
-            for rotation, xs in self.qtables[hash][mino - 1].items():
-                for x, reward in xs.items():
+            for rotation in range(len(TetriMino.mino_map[mino - 1])):
+                for x in range(TetriMino.mino_map[mino - 1][rotation]['X_RANGE']):
+                    reward = self.qtables[xxhash.xxh32_digest(hash + ':' + str(mino - 1) + ':' + str(rotation) + ':' + str(x))]
                     if best_reward is None or reward > best_reward:
                         best_rotation = rotation
                         best_x = x

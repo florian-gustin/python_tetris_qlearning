@@ -16,7 +16,7 @@ class HeadlessAgentEngine(Engine):
             print("Actions per sec : ", self.agent.actions)
             self.agent.actions = 0
             self.time = time.time()
-        if time.time() - self.save_time > 600:
+        if time.time() - self.save_time > 300:
             print("Saving total game = ", self.environment.game_process_counter, ", taille qtable = ", len(self.agent.qtables))
             self.environment.game_process_counter = 0
             self.agent.save_qtable("agent.dat")
