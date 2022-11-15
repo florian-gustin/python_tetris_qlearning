@@ -5,13 +5,14 @@ from pygame.rect import Rect
 from constants.tetri_mino import TetriMino
 from constants.ui_configuration import UIConfiguration
 from engines.game_mode.engine import Engine
-
+from sys import getsizeof
 
 class GUIAgentEngine(Engine):
 
-    def __init__(self, environment, agent, game) -> None:
+    def __init__(self, environment, agent, game, watch) -> None:
         super().__init__(environment, agent, game)
-        self.framerate = 2  # Bigger -> Slower
+        self.watch = watch
+        self.framerate = 5  # Bigger -> Slower
         pygame.init()
         pygame.time.set_timer(USEREVENT, self.framerate * 10)
         self.pygame = pygame
@@ -67,9 +68,10 @@ class GUIAgentEngine(Engine):
 
     def is_quitted(self):
         self.environment.done = True
-        self.agent.reward_count_history.append(self.agent.reward_count)
-        self.agent.save_history("history.dat")
-        self.agent.save_qtable("agent.dat")
+        if not self.watch:
+            self.agent.reward_count_history.append(self.agent.reward_count)
+            self.agent.save_history("history.dat")
+            self.agent.save_qtable("agent.dat")
 
     def update_display(self):
         super().update_display()

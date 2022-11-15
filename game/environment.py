@@ -1,5 +1,5 @@
 
-from constants.config import rand_tetrimino
+from constants.config import rand_tetrimino, HEIGHT_ENVIRONMENT
 from constants.tetri_mino import *
 
 
@@ -36,7 +36,7 @@ class Environment:
         self.hold_mino = -1  # Holded mino
 
         self.width = 10  # Board width
-        self.height = 20  # Board height
+        self.height = HEIGHT_ENVIRONMENT  # Board height
         self.matrix = [[0] * (self.height + 1) for _ in range(self.width)]  # Board matrix
 
         self.tetri_mino = TetriMino()
@@ -77,7 +77,7 @@ class Environment:
         for i in range(4):
             for j in range(4):
                 if grid[i][j] != 0:
-                    if (y + i + 1) > 20:
+                    if (y + i + 1) > HEIGHT_ENVIRONMENT:
                         return True
                     elif self.matrix[x + j][y + i + 1] != 0 and self.matrix[x + j][y + i + 1] != 8:
                         return True
@@ -122,7 +122,7 @@ class Environment:
         for i in range(4):
             for j in range(4):
                 if grid[i][j] != 0:
-                    if (x + j) < 0 or (x + j) > 9 or (y + i) < 0 or (y + i) > 20:
+                    if (x + j) < 0 or (x + j) > 9 or (y + i) < 0 or (y + i) > HEIGHT_ENVIRONMENT:
                         return False
                     elif self.matrix[x + j][y + i] != 0:
                         return False
@@ -140,7 +140,7 @@ class Environment:
         for i in range(4):
             for j in range(4):
                 if grid[i][j] != 0:
-                    if (x + j) < 0 or (x + j) > 9 or (y + i) < 0 or (y + i) > 20:
+                    if (x + j) < 0 or (x + j) > 9 or (y + i) < 0 or (y + i) > HEIGHT_ENVIRONMENT:
                         return False
                     elif self.matrix[x + j][y + i] != 0:
                         return False
@@ -218,8 +218,8 @@ class Environment:
 
         for col in range(len(self.matrix)):
             block = False
-            row_start = (max_grid_bp - 21) * -1
-            row_end = (max_grid_bp - 21) * -1 + radar
+            row_start = (max_grid_bp - (HEIGHT_ENVIRONMENT+1)) * -1
+            row_end = (max_grid_bp - (HEIGHT_ENVIRONMENT+1)) * -1 + radar
             for row in range(row_start, row_end):
                 if self.matrix[col][row] > 0:
                     block = True
@@ -235,8 +235,8 @@ class Environment:
             radar = max_grid_bp
         count = 0
         for col in range(len(self.matrix)):
-            row_start = (max_grid_bp - 21) * -1
-            row_end = (max_grid_bp - 21) * -1 + radar
+            row_start = (max_grid_bp - (HEIGHT_ENVIRONMENT+1)) * -1
+            row_end = (max_grid_bp - (HEIGHT_ENVIRONMENT+1)) * -1 + radar
             for row in range(row_start, row_end):
                 if self.matrix[col][row] == 0 and self.matrix[col][row - 1] and self.matrix[col][row - 1] != 0 and \
                         self.matrix[col][row - 2] and self.matrix[col][row - 2] != 0:
@@ -269,7 +269,7 @@ class Environment:
 
     def try_erase_line(self):
         self.erase_count = 0
-        for j in range(21):
+        for j in range(HEIGHT_ENVIRONMENT+1):
             is_full = True
             for i in range(10):
                 if self.matrix[i][j] == 0:

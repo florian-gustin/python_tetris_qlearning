@@ -1,6 +1,7 @@
 import argparse
 
 from agent.agent import Agent
+from constants.config import ALPHA, GAMMA, EXPLORATION
 from engines.game_mode.gui_agent_engine import GUIAgentEngine
 from engines.game_mode.gui_player_engine import GUIPlayerEngine
 from engines.game_mode.headless_agent_engine import HeadlessAgentEngine
@@ -12,16 +13,17 @@ from graph.statistic import Statistic
 def main():
     statistic = Statistic()
     environment = Environment(True)
-    agent = Agent()
+    agent = Agent(alpha=ALPHA, gamma=GAMMA, exploration=EXPLORATION)
 
     parser = argparse.ArgumentParser()
     parser.add_argument("--mode", help="Choose between : player | gui-agent | headless-agent", type=str, default="player", required=False)
+    parser.add_argument("--watch", help="Disable saving", action="store_true")
     args = parser.parse_args()
 
     game = Game(environment)
 
     if args.mode == "gui-agent":
-        engine = GUIAgentEngine(environment, agent, game)
+        engine = GUIAgentEngine(environment, agent, game, args.watch)
         while not environment.done:
             # Game screen
             if environment.start:

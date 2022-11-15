@@ -4,6 +4,7 @@ import random
 import shutil
 import time
 import lzma
+from sys import getsizeof
 
 from constants.config import ACTION_ROTATE, ACTION_LEFT, ACTION_RIGHT
 from constants.tetri_mino import TetriMino
@@ -45,6 +46,7 @@ class Agent:
                 self.load_qtable("agent.dat")
             else:
                 self.qtables = {}
+        print(getsizeof(self.qtables))
         return
 
     def change_state(self, grid):
