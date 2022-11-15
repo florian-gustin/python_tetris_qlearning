@@ -41,6 +41,6 @@ class Merge:
         shutil.move(self.output + ".tmp", self.output)
 
 if __name__ == '__main__':
-    test = Merge("../test", "final.dat")
+    test = Merge("../records", "../agent.dat")
     test.execute()
     test.save()
