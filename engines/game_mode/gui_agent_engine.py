@@ -67,6 +67,7 @@ class GUIAgentEngine(Engine):
 
     def is_quitted(self):
         self.environment.done = True
+        self.agent.reward_count_history.append(self.agent.reward_count)
         self.agent.save_history("history.dat")
         self.agent.save_qtable("agent.dat")
 

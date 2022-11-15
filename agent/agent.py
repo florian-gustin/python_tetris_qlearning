@@ -148,10 +148,9 @@ class Agent:
         shutil.move(filename + ".tmp", filename)
 
     def save_history(self, filename):
-        with open(filename + ".tmp", 'a') as file:
+        with open(filename, 'a') as file:
             for reward in self.reward_count_history:
                 file.write(str(reward)+"\n")
-        shutil.move(filename + ".tmp", filename)
 
     def load_qtable(self, filename):
         start = time.time()
