@@ -63,7 +63,6 @@ class Agent:
         return ''.join(map(str, table))
 
     def insert_reward_in_state_qtable(self, mino, x, value, state_str, rotation):
-        try:
             # print(state_str)
             # print("ROTATION", rotation)
             # print("MINO - 1", mino - 1)
@@ -72,34 +71,27 @@ class Agent:
             # print("MINOOOO", mino)
             for rot in range(len(TetriMino.mino_map[mino - 1])):
                 for x_ in range(TetriMino.mino_map[mino - 1][rot]['X_RANGE']):
-                    reward = self.qtables[xxhash.xxh32_digest(state_str + ':' + str(mino - 1) + ':' + str(rot) + ':' + str(x_))]
+                    key = xxhash.xxh32_digest(state_str + ':' + str(mino - 1) + ':' + str(rotation) + ':' + str(x_))
+                    reward = self.qtables[key] if key in self.qtables else 0
                     if maxQ is None or reward > maxQ:
                         maxQ = reward
 
             # (1 - self.__alpha) * qtable[action] + self.__alpha * (reward + self.__gamma * max_q)  <- version du projet noe pieerre
-
-            tmp = self.__alpha * \
-                  (value + self.__gamma * maxQ - self.qtables[xxhash.xxh32_digest(state_str+':'+str(mino - 1)+':'+str(rotation)+':'+str(x))])
+            key = xxhash.xxh32_digest(state_str + ':' + str(mino - 1) + ':' + str(rotation) + ':' + str(x))
+            current_reward = self.qtables[key] if key in self.qtables else 0
+            tmp = self.__alpha * (value + self.__gamma * maxQ - current_reward)
             self.qtables[xxhash.xxh32_digest(state_str+':'+str(mino - 1)+':'+str(rotation)+':'+str(x))] = tmp
             self.reward_count += tmp
             # print("INSERT QTABLE : key = ", state_str, ", mino = ", mino - 1, ", x = ", x, ", rotation = ", rotation,
             #      ", value = ", tmp)
 
             self.state = state_str
-        except:
-            pass
+
 
     def upsert_boundary_qtable(self, mino, state_str):
         self.previous_state = state_str
         state_str = self.table_to_str(state_str)
         self.previous_bp = state_str
-
-        for rotation in range(len(TetriMino.mino_map[mino - 1])):
-            x_range = TetriMino.mino_map[mino - 1][rotation]['X_RANGE']
-            for x in range(x_range):
-                if xxhash.xxh32_digest(state_str+':'+str(mino - 1)+':'+str(rotation)+':'+str(x)) not in self.qtables:
-                    self.qtables[xxhash.xxh32_digest(state_str+':'+str(mino - 1)+':'+str(rotation)+':'+str(x))] = 0
-
 
     def best_actions(self, mino, dx, boundaries):
 
@@ -140,7 +132,8 @@ class Agent:
             # print("MINOOOO", mino)
             for rotation in range(len(TetriMino.mino_map[mino - 1])):
                 for x in range(TetriMino.mino_map[mino - 1][rotation]['X_RANGE']):
-                    reward = self.qtables[xxhash.xxh32_digest(hash + ':' + str(mino - 1) + ':' + str(rotation) + ':' + str(x))]
+                    key = xxhash.xxh32_digest(hash + ':' + str(mino - 1) + ':' + str(rotation) + ':' + str(x))
+                    reward = self.qtables[key] if key in self.qtables else 0
                     if best_reward is None or reward > best_reward:
                         best_rotation = rotation
                         best_x = x
@@ -148,6 +141,7 @@ class Agent:
             return best_rotation, best_x
 
     def save_qtable(self, filename):
+        self.qtables = {key: value for key, value in self.qtables.items() if value != 0}
         with lzma.open(filename + ".tmp", 'w') as file:
             pickle.dump(self.qtables, file)
         shutil.move(filename + ".tmp", filename)
@@ -161,6 +155,10 @@ class Agent:
         start = time.time()
         with lzma.open(filename, 'r') as file:
             self.qtables = pickle.load(file)
+        print(len(self.qtables))
+        self.qtables = {key: value for key, value in self.qtables.items() if value != 0}
+        print(len(self.qtables))
+
         print(filename, " load in", time.time() - start, "sec")
 
     def load_history(self, filename):

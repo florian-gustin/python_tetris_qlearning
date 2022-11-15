@@ -1,5 +1,2 @@
-agent.dat
-agent.dat.tmp
-
-history.dat
-history.dat.tmp
+*.dat.tmp
+*.dat
