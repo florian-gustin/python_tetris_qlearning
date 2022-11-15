@@ -97,7 +97,7 @@ class Agent:
         for rotation in range(len(TetriMino.mino_map[mino - 1])):
             x_range = TetriMino.mino_map[mino - 1][rotation]['X_RANGE']
             for x in range(x_range):
-                if state_str+':'+str(mino - 1)+':'+str(rotation)+':'+str(x) not in self.qtables:
+                if xxhash.xxh32_digest(state_str+':'+str(mino - 1)+':'+str(rotation)+':'+str(x)) not in self.qtables:
                     self.qtables[xxhash.xxh32_digest(state_str+':'+str(mino - 1)+':'+str(rotation)+':'+str(x))] = 0
 
 
