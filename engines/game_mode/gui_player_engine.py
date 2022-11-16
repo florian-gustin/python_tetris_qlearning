@@ -1,20 +1,17 @@
 from __future__ import annotations
 
 import operator
-from abc import ABC, abstractmethod
-from random import randint
 
 from pygame import QUIT, USEREVENT, KEYDOWN, K_ESCAPE, K_DOWN, K_SPACE, K_LSHIFT, K_c, K_UP, K_x, K_z, K_LCTRL, K_LEFT, \
     K_RIGHT, K_RETURN
 from pygame.rect import Rect
 
-from ui_configuration import *
-from tetri_mino import *
+from constants.ui_configuration import *
+from constants.tetri_mino import *
 import pygame
-from pygame.event import Event
 
 
-class TetrisEngine:
+class GUIPlayerEngine:
 
     def __init__(self, environment) -> None:
         super().__init__()
@@ -149,7 +146,7 @@ class TetrisEngine:
                                         self.environment.level, self.environment.goal)
                         if self.environment.is_stackable(self.environment.next_mino):
                             self.environment.mino = self.environment.next_mino
-                            self.environment.next_mino = randint(1, 7)
+                            self.environment.next_mino = TETRIMINOS_POOL
                             self.environment.dx, self.environment.dy = 3, 0
                             self.environment.rotation = 0
                             self.environment.hold = False
@@ -195,7 +192,7 @@ class TetrisEngine:
                         if self.environment.hold_mino == -1:
                             self.environment.hold_mino = self.environment.mino
                             self.environment.mino = self.environment.next_mino
-                            self.environment.next_mino = randint(1, 7)
+                            self.environment.next_mino = TETRIMINOS_POOL
                         else:
                             self.environment.hold_mino, self.environment.mino = \
                                 self.environment.mino, self.environment.hold_mino
@@ -371,8 +368,8 @@ class TetrisEngine:
                     self.environment.hold = False
                     self.environment.dx, self.environment.dy = 3, 0
                     self.environment.rotation = 0
-                    self.environment.mino = randint(1, 7)
-                    self.environment.next_mino = randint(1, 7)
+                    self.environment.mino = TETRIMINOS_POOL
+                    self.environment.next_mino = TETRIMINOS_POOL
                     self.environment.hold_mino = -1
                     self.environment.framerate = 30
                     self.environment.score = 0
