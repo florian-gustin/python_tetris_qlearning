@@ -1,3 +1,4 @@
-pickle
 pygame
 matplotlib
+xxhash
+pickle-mixin
